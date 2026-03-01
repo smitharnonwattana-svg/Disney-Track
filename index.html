@@ -178,6 +178,130 @@
 
   .divider{height:1px;background:var(--light-gray);margin:10px 0;}
   .section-sub{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+
+  /* INFO PAGE */
+  .info-search-bar{display:flex;gap:8px;margin-bottom:12px;}
+  .info-search-input{flex:1;padding:10px 14px;border:2px solid var(--light-gray);border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--navy);background:var(--white);outline:none;}
+  .info-search-input:focus{border-color:var(--pink);}
+  .zone-filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:12px;}
+  .zone-filter-row::-webkit-scrollbar{display:none;}
+  .zone-filter-pill{padding:5px 13px;border-radius:16px;border:2px solid var(--light-gray);background:var(--cream);font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all 0.18s;}
+  .zone-filter-pill.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+  .attraction-card{background:var(--white);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;}
+  .attraction-card:active{transform:scale(0.98);}
+  .attraction-card-header{padding:13px 14px;display:flex;justify-content:space-between;align-items:flex-start;}
+  .attraction-card-name{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);flex:1;padding-right:8px;}
+  .attraction-card-zone{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--pink-pale);color:var(--pink);white-space:nowrap;}
+  .attraction-card-meta{padding:0 14px 12px;display:flex;gap:6px;flex-wrap:wrap;}
+  .attr-tag{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:700;}
+  .tag-wait{background:#E8EAFF;color:var(--navy-mid);}
+  .tag-dpa{background:var(--gold-pale);color:#B07D00;}
+  .tag-pp{background:var(--teal-pale);color:var(--teal);}
+  .tag-closed{background:#FFE5E5;color:#D32F2F;}
+  .tag-thrill{background:#F3E5FF;color:#7B1FA2;}
+  .tag-family{background:#E8F5E9;color:#2E7D32;}
+  .tag-kids{background:#FFF8E1;color:#F57F17;}
+
+  /* DETAIL MODAL */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:flex-end;}
+  .modal-overlay.open{display:flex;}
+  .modal-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-height:94vh;overflow-y:auto;animation:slideUp 0.32s cubic-bezier(.22,.68,0,1.2);}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.35);border-radius:2px;margin:14px auto 0;}
+  /* HERO SECTION — zone-based gradient */
+  .modal-hero{padding:0;position:relative;overflow:hidden;}
+  .modal-hero-bg{width:100%;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;}
+  .modal-hero-art{font-size:90px;text-align:center;padding:16px 0 8px;line-height:1;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3));}
+  .modal-hero-gradient{position:absolute;inset:0;background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65) 100%);}
+  .modal-hero-info{position:relative;padding:14px 18px 18px;}
+  .modal-zone-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .modal-zone-badge{font-size:11px;font-weight:700;color:var(--white);background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;}
+  .modal-status-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
+  .modal-status-dpa{background:rgba(255,184,0,0.9);color:#1A1F3A;}
+  .modal-status-pp{background:rgba(0,194,178,0.9);color:#FFF;}
+  .modal-status-closed{background:rgba(211,47,47,0.9);color:#FFF;}
+  .modal-title{font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:var(--white);line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
+  .modal-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);border:none;color:var(--white);font-size:16px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+  /* BODY */
+  .modal-body{padding:0;}
+  /* DESC CARD */
+  .modal-desc-card{padding:16px 18px;border-bottom:1px solid var(--light-gray);font-size:14px;color:#444;line-height:1.7;}
+  /* STATUS CARD like original app */
+  .modal-status-card{margin:14px 18px;border-radius:14px;overflow:hidden;border:1px solid var(--light-gray);}
+  .modal-status-card-header{padding:12px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
+  .modal-status-card-header.dpa{background:#FFF8E6;color:#B07D00;}
+  .modal-status-card-header.pp{background:#E0FAF8;color:#007A72;}
+  .modal-status-card-header.open{background:#E8F5E9;color:#2E7D32;}
+  .modal-status-card-header.closed{background:#FFE5E5;color:#C62828;}
+  .modal-status-card-body{padding:10px 16px 14px;background:var(--white);font-size:13px;color:var(--gray);line-height:1.6;}
+  .modal-status-icons{display:flex;gap:0;border-top:1px solid var(--light-gray);}
+  .modal-status-icon-btn{flex:1;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--navy);border:none;background:var(--white);cursor:pointer;border-right:1px solid var(--light-gray);}
+  .modal-status-icon-btn:last-child{border-right:none;}
+  .modal-status-icon-btn .si-icon{font-size:22px;}
+  /* SECTION */
+  .modal-section{padding:16px 18px;border-bottom:1px solid var(--light-gray);}
+  .modal-section:last-child{border-bottom:none;}
+  .modal-section-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  /* TYPE TAGS */
+  .type-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .type-tag{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600;}
+  .type-tag-thrill{background:#F3E5FF;color:#7B1FA2;}
+  .type-tag-family{background:#E8F5E9;color:#2E7D32;}
+  .type-tag-kids{background:#FFF8E1;color:#E65100;}
+  .type-tag-default{background:var(--light-gray);color:var(--navy);}
+  /* GOOD TO KNOW / RESTRICTIONS */
+  .info-list-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--light-gray);}
+  .info-list-item:last-child{border-bottom:none;}
+  .info-list-icon{font-size:20px;flex-shrink:0;line-height:1.3;}
+  .info-list-text{font-size:14px;color:#333;line-height:1.5;padding-top:1px;}
+  /* WAIT BAR */
+  .wait-big-num{font-family:'Prompt',sans-serif;font-size:36px;font-weight:700;line-height:1;}
+  .wait-meter{background:var(--light-gray);border-radius:8px;height:10px;overflow:hidden;margin-top:8px;}
+  .wait-fill{height:100%;border-radius:8px;transition:width 0.6s;}
+  .wait-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-top:3px;}
+  /* HEIGHT CARD */
+  .height-card{background:var(--pink-pale);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;}
+  .height-num{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;color:var(--pink);}
+  /* TIP CARD */
+  .tip-card{background:linear-gradient(135deg,var(--navy),#2D3561);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;}
+  .tip-card-icon{font-size:26px;flex-shrink:0;}
+  .tip-card-text{font-size:13px;color:var(--white);line-height:1.7;}
+  .tip-card-label{font-size:11px;font-weight:700;color:var(--gold-light);margin-bottom:4px;}
+
+
+  /* INFO MODE SWITCHER */
+  .info-mode-row{display:flex;gap:8px;padding:12px 0 8px;overflow-x:auto;scrollbar-width:none;}
+  .info-mode-row::-webkit-scrollbar{display:none;}
+  .info-mode-btn{flex:1;padding:8px 10px;border-radius:12px;border:2px solid var(--light-gray);background:var(--cream);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:4px;}
+  .info-mode-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+  /* RECOMMEND CARDS */
+  .recommend-header{background:linear-gradient(135deg,var(--navy),#3D2B6B);border-radius:16px;padding:16px 18px;margin-bottom:14px;color:#fff;}
+  .recommend-header h3{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+  .recommend-header p{font-size:12px;opacity:0.75;line-height:1.5;}
+  .recommend-source{font-size:10px;color:var(--gold-light);background:rgba(255,255,255,0.12);padding:3px 9px;border-radius:10px;display:inline-block;margin-top:6px;}
+  .recommend-rank-card{background:var(--white);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;}
+  .recommend-rank-card:active{transform:scale(0.98);}
+  .recommend-rank-header{display:flex;align-items:stretch;gap:0;}
+  .recommend-rank-num{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:#fff;}
+  .recommend-rank-body{flex:1;padding:11px 13px 11px 0;}
+  .recommend-rank-name{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .recommend-rank-quote{font-size:12px;color:var(--gray);line-height:1.5;font-style:italic;}
+  .recommend-rank-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+  .recommend-rank-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--light-gray);color:var(--navy);}
+
+  /* FAVORITES */
+  .fav-btn{position:absolute;top:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:none;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s;}
+  .fav-btn.active{background:rgba(255,79,123,0.7);}
+  .fav-heart{color:rgba(255,255,255,0.6);transition:all 0.2s;}
+  .fav-heart.active{color:#fff;}
+  .fav-empty-state{text-align:center;padding:50px 20px;color:var(--gray);}
+  .fav-empty-state .empty-big-icon{font-size:56px;margin-bottom:12px;}
+  .fav-empty-state p{font-size:14px;line-height:1.6;}
+  /* heart on attraction cards */
+  .attr-card-fav{position:absolute;top:10px;right:10px;font-size:18px;cursor:pointer;z-index:2;transition:transform 0.15s;}
+  .attr-card-fav:active{transform:scale(1.3);}
+
 </style>
 </head>
 <body>
@@ -190,14 +314,15 @@
 </div>
 
 <div class="nav-tabs">
-  <button class="tab-btn active" onclick="showTab('add')" id="tab-add"><span class="tab-icon">✏️</span>บันทึก</button>
+  <button class="tab-btn active" onclick="showTab('info')" id="tab-info"><span class="tab-icon">🎡</span>ข้อมูล</button>
+  <button class="tab-btn" onclick="showTab('add')" id="tab-add"><span class="tab-icon">✏️</span>บันทึก</button>
   <button class="tab-btn" onclick="showTab('timeline')" id="tab-timeline"><span class="tab-icon">⏱️</span>Timeline</button>
   <button class="tab-btn" onclick="showTab('summary')" id="tab-summary"><span class="tab-icon">📊</span>สรุป</button>
   <button class="tab-btn" onclick="showTab('export')" id="tab-export"><span class="tab-icon">📤</span>Export</button>
 </div>
 
 <!-- ===== PAGE: ADD ===== -->
-<div class="page active" id="page-add">
+<div class="page" id="page-add">
   <div class="type-selector">
     <button class="type-btn active-ride" id="type-ride" onclick="selectType('ride')"><span class="t-icon">🎢</span>เครื่องเล่น</button>
     <button class="type-btn" id="type-show" onclick="selectType('show')"><span class="t-icon">🎭</span>โชว์</button>
@@ -524,6 +649,59 @@
     <div class="export-preview" id="export-text">กด "สร้างสรุป" เพื่อดูตัวอย่าง</div>
     <button class="btn btn-primary" onclick="generateExport()" style="margin-bottom:9px">✨ สร้างสรุป</button>
     <button class="btn btn-teal" onclick="copyExport()">📋 คัดลอกข้อความ</button>
+  </div>
+</div>
+
+
+<!-- ===== PAGE: INFO ===== -->
+<div class="page active" id="page-info">
+
+  <!-- View mode switcher -->
+  <div class="info-mode-row">
+    <button class="info-mode-btn active" id="mode-all" onclick="setInfoMode('all',this)">🎡 ทั้งหมด</button>
+    <button class="info-mode-btn" id="mode-recommend" onclick="setInfoMode('recommend',this)">⭐ แนะนำ</button>
+    <button class="info-mode-btn" id="mode-fav" onclick="setInfoMode('fav',this)">❤️ ชอบ <span id="fav-count-badge" style="display:none;background:var(--pink);color:#fff;border-radius:10px;padding:0 6px;font-size:10px;margin-left:2px;"></span></button>
+  </div>
+
+  <!-- ALL mode: search + zone filter + list -->
+  <div id="info-all-view">
+    <div class="info-search-bar">
+      <input class="info-search-input" id="info-search" placeholder="🔍 ค้นหาเครื่องเล่น..." oninput="filterAttractions()"/>
+    </div>
+    <div class="zone-filter-row" id="zone-filter-row">
+      <div class="zone-filter-pill active" onclick="setZoneFilter('all',this)">🎡 ทั้งหมด</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('World Bazaar',this)">🗺️ World Bazaar</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Adventureland',this)">🌴 Adventureland</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Westernland',this)">🤠 Westernland</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Critter Country',this)">🦦 Critter Country</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Fantasyland',this)">🏰 Fantasyland</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Toontown',this)">🎨 Toontown</div>
+      <div class="zone-filter-pill" onclick="setZoneFilter('Tomorrowland',this)">🚀 Tomorrowland</div>
+    </div>
+    <div id="attraction-list"></div>
+  </div>
+
+  <!-- RECOMMEND mode -->
+  <div id="info-recommend-view" style="display:none">
+    <div id="recommend-list"></div>
+  </div>
+
+  <!-- FAV mode -->
+  <div id="info-fav-view" style="display:none">
+    <div id="fav-list"></div>
+  </div>
+
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModalIfOutside(event)">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-hero" id="modal-hero">
+      <div class="modal-handle"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <!-- hero content injected by JS -->
+    </div>
+    <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
@@ -1234,7 +1412,869 @@ document.addEventListener('DOMContentLoaded', () => {
   if(fp) fp.addEventListener('input', updateFoodConverted);
 });
 
+
+// ========== FAVORITES ==========
+let favorites = JSON.parse(localStorage.getItem('tdl_favorites') || '[]');
+
+function saveFavorites() { localStorage.setItem('tdl_favorites', JSON.stringify(favorites)); }
+
+function toggleFavorite(name, e) {
+  if(e) e.stopPropagation();
+  const idx = favorites.indexOf(name);
+  if(idx >= 0) favorites.splice(idx, 1);
+  else favorites.push(name);
+  saveFavorites();
+  updateFavBadge();
+  // re-render whichever view is active
+  const mode = document.getElementById('mode-all').classList.contains('active') ? 'all'
+    : document.getElementById('mode-fav').classList.contains('active') ? 'fav' : 'recommend';
+  if(mode === 'all') renderAttractions();
+  else if(mode === 'fav') renderFavorites();
+  else renderRecommend();
+  showToast(favorites.includes(name) ? '❤️ เพิ่มในรายการโปรดแล้ว' : '💔 ลบออกจากรายการโปรดแล้ว');
+}
+
+function toggleFavFromModal(name) {
+  const idx2 = favorites.indexOf(name);
+  if(idx2 >= 0) favorites.splice(idx2, 1);
+  else favorites.push(name);
+  saveFavorites();
+  updateFavBadge();
+  const btn = document.getElementById('modal-fav-btn');
+  if(btn) btn.textContent = favorites.includes(name) ? '❤️' : '🤍';
+  showToast(favorites.includes(name) ? '❤️ เพิ่มในรายการโปรดแล้ว' : '💔 ลบออกจากรายการโปรดแล้ว');
+}
+
+function updateFavBadge() {
+  const badge = document.getElementById('fav-count-badge');
+  if(!badge) return;
+  if(favorites.length > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = favorites.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ========== RECOMMEND DATA (from internet/reddit) ==========
+const RECOMMEND_DATA = [
+  {
+    rank: 1,
+    name: "Enchanted Tale of Beauty and the Beast",
+    quote: `"By far the BEST ride Disney has ever created. Literally my main reason for going to Tokyo." — TikTok 2025`,
+    tags: ["#1 ยอดนิยมสุดในสวน","Trackless Dark Ride","💳 DPA","ห้ามพลาดเด็ดขาด"],
+    color: "#7C3FA0",
+    source: "TikTok · Disney Tourist Blog · TDR Explorer",
+    why: `เป็น Trackless Dark Ride ที่ยิ่งใหญ่ที่สุดที่ Disney เคยสร้าง ถ้วยเต้นระบำตามจังหวะเพลง ฉากละเอียดสุดๆ คิวมักเกิน 2-3 ชั่วโมง ต้องมาก่อนสวนเปิดหรือซื้อ DPA`,
+  },
+  {
+    rank: 2,
+    name: "Pooh's Hunny Hunt",
+    quote: `"The first Trackless ride ever made — still one of the best in the world. Honey pots move randomly, no two rides are the same." — Wandering in Disney`,
+    tags: ["Trackless ตัวแรกของโลก","🎟️ Priority Pass","คิวยาวมาก"],
+    color: "#E65100",
+    source: "Wandering in Disney · TDR Explorer · Reddit r/TokyoDisney",
+    why: `Honey Pot วิ่งแบบ Random ทุกรอบ ไม่มีทางเหมือนกัน เป็นเครื่องเล่นแบบ Trackless แรกของโลก มีแต่ที่โตเกียวเท่านั้น`,
+  },
+  {
+    rank: 3,
+    name: "Splash Mountain",
+    quote: `"This is the last Splash Mountain on earth — immaculately maintained, every animatronic works. A must-do." — Trips With Tykes 2025`,
+    tags: ["สุดท้ายในโลก","น้ำตก 5 ชั้น","💳 DPA","โดนน้ำ!"],
+    color: "#1565C0",
+    source: "Trips With Tykes · That Mum Travel Life · NeverEnding Voyage",
+    why: `Splash Mountain แห่งเดียวที่เหลืออยู่ในโลก! สหรัฐฯ ปิดไปแล้วทั้งหมด โตเกียวดูแลรักษาอย่างดีเยี่ยม Animatronic ทำงานครบทุกตัว`,
+  },
+  {
+    rank: 4,
+    name: "Monsters, Inc. Ride & Go Seek!",
+    quote: `"Flashlights activate animatronic effects in unexpected ways — monsters pop out, it's a surprising delight." — Trips With Tykes`,
+    tags: ["Interactive","ส่องไฟฉาย","🎟️ Priority Pass","มีแค่ที่โตเกียว"],
+    color: "#1A237E",
+    source: "Trips With Tykes · Theme Park 247 · TikTok",
+    why: `ไฟฉายในมือส่องตัวละครแล้วมันจะ animate ขึ้นมาเอง! เอฟเฟกต์ว้าวมาก Reddit บอกว่าเป็น magic trick ที่ดีที่สุดใน Disney`,
+  },
+  {
+    rank: 5,
+    name: "Haunted Mansion",
+    quote: `"A great version of Haunted Mansion — possibly the best. The ghostly hitchhikers are exceptionally executed." — Wandering in Disney`,
+    tags: ["คลาสสิก","🎟️ Priority Pass","999 ผี","สวยกลางคืน"],
+    color: "#1B1B3A",
+    source: "Wandering in Disney · Disney Tourist Blog",
+    why: `เวอร์ชันโตเกียวคือ Haunted Mansion ที่ดีที่สุดนอกสหรัฐฯ ดูแลดีมาก เอฟเฟกต์ครบทุกจุด ไม่มีตัวไหนพัง`,
+  },
+  {
+    rank: 6,
+    name: "Big Thunder Mountain",
+    quote: `"Best experienced at night — the Wild West theming glows beautifully. Fun for all ages with great details." — NeverEnding Voyage 2025`,
+    tags: ["Roller Coaster","สวยกลางคืน","🎟️ Priority Pass","เหมาะทุกวัย"],
+    color: "#BF360C",
+    source: "NeverEnding Voyage · Theme Park 247 · That Mum Travel Life",
+    why: `รอบกลางคืนสวยมากๆ ไฟสีทองที่เหมืองและภูเขาสว่างสวยงาม ความตื่นเต้นพอดี ไม่หนักเกินสำหรับคนไม่กล้า`,
+  },
+  {
+    rank: 7,
+    name: "The Happy Ride with Baymax",
+    quote: `"Lighthearted and perfectly themed. Cast Members dance every ride — look up to see them joining in!" — Travel Between The Lines`,
+    tags: ["Cast Member เต้น!","💳 DPA","สนุกมาก","Big Hero 6"],
+    color: "#0D47A1",
+    source: "Travel Between The Lines · TikTok · Theme Park 247",
+    why: `Cast Member จะเต้นทุกรอบ! Pod สีขาวหมุนสุ่มตามเพลง บรรยากาศดีมากๆ คนดูบนขอบจะยิ้มตลอด`,
+  },
+  {
+    rank: 8,
+    name: "Pirates of the Caribbean",
+    quote: `"Jack Sparrow animatronic here is stunningly life-like — better than any other Disney park." — The Theme Park Guy`,
+    tags: ["ยาวที่สุดในโลก","Jack Sparrow","ในร่ม","พักขาดี"],
+    color: "#1A3A5C",
+    source: "The Theme Park Guy · Disney Tourist Blog",
+    why: `ล่องเรือในร่มยาวที่สุดใน Disney ทั่วโลก Jack Sparrow Animatronic ที่นี่ถือว่าสมจริงที่สุด ได้พักขาด้วย!`,
+  },
+  {
+    rank: 9,
+    name: "Star Tours: The Adventures Continue",
+    quote: `"Multiple randomized storylines — hardcore fans ride it 5+ times to see different combinations." — Theme Park 247`,
+    tags: ["สุ่มฉากทุกรอบ","Star Wars","Motion Simulator","Single Rider มี"],
+    color: "#000814",
+    source: "Theme Park 247 · Disney Tourist Blog",
+    why: `ฉากสุ่มทุกรอบ มีหลายสิบ combination ทำให้เล่นซ้ำได้ไม่เบื่อ Star Wars Fan ห้ามพลาด`,
+  },
+  {
+    rank: 10,
+    name: "Roger Rabbit's Car Toon Spin",
+    quote: `"The queue alone has amazing Easter Eggs from the movie. Underrated gem — lines rarely exceed 20 mins." — That Mum Travel Life`,
+    tags: ["Queue ดีมาก","Easter Eggs","ไม่ต้องรอนาน","Underrated"],
+    color: "#B71C1C",
+    source: "That Mum Travel Life · Wandering in Disney",
+    why: `คิวสั้นกว่าเครื่องเล่นอื่นมาก แต่คุณภาพดี! Easter Eggs ใน Queue ดูสนุกมาก ดีสำหรับตอนเครื่องเล่นอื่นคิวยาว`,
+  },
+];
+
+// ========== INFO MODE SWITCHER ==========
+let currentInfoMode = 'all';
+
+function setInfoMode(mode, el) {
+  currentInfoMode = mode;
+  document.querySelectorAll('.info-mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('info-all-view').style.display = mode==='all' ? 'block' : 'none';
+  document.getElementById('info-recommend-view').style.display = mode==='recommend' ? 'block' : 'none';
+  document.getElementById('info-fav-view').style.display = mode==='fav' ? 'block' : 'none';
+  if(mode === 'recommend') renderRecommend();
+  if(mode === 'fav') renderFavorites();
+  if(mode === 'all') renderAttractions();
+}
+
+// ========== RENDER RECOMMEND ==========
+function renderRecommend() {
+  const container = document.getElementById('recommend-list');
+
+  let html = `<div class="recommend-header">
+    <h3>🌟 เครื่องเล่น Must-Do ของโตเกียวดิสนีย์แลนด์</h3>
+    <p>รวบรวมจากรีวิวนักท่องเที่ยว, Reddit, TikTok และ travel blogs ปี 2025</p>
+    <span class="recommend-source">📡 Disney Tourist Blog · Wandering in Disney · Reddit r/TokyoDisney · TDR Explorer · TikTok</span>
+  </div>`;
+
+  RECOMMEND_DATA.forEach((r, i) => {
+    const isFav = favorites.includes(r.name);
+    const medalOrNum = i < 3 ? ['🥇','🥈','🥉'][i] : `#${r.rank}`;
+    const safeN = r.name.replace(/'/g,"\'");
+    html += `<div class="recommend-rank-card" onclick="openAttractionDetail('${safeN}')">
+      <div style="display:flex;align-items:stretch;">
+        <div style="width:56px;flex-shrink:0;background:${r.color};display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-size:${i<3?'26':'20'}px;font-weight:700;color:#fff;border-radius:14px 0 0 14px;">${medalOrNum}</div>
+        <div style="flex:1;padding:12px 12px 10px 14px;min-width:0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:6px;">
+            <div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);flex:1;line-height:1.3;">${r.name}</div>
+            <button onclick="toggleFavorite('${safeN}', event)" style="background:none;border:none;cursor:pointer;font-size:22px;flex-shrink:0;padding:0;margin-top:-2px;line-height:1;">${isFav?'❤️':'🤍'}</button>
+          </div>
+          <div style="font-size:11px;font-style:italic;color:#666;margin:5px 0 5px;line-height:1.5;border-left:3px solid ${r.color};padding-left:8px;">${r.quote}</div>
+          <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:6px;line-height:1.5;">${r.why}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;">
+            ${r.tags.map(t=>`<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:${r.color}18;color:${r.color};">${t}</span>`).join('')}
+          </div>
+          <div style="font-size:10px;color:var(--gray);">📡 ${r.source}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ========== RENDER FAVORITES ==========
+function renderFavorites() {
+  const container = document.getElementById('fav-list');
+  if(favorites.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:60px 24px;">
+      <div style="font-size:64px;margin-bottom:16px;">🤍</div>
+      <div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;">ยังไม่มีรายการโปรด</div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.7;">กด 🤍 ที่เครื่องเล่นใดก็ได้<br>เพื่อเพิ่มในรายการโปรด<br><span style="font-size:12px;opacity:0.7">ทั้งในหน้า ทั้งหมด, แนะนำ และในหน้า detail</span></div>
+    </div>`;
+    return;
+  }
+
+  const ZONE_EMOJI = {'World Bazaar':'🗺️','Adventureland':'🌴','Westernland':'🤠','Critter Country':'🦦','Fantasyland':'🏰','Toontown':'🎨','Tomorrowland':'🚀'};
+  const THRILL_TAG = {thrill:'tag-thrill', family:'tag-family', kids:'tag-kids'};
+  const THRILL_LABEL = {thrill:'⚡ Thrill', family:'👨‍👩‍👧 Family', kids:'🧒 Kids'};
+
+  let html = `<div style="background:linear-gradient(135deg,var(--pink),#ff2d6f);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+    <span style="font-size:32px;">❤️</span>
+    <div>
+      <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:#fff;">รายการโปรดของคุณ</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:2px;">${favorites.length} เครื่องเล่น • กด ❤️ เพื่อลบออก</div>
+    </div>
+  </div>`;
+
+  favorites.forEach(name => {
+    const r = RIDES_DATA.find(x => x.name === name) || {name, zone:'-', wait:null};
+    const d = ATTRACTION_DETAILS[name] || {};
+    const thrill = d.thrill || 'family';
+    const passTag = d.pass || r.pass;
+    const recRank = RECOMMEND_DATA.findIndex(x => x.name === name);
+    const safeN = name.replace(/'/g,"\'");
+    html += `<div class="attraction-card" style="position:relative;" onclick="openAttractionDetail('${safeN}')">
+      <button class="attr-card-fav" onclick="toggleFavorite('${safeN}', event)">❤️</button>
+      <div class="attraction-card-header" style="padding-right:40px;">
+        <div class="attraction-card-name">${name}</div>
+        <div class="attraction-card-zone">${ZONE_EMOJI[r.zone]||''} ${r.zone}</div>
+      </div>
+      <div class="attraction-card-meta">
+        <span class="attr-tag ${THRILL_TAG[thrill]}">${THRILL_LABEL[thrill]}</span>
+        ${recRank>=0?`<span class="attr-tag" style="background:#FFF8E1;color:#E65100;font-weight:800;">⭐ Top ${recRank+1}</span>`:''}
+        ${r.wait&&r.wait!=='-'&&r.wait!=='walk-in'?`<span class="attr-tag tag-wait">⏳ ${r.wait} น.</span>`:''}
+        ${passTag==='DPA'?`<span class="attr-tag tag-dpa">💳 DPA</span>`:''}
+        ${passTag==='Priority Pass'?`<span class="attr-tag tag-pp">🎟️ PP</span>`:''}
+        ${d.closedUntil?`<span class="attr-tag tag-closed">⚠️ ปิดอยู่</span>`:''}
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+
+// ========== ATTRACTION DETAILS DATA ==========
+const ATTRACTION_DETAILS = {
+  "Enchanted Tale of Beauty and the Beast": {
+    desc: "นั่งถ้วยวิเศษที่เต้นระบำตามจังหวะเพลง ล่องผ่านฉากในเทพนิยายสวยงามของโฉมงามกับเจ้าชายอสูร",
+    thrill: "family", rideType: ["เครื่องเล่นรางในร่ม","Trackless Dark Ride","หมุน/Spin","ความมืด"],
+    goodToKnow: ["เล่นได้ฝนตก","Single Rider มี"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่อายุ 16 ปีขึ้นไปร่วม","ไม่เหมาะสำหรับหญิงตั้งครรภ์","ผู้ป่วยโรคหัวใจ/ความดัน/หลัง/คอ ควรงดเล่น"],
+    pass: "DPA", height: null, closedUntil: null,
+    tip: "เครื่องเล่นยอดนิยมที่สุด! รีบมาเล่นแรกหรือซื้อ DPA"
+  },
+  "Pooh's Hunny Hunt": {
+    desc: "ขับรถไปรับน้ำผึ้งกับพูห์ในดินแดน Hundred Acre Wood ระบบ Trackless ทำให้รถวิ่งแบบไม่ซ้ำกันทุกครั้ง",
+    thrill: "family", rideType: ["เครื่องเล่นรางในร่ม","Trackless Dark Ride","ไม่มีความเร็ว"],
+    goodToKnow: ["เล่นได้ฝนตก","เหมาะทุกวัย"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: "Priority Pass", height: null, closedUntil: null,
+    tip: "Trackless ride แรกของโลก! รีบมาเช้าหรือใช้ Priority Pass"
+  },
+  "Haunted Mansion": {
+    desc: "ล่องผ่านคฤหาสน์หลอกสนุก 999 ผีอาศัยอยู่ร่วมกัน ภาพลวงตาและเอฟเฟกต์สุดคลาสสิก",
+    thrill: "family", rideType: ["เครื่องเล่นรางในร่ม","Dark Ride","ความมืด","เสียงดัง"],
+    goodToKnow: ["เล่นได้ฝนตก","มีเวอร์ชัน Halloween พิเศษ"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม","ไม่เหมาะผู้กลัวความมืด"],
+    pass: "Priority Pass", height: null, closedUntil: null,
+    tip: "เข้าคิวช่วงกลางวัน หรือก่อนปิดสวน คนน้อยกว่า"
+  },
+  "Splash Mountain": {
+    desc: "ล่องเรือท่อนซุงผ่านดินแดนของพี่กระต่ายบราร์ สุดท้ายดิ่งลงน้ำตกสูง 5 ชั้น โดนน้ำแน่นอน!",
+    thrill: "thrill", rideType: ["เครื่องเล่นน้ำ","Log Flume","ตกน้ำ","เสียงดัง"],
+    goodToKnow: ["เตรียมรองเท้ากันน้ำ","มีที่เก็บของ"],
+    restrictions: ["ส่วนสูง 90 ซม.ขึ้นไป","ไม่เหมาะหญิงตั้งครรภ์","ผู้ป่วยหัวใจ/ความดัน/หลัง ควรงด","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: "DPA", height: 90, closedUntil: null,
+    tip: "เล่นช่วงบ่ายร้อนๆ จะสดชื่นมาก เตรียมเสื้อสำรอง!"
+  },
+  "Big Thunder Mountain": {
+    desc: "รถไฟเหาะสุดเถื่อนผ่านเหมืองทองในแถบตะวันตกเก่า ทั้งเนิน ทั้งโค้ง ทั้งอุโมงค์มืด",
+    thrill: "thrill", rideType: ["Roller Coaster","ตื่นเต้น/Thrill","กลางแจ้ง/ในร่ม"],
+    goodToKnow: ["Single Rider มี","สวยงามตอนกลางคืน"],
+    restrictions: ["ส่วนสูง 102 ซม.ขึ้นไป","ไม่เหมาะหญิงตั้งครรภ์","ผู้ป่วยหัวใจ/ความดัน/หลัง/คอ ควรงด","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: "Priority Pass", height: 102, closedUntil: null,
+    tip: "ตอนกลางคืนวิวสวยมาก! ลองนั่งรอบสุดท้ายก่อนปิด"
+  },
+  "Space Mountain": {
+    desc: "รถไฟเหาะในความมืดสนิท จำลองการเดินทางอวกาศ — ปิดปรับปรุงใหญ่ จะกลับมาในปี 2027",
+    thrill: "thrill", rideType: ["Roller Coaster","ความมืดสนิท","ตื่นเต้น/Thrill"],
+    goodToKnow: ["กำลังปรับปรุง","จะเปิดใหม่ปี 2027"],
+    restrictions: ["⚠️ ปิดปรับปรุงถึงปี 2027"],
+    pass: null, height: null, closedUntil: "2027",
+    tip: "ตอนนี้ปิดอยู่ครับ รอเปิดใหม่ปี 2027"
+  },
+  "Pirates of the Caribbean": {
+    desc: "ล่องเรือผ่านอาณาจักรโจรสลัด Captain Jack Sparrow นำทัพ ฉากในร่มยาวที่สุดของ TDL",
+    thrill: "family", rideType: ["เครื่องเล่นน้ำในร่ม","Boat Ride","ตกเล็กน้อย","ความมืด"],
+    goodToKnow: ["เล่นได้ฝนตก","พักขาได้ดี","เย็นสบาย"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "ฉากยาวที่สุดในบรรดา Pirates ทุกสาขา คุ้มมาก!"
+  },
+  "Jungle Cruise: Wildlife Expeditions": {
+    desc: "ล่องเรือสำรวจป่าลึกกับไกด์ตลกขบขัน พบสัตว์ป่า Animatronic ตลอดเส้นทาง",
+    thrill: "family", rideType: ["เครื่องเล่นน้ำ","Boat Ride","กลางแจ้ง"],
+    goodToKnow: ["ตอนกลางคืนมีไฟสวยงาม","ไกด์พูดภาษาญี่ปุ่น"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "เวอร์ชัน Night เด็ดมาก! ลองรอบกลางคืนถ้าทัน"
+  },
+  "Monsters, Inc. Ride & Go Seek!": {
+    desc: "ขับรถส่องไฟฉายตามหาตัวละครจาก Monsters Inc. ที่ซ่อนตัวอยู่ทั่วเมือง Monstropolis",
+    thrill: "family", rideType: ["Interactive Dark Ride","ส่องไฟ","ในร่ม"],
+    goodToKnow: ["เล่นได้ฝนตก","เหมาะทุกวัย","Interactive"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: "Priority Pass", height: null, closedUntil: null,
+    tip: "ส่องไฟฉายให้แม่นๆ จะได้คะแนนสูง! เพลิดเพลินมาก"
+  },
+  "The Happy Ride with Baymax": {
+    desc: "ขึ้น Pod กลมสีขาวหมุนแบบสุ่มตามจังหวะเพลง บรรยากาศสุดสนุกของ Big Hero 6",
+    thrill: "family", rideType: ["Spinning Ride","หมุน/Spin","กลางแจ้ง"],
+    goodToKnow: ["DPA มี","Cast Member เต้นร่วมด้วย"],
+    restrictions: ["ส่วนสูง 81 ซม.ขึ้นไป","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม","ไม่เหมาะผู้ป่วยเวียนหัวง่าย"],
+    pass: "DPA", height: 81, closedUntil: null,
+    tip: "Cast Member จะเต้นด้วยทุกรอบ มองขึ้นไปดูแล้วจะยิ้มแน่นอน!"
+  },
+  "Buzz Lightyear's Astro Blasters": {
+    desc: "ยิง Laser ต่อสู้กับ Emperor Zurg สะสมคะแนนแข่งกับเพื่อนในเครื่องเล่นสไตล์ยิงปืน Interactive",
+    thrill: "family", rideType: ["Interactive Dark Ride","ยิงปืน","ในร่ม"],
+    goodToKnow: ["เล่นได้ฝนตก","แข่งคะแนนกันสนุก"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "เล็งไปที่เป้าเล็กๆ จะได้คะแนนมากกว่า ลองดูกลยุทธ์ใน YouTube ก่อนไป!"
+  },
+  "Star Tours: The Adventures Continue": {
+    desc: "เครื่องจำลองการบินใน Universe Star Wars ฉากสุ่มทุกรอบ มีเนื้อเรื่องไม่ซ้ำกันนับสิบแบบ",
+    thrill: "thrill", rideType: ["Flight Simulator","Motion Simulator","3D","เสียงดัง"],
+    goodToKnow: ["Single Rider มี","สุ่มฉากทุกรอบ"],
+    restrictions: ["ส่วนสูง 102 ซม.ขึ้นไป","ไม่เหมาะหญิงตั้งครรภ์","ผู้ป่วยหัวใจ/ความดัน/หลัง/คอ ควรงด","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: 102, closedUntil: null,
+    tip: "เล่นได้หลายรอบเพราะฉากต่างกัน! คนป่วยเวียนหัวง่ายควรระวัง"
+  },
+  "Stitch Encounter": {
+    desc: "สนทนาแบบ Real-time กับ Stitch ที่ถูกจับในยานอวกาศ Stitch ตอบสนองสดทุกคำพูด",
+    thrill: "kids", rideType: ["Interactive Show","ในร่ม","นั่งชม"],
+    goodToKnow: ["เย็นสบาย","พักขาได้"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เหมาะมากสำหรับพักขา! Stitch ตอบสนองกับผู้ชมจริงๆ สนุกและตลก"
+  },
+  "Peter Pan's Flight": {
+    desc: "บินข้ามกรุงลอนดอนและดินแดน Neverland บนเรือโจรสลัด วิวสวยงามตามฉากจากภาพยนตร์",
+    thrill: "family", rideType: ["Dark Ride","ลอยฟ้า","ในร่ม"],
+    goodToKnow: ["เล่นได้ฝนตก","เหมาะทุกวัย"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "คิวยาวเสมอ มาเล่นช่วงเย็นหรือก่อนปิดสวน"
+  },
+  "it's a small world (with Groot)": {
+    desc: "ล่องเรือชมตุ๊กตาเด็กนานาชาติร้องเพลง Small World พร้อมตัวละคร Groot จาก Guardians of the Galaxy (ถึง มิ.ย. 2026)",
+    thrill: "kids", rideType: ["Boat Ride","ในร่ม","ไม่มีความเร็ว","Seasonal Overlay"],
+    goodToKnow: ["เล่นได้ฝนตก","เหมาะทุกวัย","เด็กเล็กชอบมาก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "Overlay พิเศษ Groot มีถึง มิ.ย. 2026 เท่านั้น!"
+  },
+  "Alice's Tea Party": {
+    desc: "นั่งถ้วยชาหมุนจากเทพนิยาย Alice in Wonderland บิดบ้วนตามใจต้องการ",
+    thrill: "kids", rideType: ["Spinning Ride","หมุน","กลางแจ้ง"],
+    goodToKnow: ["เหมาะเด็กเล็ก"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม","ไม่เหมาะผู้ป่วยเวียนหัว"],
+    pass: null, height: null, closedUntil: null,
+    tip: "หมุนพวงมาลัยตรงกลางเพื่อบังคับความเร็ว!"
+  },
+  "Castle Carrousel": {
+    desc: "ม้าหมุนคลาสสิกตกแต่งสวยงามสไตล์เจ้าหญิงดิสนีย์ นั่งม้าขาวที่ประดับอย่างวิจิตร",
+    thrill: "kids", rideType: ["Merry-go-round","ในร่มบางส่วน","เหมาะเด็กเล็ก"],
+    goodToKnow: ["เหมาะทุกวัย","ถ่ายรูปสวยมาก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "ถ่ายรูปสวยที่สุดตอนเย็น แสงสีทองสวยงาม"
+  },
+  "Dumbo the Flying Elephant": {
+    desc: "ขึ้นขี่ดัมโบ้บินวนรอบสูงต่ำได้ตามต้องการ — ปิดปรับปรุงช่วง 5 ม.ค. - 31 ก.ค. 2026",
+    thrill: "kids", rideType: ["Flying Ride","กลางแจ้ง","เหมาะเด็กเล็ก"],
+    goodToKnow: ["บังคับสูงต่ำได้","วิวดีจากด้านบน"],
+    restrictions: ["⚠️ ปิด 5 ม.ค. - 31 ก.ค. 2026","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: "31 ก.ค. 2026",
+    tip: "ปิดอยู่ครับ กลับมาเปิด 1 ส.ค. 2026"
+  },
+  "Snow White's Adventures": {
+    desc: "นั่งเกวียนผ่านฉากน่ากลัวจากเรื่อง Snow White แม่มดจะโผล่มาทักทาย",
+    thrill: "family", rideType: ["Dark Ride","ในร่ม","ความมืด","อาจน่ากลัวเด็กเล็ก"],
+    goodToKnow: ["เล่นได้ฝนตก"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "แม่มดจะโผล่มาตอนกลาง อาจทำให้เด็กเล็กตกใจ"
+  },
+  "Cinderella's Fairy Tale Hall": {
+    desc: "เดินชมภายในปราสาท Cinderella ดูม้าแก้ว ภาพโมเสกเรื่องราว Cinderella และจุดชมวิวปราสาท",
+    thrill: "kids", rideType: ["Walk-through","ในร่ม","ไม่มีขบวน"],
+    goodToKnow: ["เล่นได้ฝนตก","พักขาได้","เหมาะทุกวัย"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เข้าฟรี ไม่ต้องรอนาน ถ่ายรูปในปราสาทได้สวยมาก"
+  },
+  "Pinocchio's Daring Journey": {
+    desc: "นั่งเกวียนผ่านการผจญภัยของปิโนคิโอ ตั้งแต่ถูกล่อลวง จนสุดท้ายกลายเป็นเด็กจริง",
+    thrill: "family", rideType: ["Dark Ride","ในร่ม","ความมืดบางส่วน"],
+    goodToKnow: ["เล่นได้ฝนตก"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "คิวไม่ยาวมาก เหมาะเล่นช่วงกลางวันที่คนเยอะ"
+  },
+  "Mickey's PhilharMagic": {
+    desc: "โชว์ 4D ในโรงภาพยนตร์ มิกกี้ผจญภัยผ่านหนังดิสนีย์คลาสสิก มีเอฟเฟกต์น้ำ ลม และกลิ่น",
+    thrill: "kids", rideType: ["4D Show","ในร่ม","นั่งชม","เอฟเฟกต์น้ำ/ลม"],
+    goodToKnow: ["เย็นสบาย","พักขาได้ดี","เล่นได้ฝนตก"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "พักขาในที่แอร์เย็นได้นาน 12 นาที เหมาะช่วงกลางวันร้อน"
+  },
+  "Roger Rabbit's Car Toon Spin": {
+    desc: "นั่งรถแท็กซี่หมุนผ่านโลกของ Roger Rabbit ควบคุมทิศทางหมุนได้ด้วยพวงมาลัย",
+    thrill: "family", rideType: ["Spinning Dark Ride","หมุน","ในร่ม"],
+    goodToKnow: ["เล่นได้ฝนตก","บังคับหมุนเองได้"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "หมุนพวงมาลัยเพื่อบังคับทิศทาง! สนุกกว่าถ้าหมุนเต็มที่"
+  },
+  "Gadget's Go Coaster": {
+    desc: "รถไฟเหาะเล็กสำหรับเด็ก ออกแบบโดย Gadget จากการ์ตูน Chip 'n Dale วิ่งผ่านอุโมงค์และโค้งเล็กๆ",
+    thrill: "kids", rideType: ["Roller Coaster","กลางแจ้ง","เหมาะเด็ก"],
+    goodToKnow: ["เหมาะเด็กทุกวัย","ผู้ใหญ่อาจแน่นหน่อย"],
+    restrictions: ["ส่วนสูง 90 ซม.ขึ้นไป","ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: 90, closedUntil: null,
+    tip: "รถไฟเหาะสำหรับเด็กเล็กที่อยากลองครั้งแรก"
+  },
+  "Mickey's House & Meet Mickey": {
+    desc: "เดินชมบ้านของมิกกี้ และถ่ายรูปร่วมกับมิกกี้เมาส์ตัวจริงในห้องรับแขกส่วนตัว",
+    thrill: "kids", rideType: ["Character Meet & Greet","Walk-through","ในร่ม"],
+    goodToKnow: ["ถ่ายรูปได้กับมิกกี้","เล่นได้ฝนตก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "คิวอาจยาว 30-60 นาที แต่ได้ถ่ายรูปกับมิกกี้คุ้มมาก!"
+  },
+  "Western River Railroad": {
+    desc: "รถไฟหัวจักรไอน้ำวิ่งรอบสวน ผ่านทิวทัศน์ตะวันตก และอุโมงค์ไดโนเสาร์ที่น่าตื่นตาตื่นใจ",
+    thrill: "kids", rideType: ["Train Ride","กลางแจ้ง","ชมวิว"],
+    goodToKnow: ["วิวดี","พักขาดี","ใช้เวลาประมาณ 20 นาที"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "ดีมากสำหรับพักขา และชมวิวรอบสวน"
+  },
+  "Mark Twain Riverboat": {
+    desc: "ล่องเรือสำราญขนาดใหญ่สไตล์แม่น้ำมิสซิสซิปปี ชมทิวทัศน์ Westernland จากดาดฟ้าเรือ",
+    thrill: "kids", rideType: ["Boat Ride","กลางแจ้ง","ชมวิว"],
+    goodToKnow: ["วิวดีจากดาดฟ้า","พักขาดี"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "ขึ้นไปชั้นบนสุด วิวดีที่สุด และลมเย็นสบาย"
+  },
+  "Splash Mountain": {
+    desc: "ล่องเรือท่อนซุงผ่านดินแดนของพี่กระต่ายบราร์ สุดท้ายดิ่งลงน้ำตกสูง 5 ชั้น โดนน้ำแน่นอน!",
+    thrill: "thrill", rideType: ["Water Flume","ตกน้ำ","เสียงดัง","กลางแจ้ง"],
+    goodToKnow: ["มีที่เก็บของกันน้ำ","เตรียมเสื้อสำรอง"],
+    restrictions: ["ส่วนสูง 90 ซม.ขึ้นไป","ไม่เหมาะหญิงตั้งครรภ์","ผู้ป่วยหัวใจ/ความดัน/หลัง ควรงด"],
+    pass: "DPA", height: 90, closedUntil: null,
+    tip: "นั่งแถวหน้าโดนน้ำมากกว่า แถวหลังโดนน้อยกว่า"
+  },
+  "Beaver Brothers Explorer Canoes": {
+    desc: "พายเรือแคนูรอบเกาะ Tom Sawyer ด้วยแรงพายของตัวเอง Cast Member นำทางและพายร่วมด้วย",
+    thrill: "family", rideType: ["Canoe Ride","กลางแจ้ง","ออกแรงพาย"],
+    goodToKnow: ["ออกแรงพายจริง","วิวธรรมชาติสวย","Seasonal"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "ประสบการณ์แปลกใหม่มาก! Cast Member จะสอนการพาย"
+  },
+  "Swiss Family Treehouse": {
+    desc: "ปีนขึ้นบ้านบนต้นไม้ของครอบครัวที่ติดเกาะร้าง ชมวิวสวนจากด้านบน — ปิดปรับปรุงอยู่",
+    thrill: "kids", rideType: ["Walk-through","กลางแจ้ง","ปีนบันได"],
+    goodToKnow: ["วิวดีจากด้านบน","ต้องเดินเยอะ"],
+    restrictions: ["⚠️ ปิดถึง 27 มี.ค. 2026"],
+    pass: null, height: null, closedUntil: "27 มี.ค. 2026",
+    tip: "ปิดอยู่ครับ เปิดอีกครั้ง 28 มี.ค. 2026"
+  },
+  "The Enchanted Tiki Room (Stitch)": {
+    desc: "โชว์นกแก้ว Animatronic ร้องเพลงฮาวาย พร้อม Stitch มาป่วนโชว์แบบไม่คาดฝัน",
+    thrill: "kids", rideType: ["Audio-Animatronic Show","ในร่ม","นั่งชม"],
+    goodToKnow: ["เย็นสบาย","พักขาได้","เล่นได้ฝนตก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "พักขาในที่ร่มได้ดี ไม่ต้องรอนาน เหมาะช่วงฝนตก"
+  },
+  "Country Bear Theater": {
+    desc: "โชว์ตลกของหมี Animatronic ที่เล่นดนตรีและร้องเพลงคันทรี มีเวอร์ชันพิเศษตามฤดูกาล",
+    thrill: "kids", rideType: ["Audio-Animatronic Show","ในร่ม","นั่งชม"],
+    goodToKnow: ["เย็นสบาย","พักขาดีมาก","Seasonal version"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "คนน้อยกว่าเครื่องเล่นอื่น เหมาะพักตอนกลางวัน"
+  },
+  "Omnibus": {
+    desc: "รถบัสสองชั้นย้อนยุควิ่งรอบ World Bazaar ชมบรรยากาศและวิวรอบประตูทางเข้า",
+    thrill: "kids", rideType: ["Bus Ride","กลางแจ้ง","ชมวิว"],
+    goodToKnow: ["วิวดี","พักขาได้","Seasonal"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "ขึ้นชั้นบนวิวสวยกว่า ถ่ายรูปกับปราสาทสวยมาก"
+  },
+  "Goofy's Paint 'n' Play House": {
+    desc: "เล่นเกม Interactive วาดรูปบนผนังในบ้านของกูฟฟี่ ยิง Paintball เสมือนจริงผ่านหน้าจอ",
+    thrill: "kids", rideType: ["Interactive Game","ในร่ม","เหมาะเด็ก"],
+    goodToKnow: ["เล่นได้ฝนตก","เหมาะเด็กเล็ก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เด็กๆ ชอบมาก สนุกและเล่นได้นาน"
+  },
+  "Donald's Boat": {
+    desc: "เรือของโดนัลด์ดั๊กที่ Toontown เด็กๆ ปีนป่ายสำรวจได้ มีน้ำพ่น และห้องบังคับเรือจำลอง",
+    thrill: "kids", rideType: ["Play Area","กลางแจ้ง","เหมาะเด็กเล็ก"],
+    goodToKnow: ["มีน้ำพ่น เตรียมเสื้อสำรอง","เหมาะเด็กเล็กมาก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เด็กเล็กชอบมาก แต่โดนน้ำได้ เตรียมเสื้อสำรองด้วย"
+  },
+  "Minnie's House": {
+    desc: "เดินชมบ้านของมินนี่เมาส์ ตกแต่งสวยงาม มีห้องครัว ห้องนอน และสวนดอกไม้",
+    thrill: "kids", rideType: ["Walk-through","ในร่ม","ชมบ้าน"],
+    goodToKnow: ["ถ่ายรูปสวย","ไม่ต้องรอนาน"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "ถ่ายรูปในห้องครัวมินนี่สวยมาก ใช้เวลาไม่นาน"
+  },
+  "Chip 'n Dale's Treehouse": {
+    desc: "บ้านต้นไม้ของชิปและเดล เด็กๆ ปีนป่ายสำรวจภายในได้",
+    thrill: "kids", rideType: ["Play Area","กลางแจ้ง","เหมาะเด็กเล็ก"],
+    goodToKnow: ["เหมาะเด็กเล็กมาก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เหมาะสำหรับเด็กเล็กที่อยากปีนป่ายสำรวจ"
+  },
+  "Tom Sawyer Island Rafts": {
+    desc: "ขึ้นแพข้ามแม่น้ำไปสำรวจเกาะ Tom Sawyer มีถ้ำ สะพาน และป้อมปราการให้เดินชม",
+    thrill: "kids", rideType: ["Raft Ride","กลางแจ้ง","เดินสำรวจ"],
+    goodToKnow: ["ต้องเดินเยอะบนเกาะ","วิวแม่น้ำสวย","Seasonal"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เด็กๆ ชอบสำรวจถ้ำและป้อม ใช้เวลาบนเกาะได้นาน"
+  },
+  "Westernland Shootin' Gallery": {
+    desc: "เกมยิงปืนตะวันตก เสียเงินเพิ่มนอกจากค่าบัตรสวนสนุก ลองฝีมือยิงเป้าต่างๆ",
+    thrill: "kids", rideType: ["Shooting Gallery","กลางแจ้ง","เสียเงินเพิ่ม"],
+    goodToKnow: ["เสียเงินเพิ่ม ไม่รวมค่าบัตร"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เสียเงินเพิ่มแต่สนุก โดยเฉพาะถ้าชอบเกมยิงปืน"
+  },
+  "Toon Park": {
+    desc: "สนามเด็กเล่นสีสันสดใสสไตล์ Toontown มีสไลเดอร์ บ่อบอล และอุปกรณ์เล่นต่างๆ",
+    thrill: "kids", rideType: ["Play Area","กลางแจ้ง","เหมาะเด็กเล็กมาก"],
+    goodToKnow: ["เหมาะเด็กเล็กมาก"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "เหมาะสำหรับเด็กเล็กมาก ผู้ปกครองนั่งพักรอได้"
+  },
+  "Penny Arcade": {
+    desc: "ห้องเกมย้อนยุคสไตล์ต้นศตวรรษที่ 20 เกมหยอดเหรียญแบบโบราณในบรรยากาศ World Bazaar",
+    thrill: "kids", rideType: ["Arcade","ในร่ม","เกมย้อนยุค","เสียเงินเพิ่ม"],
+    goodToKnow: ["เสียเงินเพิ่ม","บรรยากาศย้อนยุคสวยงาม"],
+    restrictions: [],
+    pass: null, height: null, closedUntil: null,
+    tip: "แวะชมบรรยากาศย้อนยุคได้ฟรี แต่เล่นเกมเสียเงินเพิ่ม"
+  },
+  "MicroAdventure!": {
+    desc: "โชว์ 4D ผจญภัยกับ Stuart Little ในโลกจิ๋ว สนุกและน่าตื่นเต้นสำหรับทุกวัย",
+    thrill: "family", rideType: ["4D Show","ในร่ม","นั่งชม","เอฟเฟกต์"],
+    goodToKnow: ["เย็นสบาย","พักขาดี"],
+    restrictions: ["ต่ำกว่า 7 ขวบต้องมีผู้ใหญ่ร่วม"],
+    pass: null, height: null, closedUntil: null,
+    tip: "พักขาได้ดีในที่แอร์เย็น เหมาะช่วงกลางวันร้อน"
+  },
+};
+
+// ========== INFO PAGE ==========
+let currentZoneFilter = 'all';
+let infoSearchQuery = '';
+
+function renderAttractions() {
+  const container = document.getElementById('attraction-list');
+  let list = RIDES_DATA;
+  if(currentZoneFilter !== 'all') list = list.filter(r => r.zone === currentZoneFilter);
+  if(infoSearchQuery) list = list.filter(r => r.name.toLowerCase().includes(infoSearchQuery.toLowerCase()));
+
+  if(list.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>ไม่พบเครื่องเล่นที่ค้นหา</p></div>';
+    return;
+  }
+
+  const ZONE_EMOJI = {'World Bazaar':'🗺️','Adventureland':'🌴','Westernland':'🤠','Critter Country':'🦦','Fantasyland':'🏰','Toontown':'🎨','Tomorrowland':'🚀'};
+  const THRILL_LABEL = {thrill:'⚡ Thrill', family:'👨‍👩‍👧 Family', kids:'🧒 Kids'};
+  const THRILL_TAG = {thrill:'tag-thrill', family:'tag-family', kids:'tag-kids'};
+
+  container.innerHTML = list.map(r => {
+    const d = ATTRACTION_DETAILS[r.name] || {};
+    const isClosed = r.closedUntil || (d.closedUntil);
+    const passTag = r.pass || d.pass;
+    const heightTag = r.height || d.height;
+    const thrill = d.thrill || 'family';
+    const isFav = favorites.includes(r.name);
+    const recRank = RECOMMEND_DATA.findIndex(x => x.name === r.name);
+    const safeName = r.name.replace(/'/g,"\\'");
+
+    return `<div class="attraction-card" style="position:relative;" onclick="openAttractionDetail('${safeName}')">
+      <button class="attr-card-fav" onclick="toggleFavorite('${safeName}', event)">${isFav ? '❤️' : '🤍'}</button>
+      <div class="attraction-card-header" style="padding-right:40px;">
+        <div class="attraction-card-name">${r.name}</div>
+        <div class="attraction-card-zone">${ZONE_EMOJI[r.zone]||''} ${r.zone}</div>
+      </div>
+      <div class="attraction-card-meta">
+        <span class="attr-tag ${THRILL_TAG[thrill]}">${THRILL_LABEL[thrill]}</span>
+        ${recRank >= 0 ? `<span class="attr-tag" style="background:#FFF8E1;color:#E65100;font-weight:800;">⭐ Top ${recRank+1}</span>` : ''}
+        ${r.wait && r.wait !== '-' && r.wait !== 'walk-in' ? `<span class="attr-tag tag-wait">⏳ ${r.wait} น.</span>` : ''}
+        ${passTag === 'DPA' ? `<span class="attr-tag tag-dpa">💳 DPA</span>` : ''}
+        ${passTag === 'Priority Pass' ? `<span class="attr-tag tag-pp">🎟️ Priority Pass</span>` : ''}
+        ${isClosed ? `<span class="attr-tag tag-closed">⚠️ ปิดอยู่</span>` : ''}
+        ${heightTag ? `<span class="attr-tag tag-wait">📏 ${heightTag} ซม.+</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setZoneFilter(zone, el) {
+  currentZoneFilter = zone;
+  document.querySelectorAll('.zone-filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderAttractions();
+}
+
+function filterAttractions() {
+  infoSearchQuery = document.getElementById('info-search').value;
+  renderAttractions();
+}
+
+function openAttractionDetail(name) {
+  const r = RIDES_DATA.find(x => x.name === name) || {};
+  const d = ATTRACTION_DETAILS[name] || {};
+
+  const ZONE_COLORS = {
+    'World Bazaar':   {bg:'linear-gradient(160deg,#4A3728 0%,#7B5C3F 100%)', emoji:'🗺️'},
+    'Adventureland':  {bg:'linear-gradient(160deg,#1B4332 0%,#40916C 100%)', emoji:'🌴'},
+    'Westernland':    {bg:'linear-gradient(160deg,#7C4B00 0%,#BF7A2A 100%)', emoji:'🤠'},
+    'Critter Country':{bg:'linear-gradient(160deg,#2D5016 0%,#5A8A2A 100%)', emoji:'🦦'},
+    'Fantasyland':    {bg:'linear-gradient(160deg,#3D1A6E 0%,#7C3FA0 100%)', emoji:'🏰'},
+    'Toontown':       {bg:'linear-gradient(160deg,#B5380A 0%,#FF6B35 100%)', emoji:'🎨'},
+    'Tomorrowland':   {bg:'linear-gradient(160deg,#0D2B6B 0%,#1565C0 100%)', emoji:'🚀'},
+  };
+
+  // SVG illustrations per attraction
+  const ATTRACTION_SVG = {
+    "Enchanted Tale of Beauty and the Beast": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sky1" cx="50%" cy="30%"><stop offset="0%" stop-color="#1a0533"/><stop offset="100%" stop-color="#4a1a7a"/></radialGradient></defs><rect width="400" height="200" fill="url(#sky1)"/><circle cx="320" cy="40" r="20" fill="#ffe066" opacity="0.8"/><ellipse cx="200" cy="220" rx="220" ry="60" fill="#2d1b4e" opacity="0.6"/><rect x="160" y="70" width="30" height="80" fill="#8a4dbd" rx="4"/><rect x="200" y="60" width="40" height="90" fill="#9c5ecc" rx="4"/><rect x="250" y="75" width="28" height="75" fill="#8a4dbd" rx="4"/><polygon points="160,70 175,45 190,70" fill="#c47fff"/><polygon points="200,60 220,30 240,60" fill="#d48fff"/><polygon points="250,75 264,55 278,75" fill="#c47fff"/><rect x="215" y="115" width="12" height="35" fill="#ffe066" rx="2"/><ellipse cx="221" cy="115" rx="10" ry="8" fill="#ffe066" opacity="0.7"/><circle cx="60" cy="80" r="4" fill="#ffe" opacity="0.6"/><circle cx="340" cy="60" r="3" fill="#ffe" opacity="0.5"/><circle cx="30" cy="50" r="2" fill="#ffe" opacity="0.7"/><circle cx="370" cy="100" r="2" fill="#ffe" opacity="0.4"/><path d="M30 140 Q60 120 90 135 Q120 150 150 130 Q180 110 210 125 Q240 140 270 120 Q300 100 330 115 Q360 130 390 110 L390 200 L30 200Z" fill="#1d3a1d" opacity="0.9"/></svg>`,
+
+    "Splash Mountain": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a7abf"/><stop offset="100%" stop-color="#4fc3f7"/></linearGradient><linearGradient id="mtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5d4037"/><stop offset="100%" stop-color="#795548"/></linearGradient></defs><rect width="400" height="200" fill="url(#sky2)"/><ellipse cx="200" cy="240" rx="250" ry="100" fill="#2e7d32" opacity="0.5"/><polygon points="100,180 180,60 260,180" fill="url(#mtn)"/><polygon points="200,180 300,50 380,180" fill="#4e342e"/><rect x="0" y="155" width="400" height="50" fill="#1565c0" opacity="0.8"/><path d="M80 155 Q100 140 120 155 Q140 170 160 155 Q180 140 200 155 Q220 170 240 155 Q260 140 280 155 Q300 170 320 155 L320 200 L80 200Z" fill="#1976d2"/><path d="M150 120 L165 155" stroke="#1565c0" stroke-width="3" fill="none"/><ellipse cx="152" cy="118" rx="18" ry="10" fill="#5d4037"/><ellipse cx="164" cy="118" rx="5" ry="5" fill="#fff" opacity="0.8"/><path d="M145 155 Q165 135 185 155" stroke="#64b5f6" stroke-width="4" fill="none"/><path d="M130 160 Q165 130 200 160" stroke="#90caf9" stroke-width="3" fill="none" opacity="0.7"/><circle cx="300" cy="50" r="25" fill="#ffee58" opacity="0.9"/><path d="M10 145 Q50 130 90 145 Q130 160 170 145 L170 200 L10 200Z" fill="#388e3c" opacity="0.9"/></svg>`,
+
+    "Big Thunder Mountain": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#e65c00"/></linearGradient></defs><rect width="400" height="200" fill="url(#sky3)"/><polygon points="60,180 150,40 240,180" fill="#5d4037"/><polygon points="160,180 260,55 340,180" fill="#4e342e"/><polygon points="20,180 90,90 160,180" fill="#6d4c41" opacity="0.8"/><rect x="0" y="165" width="400" height="40" fill="#3e2723"/><path d="M40 165 Q80 140 120 155 Q160 170 200 155 Q240 140 280 155 Q320 170 360 155 L360 165Z" fill="#4e342e"/><path d="M155 120 Q170 80 185 120 Q200 160 215 120" stroke="#bf6c30" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="152" y="148" width="12" height="18" rx="3" fill="#bf5700"/><rect x="163" y="151" width="14" height="15" rx="3" fill="#bf5700"/><rect x="175" y="148" width="12" height="18" rx="3" fill="#a34700"/><circle cx="320" cy="30" r="2" fill="#fff" opacity="0.9"/><circle cx="50" cy="45" r="1.5" fill="#fff" opacity="0.7"/><circle cx="360" cy="55" r="2" fill="#fff" opacity="0.6"/><circle cx="15" cy="30" r="1" fill="#fff" opacity="0.8"/><path d="M240 90 Q260 70 280 90" stroke="#e65c00" stroke-width="2" fill="none" opacity="0.8"/></svg>`,
+
+    "Pooh's Hunny Hunt": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8e1"/><stop offset="100%" stop-color="#ffecb3"/></linearGradient></defs><rect width="400" height="200" fill="url(#sky4)"/><ellipse cx="80" cy="80" rx="40" ry="30" fill="#a5d6a7" opacity="0.8"/><ellipse cx="300" cy="70" rx="50" ry="35" fill="#c8e6c9" opacity="0.7"/><ellipse cx="200" cy="220" rx="240" ry="80" fill="#558b2f" opacity="0.6"/><path d="M20 150 Q80 120 140 140 Q200 160 260 135 Q320 110 380 130 L380 200 L20 200Z" fill="#33691e" opacity="0.9"/><circle cx="170" cy="130" r="28" fill="#ffcc02"/><circle cx="170" cy="130" r="22" fill="#e6a800"/><text x="170" y="136" text-anchor="middle" font-size="22" fill="#7a3900">🍯</text><circle cx="250" cy="135" r="22" fill="#ffcc02"/><circle cx="250" cy="135" r="17" fill="#e6a800"/><text x="250" y="141" text-anchor="middle" font-size="18" fill="#7a3900">🍯</text><circle cx="100" cy="145" r="18" fill="#ffcc02" opacity="0.7"/><text x="100" y="151" text-anchor="middle" font-size="14" fill="#7a3900">🍯</text><circle cx="300" cy="120" r="8" fill="#ffee58"/><circle cx="280" cy="130" r="5" fill="#ffee58" opacity="0.7"/><circle cx="320" cy="110" r="4" fill="#ffee58" opacity="0.6"/></svg>`,
+
+    "Haunted Mansion": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d0d1a"/><stop offset="100%" stop-color="#1a1a33"/></linearGradient></defs><rect width="400" height="200" fill="url(#sky5)"/><circle cx="320" cy="35" r="18" fill="#c0c0d0" opacity="0.5"/><path d="M150 200 L150 90 Q150 70 160 70 L240 70 Q250 70 250 90 L250 200Z" fill="#2a2a3a"/><rect x="155" y="60" width="20" height="30" fill="#1a1a2a"/><rect x="225" y="60" width="20" height="30" fill="#1a1a2a"/><polygon points="150,90 200,55 250,90" fill="#1f1f2f"/><rect x="155" y="90" width="25" height="35" fill="#0d0d1a" opacity="0.8"/><rect x="215" y="90" width="25" height="35" fill="#0d0d1a" opacity="0.8"/><rect x="182" y="145" width="35" height="55" fill="#111"/><rect x="170" y="60" width="12" height="20" fill="#4a3a1a" opacity="0.6"/><rect x="218" y="60" width="12" height="20" fill="#4a3a1a" opacity="0.6"/><text x="200" y="115" text-anchor="middle" font-size="30" opacity="0.7">👻</text><text x="120" y="140" text-anchor="middle" font-size="18" opacity="0.4">👻</text><text x="280" y="155" text-anchor="middle" font-size="16" opacity="0.35">👻</text><path d="M0 160 Q40 140 80 150 Q120 160 160 145 L160 200 L0 200Z" fill="#111a0d" opacity="0.9"/><path d="M240 150 Q280 135 320 148 Q360 160 400 145 L400 200 L240 200Z" fill="#111a0d" opacity="0.9"/><circle cx="50" cy="50" r="2" fill="#9090b0" opacity="0.9"/><circle cx="360" cy="70" r="1.5" fill="#9090b0" opacity="0.7"/><circle cx="20" cy="80" r="1" fill="#9090b0" opacity="0.6"/></svg>`,
+
+    "Pirates of the Caribbean": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#01579b"/><stop offset="100%" stop-color="#0d47a1"/></linearGradient><linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d1b3e"/><stop offset="100%" stop-color="#1a3a5c"/></linearGradient></defs><rect width="400" height="200" fill="url(#night)"/><circle cx="60" cy="35" r="15" fill="#fffde7" opacity="0.7"/><rect x="0" y="120" width="400" height="80" fill="url(#water)" opacity="0.85"/><path d="M0 120 Q40 110 80 120 Q120 130 160 120 Q200 110 240 120 Q280 130 320 118 Q360 106 400 118 L400 125 L0 125Z" fill="#0277bd" opacity="0.8"/><path d="M60 120 L80 60 L120 120Z" fill="#4e342e"/><line x1="80" y1="62" x2="80" y2="120" stroke="#5d4037" stroke-width="3"/><rect x="82" y="68" width="36" height="24" fill="#f5f5dc" opacity="0.9" rx="2"/><path d="M260 120 L280 70 L320 120Z" fill="#3e2723"/><line x1="280" y1="72" x2="280" y2="120" stroke="#4e342e" stroke-width="3"/><rect x="282" y="78" width="34" height="22" fill="#fff" opacity="0.8" rx="2"/><text x="299" y="91" text-anchor="middle" font-size="11" fill="#b71c1c">☠️</text><path d="M30 145 Q80 130 130 145 Q180 160 230 145 L230 165 Q180 155 130 165 Q80 175 30 165Z" fill="#2d4a1e" opacity="0.9"/><circle cx="340" cy="40" r="2" fill="#fff" opacity="0.8"/><circle cx="380" cy="25" r="1.5" fill="#fff" opacity="0.6"/><circle cx="20" cy="55" r="1" fill="#fff" opacity="0.7"/></svg>`,
+
+    "Jungle Cruise: Wildlife Expeditions": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="jungle" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1b5e20"/><stop offset="100%" stop-color="#388e3c"/></linearGradient></defs><rect width="400" height="200" fill="#1a3a1a"/><ellipse cx="200" cy="110" rx="220" ry="60" fill="#2e7d32" opacity="0.5"/><path d="M0 130 Q30 110 70 125 Q110 140 140 120 Q170 100 200 115 Q230 130 260 110 Q290 90 320 105 Q350 120 400 105 L400 200 L0 200Z" fill="#1b5e20" opacity="0.9"/><path d="M0 150 Q50 135 100 148 Q150 161 200 148 Q250 135 300 148 Q350 161 400 148 L400 200 L0 200Z" fill="#004d00"/><path d="M20 130 Q10 80 30 60 Q50 40 40 20" stroke="#2e7d32" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M40 20 Q70 30 80 60" stroke="#388e3c" stroke-width="6" fill="none"/><ellipse cx="65" cy="28" rx="28" ry="18" fill="#43a047"/><path d="M350 140 Q380 90 360 60 Q340 30 360 10" stroke="#2e7d32" stroke-width="8" fill="none" stroke-linecap="round"/><ellipse cx="355" cy="18" rx="30" ry="18" fill="#388e3c"/><rect x="130" y="135" width="70" height="22" rx="5" fill="#5d4037"/><rect x="125" y="130" width="80" height="12" rx="4" fill="#6d4c41"/><text x="165" y="143" text-anchor="middle" font-size="10" fill="#ffb300">⚓ JUNGLE</text><circle cx="180" cy="90" r="6" fill="#ff8f00" opacity="0.7"/><text x="300" y="110" text-anchor="middle" font-size="20">🐊</text></svg>`,
+
+    "Monsters, Inc. Ride & Go Seek!": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="city" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a237e"/><stop offset="100%" stop-color="#283593"/></linearGradient></defs><rect width="400" height="200" fill="url(#city)"/><rect x="40" y="80" width="40" height="120" fill="#1565c0" opacity="0.9"/><rect x="90" y="60" width="35" height="140" fill="#1976d2" opacity="0.9"/><rect x="135" y="90" width="45" height="110" fill="#0d47a1" opacity="0.9"/><rect x="250" y="70" width="40" height="130" fill="#1565c0" opacity="0.9"/><rect x="300" y="85" width="50" height="115" fill="#1976d2" opacity="0.9"/><rect x="350" y="75" width="45" height="125" fill="#283593" opacity="0.9"/><rect x="46" y="88" width="8" height="8" fill="#ffee58" opacity="0.8"/><rect x="58" y="88" width="8" height="8" fill="#ffee58" opacity="0.6"/><rect x="46" y="102" width="8" height="8" fill="#ffee58" opacity="0.4"/><rect x="58" y="102" width="8" height="8" fill="#ffee58" opacity="0.9"/><rect x="96" y="70" width="8" height="8" fill="#ffee58" opacity="0.7"/><rect x="108" y="70" width="8" height="8" fill="#ffee58" opacity="0.5"/><rect x="256" y="80" width="8" height="8" fill="#ffee58" opacity="0.8"/><rect x="268" y="80" width="8" height="8" fill="#ffee58" opacity="0.6"/><rect x="0" y="155" width="400" height="50" fill="#0d1a4a"/><path d="M155 130 L200 100 L245 130 L240 200 L160 200Z" fill="#1a237e"/><circle cx="200" cy="105" r="18" fill="#42a5f5" opacity="0.9"/><path d="M192 102 L200 108 L208 102" stroke="#fff" stroke-width="2" fill="none"/><circle cx="200" cy="105" r="5" fill="#fff" opacity="0.9"/><text x="130" y="165" text-anchor="middle" font-size="24">🔦</text><text x="270" y="160" text-anchor="middle" font-size="20">🔦</text></svg>`,
+
+    "The Happy Ride with Baymax": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d47a1"/><stop offset="100%" stop-color="#1976d2"/></linearGradient></defs><rect width="400" height="200" fill="url(#sky6)"/><circle cx="200" cy="95" r="55" fill="#f5f5f5"/><circle cx="200" cy="80" r="38" fill="#fff"/><ellipse cx="186" cy="76" rx="7" ry="8" fill="#111"/><ellipse cx="214" cy="76" rx="7" ry="8" fill="#111"/><path d="M188 88 Q200 96 212 88" stroke="#111" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="174" y="113" width="52" height="25" rx="12" fill="#f0f0f0"/><rect x="182" y="135" width="16" height="30" rx="4" fill="#e0e0e0"/><rect x="202" y="135" width="16" height="30" rx="4" fill="#e0e0e0"/><rect x="148" y="118" width="20" height="14" rx="7" fill="#e0e0e0"/><rect x="232" y="118" width="20" height="14" rx="7" fill="#e0e0e0"/><circle cx="80" cy="110" r="30" fill="#e3f2fd" opacity="0.8"/><circle cx="320" cy="105" r="25" fill="#e3f2fd" opacity="0.7"/><circle cx="50" cy="160" r="20" fill="#bbdefb" opacity="0.6"/><circle cx="350" cy="155" r="22" fill="#bbdefb" opacity="0.5"/><circle cx="200" cy="95" r="55" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4,4" opacity="0.4"/></svg>`,
+
+    "Star Tours: The Adventures Continue": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#000"/><circle cx="30" cy="20" r="1.5" fill="#fff" opacity="0.9"/><circle cx="80" cy="50" r="1" fill="#fff" opacity="0.7"/><circle cx="150" cy="15" r="2" fill="#fff" opacity="0.8"/><circle cx="220" cy="35" r="1" fill="#fff" opacity="0.6"/><circle cx="300" cy="10" r="1.5" fill="#fff" opacity="0.9"/><circle cx="370" cy="45" r="1" fill="#fff" opacity="0.7"/><circle cx="50" cy="90" r="1" fill="#fff" opacity="0.5"/><circle cx="340" cy="80" r="1.5" fill="#fff" opacity="0.6"/><circle cx="110" cy="70" r="1" fill="#fff" opacity="0.8"/><circle cx="260" cy="65" r="1" fill="#fff" opacity="0.7"/><ellipse cx="200" cy="130" rx="180" ry="50" fill="#1a237e" opacity="0.3"/><polygon points="200,50 230,120 160,80 240,80 170,120" fill="#1565c0" opacity="0.9"/><ellipse cx="200" cy="120" rx="60" ry="15" fill="#0d47a1" opacity="0.7"/><rect x="170" y="118" width="60" height="8" rx="4" fill="#1976d2"/><path d="M150 118 Q140 130 130 135" stroke="#42a5f5" stroke-width="3" fill="none"/><path d="M250 118 Q260 130 270 135" stroke="#42a5f5" stroke-width="3" fill="none"/><path d="M140 100 L80 80 L70 90 L135 108Z" fill="#1565c0" opacity="0.8"/><path d="M260 100 L320 80 L330 90 L265 108Z" fill="#1565c0" opacity="0.8"/><ellipse cx="200" cy="75" rx="8" ry="12" fill="#90caf9" opacity="0.9"/><circle cx="200" cy="68" r="5" fill="#bbdefb"/><path d="M180 140 Q200 200 220 140" stroke="#1976d2" stroke-width="12" fill="none" stroke-linecap="round" opacity="0.6"/></svg>`,
+
+    "Peter Pan's Flight": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="nightsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a0a2a"/><stop offset="100%" stop-color="#1a1a4e"/></linearGradient></defs><rect width="400" height="200" fill="url(#nightsky)"/><circle cx="200" cy="30" r="22" fill="#fffde7" opacity="0.85"/><circle cx="200" cy="30" r="16" fill="#fff9c4" opacity="0.9"/><circle cx="50" cy="25" r="2" fill="#fff" opacity="0.9"/><circle cx="120" cy="15" r="1.5" fill="#fff" opacity="0.7"/><circle cx="300" cy="20" r="2" fill="#fff" opacity="0.8"/><circle cx="380" cy="35" r="1.5" fill="#fff" opacity="0.6"/><circle cx="20" cy="60" r="1" fill="#fff" opacity="0.7"/><circle cx="350" cy="55" r="1" fill="#fff" opacity="0.8"/><rect x="20" y="110" width="360" height="90" fill="#1a2a1a"/><rect x="30" y="100" width="15" height="30" fill="#b0bec5" opacity="0.9"/><rect x="50" y="90" width="20" height="40" fill="#90a4ae"/><rect x="75" y="105" width="18" height="25" fill="#b0bec5" opacity="0.8"/><rect x="300" y="95" width="22" height="35" fill="#90a4ae"/><rect x="330" y="105" width="18" height="25" fill="#b0bec5"/><rect x="355" y="98" width="20" height="32" fill="#90a4ae" opacity="0.8"/><path d="M160 80 L200 50 L240 80 L235 95 L165 95Z" fill="#2e5e2e" opacity="0.9"/><path d="M150 90 Q200 60 250 90" stroke="#2e7d32" stroke-width="6" fill="none"/><circle cx="150" cy="70" r="12" fill="#ffd54f" opacity="0.9"/><path d="M144 68 L150 72 L156 68" stroke="#e65100" stroke-width="1.5" fill="none"/><text x="200" y="105" text-anchor="middle" font-size="24">🏴‍☠️</text></svg>`,
+
+    "it's a small world (with Groot)": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#e1f5fe"/><path d="M0 100 Q100 60 200 80 Q300 100 400 70 L400 200 L0 200Z" fill="#b3e5fc" opacity="0.6"/><rect x="160" y="30" width="80" height="100" fill="#fff" rx="5" stroke="#e0e0e0" stroke-width="2"/><polygon points="160,30 200,5 240,30" fill="#ef9a9a"/><rect x="185" y="80" width="30" height="50" fill="#ffcc80" rx="3"/><circle cx="185" cy="55" r="12" fill="#ffcc80"/><circle cx="215" cy="50" r="10" fill="#a5d6a7"/><circle cx="200" cy="65" r="9" fill="#90caf9"/><rect x="40" y="120" width="50" height="60" fill="#fff59d" rx="4" stroke="#f9a825" stroke-width="1.5"/><rect x="130" y="110" width="45" height="70" fill="#c8e6c9" rx="4" stroke="#66bb6a" stroke-width="1.5"/><rect x="310" y="115" width="48" height="65" fill="#f8bbd0" rx="4" stroke="#ec407a" stroke-width="1.5"/><text x="65" y="155" text-anchor="middle" font-size="20">🌍</text><text x="152" y="150" text-anchor="middle" font-size="18">🌸</text><text x="334" y="152" text-anchor="middle" font-size="20">🌺</text><text x="280" y="80" text-anchor="middle" font-size="26">🌿</text><circle cx="295" cy="60" r="8" fill="#8d6e63"/><path d="M285 68 Q295 45 305 68" stroke="#5d4037" stroke-width="3" fill="none"/></svg>`,
+
+    "Alice's Tea Party": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#e8eaf6"/><path d="M0 140 Q100 120 200 135 Q300 150 400 130 L400 200 L0 200Z" fill="#c5cae9" opacity="0.8"/><circle cx="200" cy="115" r="52" fill="#fff9c4" stroke="#f9a825" stroke-width="3"/><circle cx="200" cy="115" r="40" fill="#fff3e0" stroke="#ffb300" stroke-width="2"/><ellipse cx="200" cy="115" rx="25" ry="20" fill="#fff8e1"/><text x="200" y="120" text-anchor="middle" font-size="22">☕</text><rect x="240" y="108" width="22" height="12" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/><circle cx="100" cy="130" r="35" fill="#f8bbd0" stroke="#ec407a" stroke-width="2.5"/><circle cx="100" cy="130" r="26" fill="#fce4ec" stroke="#f48fb1" stroke-width="1.5"/><text x="100" y="136" text-anchor="middle" font-size="20">☕</text><rect x="132" y="124" width="18" height="10" rx="4" fill="#fce4ec" stroke="#ec407a" stroke-width="1.5"/><circle cx="300" cy="125" r="32" fill="#c8e6c9" stroke="#43a047" stroke-width="2.5"/><circle cx="300" cy="125" r="24" fill="#e8f5e9" stroke="#66bb6a" stroke-width="1.5"/><text x="300" y="131" text-anchor="middle" font-size="18">☕</text><text x="200" y="70" text-anchor="middle" font-size="14" fill="#7b1fa2" font-weight="bold">🎩</text><circle cx="45" cy="75" r="18" fill="#ce93d8" opacity="0.7"/><circle cx="355" cy="80" r="15" fill="#f48fb1" opacity="0.6"/></svg>`,
+
+    "Roger Rabbit's Car Toon Spin": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#fff9c4"/><ellipse cx="200" cy="160" rx="180" ry="50" fill="#ffeb3b" opacity="0.4"/><rect x="20" y="100" width="60" height="40" rx="8" fill="#ef5350"/><rect x="28" y="90" width="44" height="20" rx="4" fill="#e53935"/><circle cx="35" cy="140" r="10" fill="#212121"/><circle cx="35" cy="140" r="6" fill="#757575"/><circle cx="72" cy="140" r="10" fill="#212121"/><circle cx="72" cy="140" r="6" fill="#757575"/><rect x="24" y="103" width="16" height="10" rx="2" fill="#90caf9" opacity="0.8"/><rect x="44" y="103" width="16" height="10" rx="2" fill="#90caf9" opacity="0.8"/><rect x="220" y="95" width="65" height="42" rx="8" fill="#66bb6a" transform="rotate(-15,252,116)"/><rect x="228" y="85" width="48" height="20" rx="4" fill="#43a047" transform="rotate(-15,252,95)"/><circle cx="230" cy="143" r="10" fill="#212121" transform="rotate(-15,252,116)"/><circle cx="270" cy="138" r="10" fill="#212121" transform="rotate(-15,252,116)"/><rect x="140" y="105" width="55" height="38" rx="8" fill="#ffa726" transform="rotate(10,167,124)"/><circle cx="148" cy="148" r="9" fill="#212121"/><circle cx="185" cy="147" r="9" fill="#212121"/><text x="320" y="130" text-anchor="middle" font-size="30">🐰</text><path d="M50 80 Q80 60 110 75" stroke="#e53935" stroke-width="3" fill="none" stroke-dasharray="5,3"/><path d="M280 75 Q310 55 340 70" stroke="#66bb6a" stroke-width="3" fill="none" stroke-dasharray="5,3"/></svg>`,
+
+    "Mickey's House & Meet Mickey": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#fffde7"/><path d="M0 160 Q100 140 200 155 Q300 170 400 150 L400 200 L0 200Z" fill="#a5d6a7" opacity="0.8"/><rect x="140" y="90" width="120" height="90" fill="#ffccbc" rx="4"/><polygon points="140,90 200,55 260,90" fill="#ef9a9a"/><rect x="185" y="140" width="30" height="40" fill="#a5d6a7" rx="3"/><rect x="148" y="100" width="28" height="24" rx="3" fill="#90caf9" opacity="0.85"/><rect x="224" y="100" width="28" height="24" rx="3" fill="#90caf9" opacity="0.85"/><rect x="200" y="65" width="18" height="4" fill="#ef9a9a"/><path d="M50 120 Q80 100 110 115 Q140 130 170 115 L170 180 Q140 165 110 175 Q80 185 50 170Z" fill="#ffecb3"/><text x="110" y="155" text-anchor="middle" font-size="14" fill="#e65100">✉️</text><circle cx="310" cy="105" r="35" fill="#fff" stroke="#e0e0e0" stroke-width="2"/><circle cx="295" cy="85" r="18" fill="#000"/><circle cx="325" cy="85" r="18" fill="#000"/><circle cx="310" cy="108" r="22" fill="#ffcc80"/><text x="310" y="115" text-anchor="middle" font-size="18">😊</text><circle cx="290" cy="75" r="12" fill="#000"/><circle cx="330" cy="75" r="12" fill="#000"/></svg>`,
+
+    "Space Mountain": `<svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="200" fill="#000"/><circle cx="20" cy="20" r="2" fill="#fff" opacity="0.9"/><circle cx="80" cy="40" r="1.5" fill="#fff" opacity="0.7"/><circle cx="180" cy="10" r="2" fill="#fff" opacity="0.8"/><circle cx="250" cy="30" r="1" fill="#fff" opacity="0.6"/><circle cx="340" cy="15" r="2" fill="#fff" opacity="0.9"/><circle cx="390" cy="50" r="1.5" fill="#fff" opacity="0.7"/><circle cx="60" cy="80" r="1" fill="#fff" opacity="0.5"/><circle cx="320" cy="65" r="2" fill="#fff" opacity="0.6"/><circle cx="150" cy="60" r="1" fill="#fff" opacity="0.8"/><circle cx="280" cy="55" r="1.5" fill="#fff" opacity="0.7"/><circle cx="100" cy="110" r="1" fill="#fff" opacity="0.5"/><circle cx="360" cy="100" r="1" fill="#fff" opacity="0.6"/><ellipse cx="200" cy="145" rx="120" ry="60" fill="#1565c0" opacity="0.15"/><ellipse cx="200" cy="130" rx="80" ry="45" fill="#b0bec5" opacity="0.9"/><ellipse cx="200" cy="128" rx="70" ry="40" fill="#eceff1"/><ellipse cx="200" cy="125" rx="50" ry="30" fill="#fff"/><rect x="190" y="75" width="20" height="55" fill="#cfd8dc" rx="3"/><polygon points="190,80 200,55 210,80" fill="#b0bec5"/><text x="200" y="108" text-anchor="middle" font-size="11" fill="#455a64" font-weight="bold">🔧 2027</text><rect x="185" y="165" width="30" height="8" rx="3" fill="#ef5350" opacity="0.9"/><text x="200" y="172" text-anchor="middle" font-size="7" fill="#fff">ปิดปรับปรุง</text></svg>`,
+  };
+  const zone = r.zone || 'Fantasyland';
+  const zc = ZONE_COLORS[zone] || ZONE_COLORS['Fantasyland'];
+
+  const THRILL_INFO = {
+    thrill: {icon:'⚡', label:'Thrill / ตื่นเต้น', cls:'type-tag-thrill'},
+    family: {icon:'👨‍👩‍👧', label:'Family / ครอบครัว', cls:'type-tag-family'},
+    kids:   {icon:'🧒', label:'Kids / เด็กเล็ก', cls:'type-tag-kids'},
+  };
+  const thrill = d.thrill || 'family';
+  const ti = THRILL_INFO[thrill];
+
+  const passTag = d.pass;
+  const heightReq = d.height || r.height;
+  const isClosed = d.closedUntil;
+
+  // ---- HERO ----
+  const passRowHTML = (() => {
+    let badges = `<span class="modal-zone-badge">${zc.emoji} ${zone}</span>`;
+    if(isClosed) badges += ` <span class="modal-status-badge modal-status-closed">⚠️ ปิดชั่วคราว</span>`;
+    else if(passTag === 'DPA') badges += ` <span class="modal-status-badge modal-status-dpa">💳 Disney Premier Access</span>`;
+    else if(passTag === 'Priority Pass') badges += ` <span class="modal-status-badge modal-status-pp">🎟️ Priority Pass</span>`;
+    return badges;
+  })();
+
+  const svgArt = ATTRACTION_SVG[name] || null;
+  document.getElementById('modal-hero').style.background = svgArt ? 'none' : zc.bg;
+  document.getElementById('modal-hero').innerHTML = `
+    <div style="position:relative;overflow:hidden;border-radius:24px 24px 0 0;">
+      ${svgArt ? `<div style="width:100%;height:200px;overflow:hidden;">${svgArt.replace(/`/g,"'")}</div>` : `<div style="height:170px;background:${zc.bg};display:flex;align-items:center;justify-content:center;font-size:80px;">${zc.emoji}</div>`}
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.65) 80%);border-radius:24px 24px 0 0;"></div>
+      <div style="position:absolute;top:14px;right:14px;z-index:10;">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div style="position:absolute;top:14px;left:14px;z-index:10;">
+        <button id="modal-fav-btn" onclick="toggleFavFromModal(this.dataset.name)" data-name="${name}" style="background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);border:none;font-size:22px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;">${favorites.includes(name)?'❤️':'🤍'}</button>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 18px 18px;">
+        <div class="modal-zone-row" style="margin-bottom:6px;">${passRowHTML}</div>
+        <div class="modal-title">${name}</div>
+      </div>
+    </div>`;
+
+  // ---- BODY ----
+  let html = '';
+
+  // Description
+  if(d.desc || r.note) {
+    html += `<div class="modal-desc-card">${d.desc || r.note}</div>`;
+  }
+
+  // Status card (DPA / PP / Open / Closed) — like original app
+  if(isClosed) {
+    html += `<div class="modal-status-card">
+      <div class="modal-status-card-header closed">⛔ ปิดให้บริการชั่วคราว</div>
+      <div class="modal-status-card-body">ปิดปรับปรุงจนถึง <strong>${isClosed}</strong><br>กรุณาตรวจสอบก่อนเข้าสวนสนุก</div>
+    </div>`;
+  } else if(passTag === 'DPA') {
+    html += `<div class="modal-status-card">
+      <div class="modal-status-card-header dpa">💳 Disney Premier Access (DPA)</div>
+      <div class="modal-status-card-body">ต้องซื้อผ่าน Tokyo Disney Resort App<br>เลือกเวลาเข้าล่วงหน้า ไม่ต้องรอคิว (เสียเงินเพิ่ม)</div>
+
+    </div>`;
+  } else if(passTag === 'Priority Pass') {
+    html += `<div class="modal-status-card">
+      <div class="modal-status-card-header pp">🎟️ Priority Pass</div>
+      <div class="modal-status-card-body">จองคิวฟรีผ่าน App ได้รับเวลาเข้าที่กำหนด<br>ไม่ต้องยืนรอในแถวนาน</div>
+
+    </div>`;
+  } else {
+    html += `<div class="modal-status-card">
+      <div class="modal-status-card-header open">✅ เปิดให้บริการปกติ</div>
+      <div class="modal-status-card-body">เข้าคิวปกติ ไม่ต้องใช้ Pass พิเศษ</div>
+
+    </div>`;
+  }
+
+  // Wait time
+  if(r.wait && r.wait !== '-' && r.wait !== 'walk-in' && !isClosed) {
+    const parts = String(r.wait).split('-');
+    const avg = parts.length===2 ? (parseInt(parts[0])+parseInt(parts[1]))/2 : parseInt(parts[0]);
+    const pct = Math.min((avg/120)*100,100);
+    const col = avg<30?'#4CAF50':avg<60?'#FF9800':'#F44336';
+    html += `<div class="modal-section">
+      <div class="modal-section-title">⏳ เวลารอโดยทั่วไป</div>
+      <div class="wait-big-num" style="color:${col}">${r.wait} <span style="font-size:16px;font-weight:400;color:var(--gray)">นาที</span></div>
+      <div class="wait-meter"><div class="wait-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="wait-labels"><span>เร็วมาก</span><span>30น.</span><span>60น.</span><span>90น.</span><span>120น.+</span></div>
+    </div>`;
+  }
+
+  // Height requirement
+  if(heightReq) {
+    html += `<div class="modal-section">
+      <div class="modal-section-title">📏 ข้อกำหนดส่วนสูง</div>
+      <div class="height-card">
+        <div style="font-size:40px">📏</div>
+        <div>
+          <div class="height-num">${heightReq} ซม. ขึ้นไป</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:2px">ต่ำกว่านี้ไม่สามารถเล่นได้</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Type section
+  if(d.rideType && d.rideType.length > 0) {
+    html += `<div class="modal-section">
+      <div class="modal-section-title">ประเภท</div>
+      <div class="type-tags">
+        <span class="type-tag ${ti.cls}">${ti.icon} ${ti.label}</span>
+        ${d.rideType.map(t => `<span class="type-tag type-tag-default">${t}</span>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Good to know
+  if(d.goodToKnow && d.goodToKnow.length > 0) {
+    const GTK_ICON = {
+      'เล่นได้ฝนตก':'🌧️','Single Rider':'👤','Single Rider มี':'👤','Cast Member เต้นร่วมด้วย':'💃',
+      'Interactive':'🎮','เหมาะทุกวัย':'👨‍👩‍👧‍👦','เย็นสบาย':'❄️','พักขาได้':'🪑','พักขาดี':'🪑',
+      'พักขาได้ดี':'🪑','พักขาดีมาก':'🪑','วิวดี':'👀','ถ่ายรูปสวย':'📸','ถ่ายรูปได้กับมิกกี้':'📸',
+      'DPA มี':'💳','Seasonal':'🗓️','Seasonal version':'🗓️','มีที่เก็บของ':'🎒','มีที่เก็บของกันน้ำ':'🎒',
+      'เตรียมรองเท้ากันน้ำ':'👟','เตรียมเสื้อสำรอง':'👕','สุ่มฉากทุกรอบ':'🎲',
+      'กำลังปรับปรุง':'🔧','บรรยากาศย้อนยุคสวยงาม':'🏛️','เสียเงินเพิ่ม':'💰',
+    };
+    html += `<div class="modal-section">
+      <div class="modal-section-title">ข้อมูลที่ควรรู้</div>
+      ${d.goodToKnow.map(g => {
+        const icon = GTK_ICON[g] || '✅';
+        return `<div class="info-list-item"><span class="info-list-icon">${icon}</span><span class="info-list-text">${g}</span></div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Restrictions
+  if(d.restrictions && d.restrictions.length > 0) {
+    html += `<div class="modal-section">
+      <div class="modal-section-title">ข้อควรระวัง / ข้อจำกัด</div>
+      ${d.restrictions.map(rt => {
+        const icon = rt.includes('⚠️')||rt.includes('ปิด') ? '⛔' : rt.includes('ส่วนสูง') ? '📏' : rt.includes('ตั้งครรภ์') ? '🤰' : rt.includes('7 ขวบ') ? '🧒' : '⚠️';
+        return `<div class="info-list-item"><span class="info-list-icon">${icon}</span><span class="info-list-text">${rt}</span></div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Insider tip
+  if(d.tip) {
+    html += `<div class="modal-section">
+      <div class="tip-card">
+        <span class="tip-card-icon">💡</span>
+        <div>
+          <div class="tip-card-label">เคล็ดลับจากประสบการณ์</div>
+          <div class="tip-card-text">${d.tip}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div style="height:20px;"></div>`;
+
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('detail-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modal-sheet').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('detail-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalIfOutside(e) {
+  if(e.target === document.getElementById('detail-modal')) closeModal();
+}
+
 init();
+renderAttractions();
 </script>
 </body>
 </html>
