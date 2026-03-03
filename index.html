@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง</title>
+<title>🏰 TDL บันทึกการเดินทาง v1.0.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -179,137 +179,131 @@
   .divider{height:1px;background:var(--light-gray);margin:10px 0;}
   .section-sub{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
 
-  /* INFO PAGE */
-  .info-search-bar{display:flex;gap:8px;margin-bottom:12px;}
-  .info-search-input{flex:1;padding:10px 14px;border:2px solid var(--light-gray);border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--navy);background:var(--white);outline:none;}
-  .info-search-input:focus{border-color:var(--pink);}
-  .zone-filter-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:12px;}
-  .zone-filter-row::-webkit-scrollbar{display:none;}
-  .zone-filter-pill{padding:5px 13px;border-radius:16px;border:2px solid var(--light-gray);background:var(--cream);font-family:'Sarabun',sans-serif;font-size:11px;font-weight:700;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all 0.18s;}
-  .zone-filter-pill.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
-  .attraction-card{background:var(--white);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;}
-  .attraction-card:active{transform:scale(0.98);}
-  .attraction-card-header{padding:13px 14px;display:flex;justify-content:space-between;align-items:flex-start;}
-  .attraction-card-name{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);flex:1;padding-right:8px;}
-  .attraction-card-zone{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--pink-pale);color:var(--pink);white-space:nowrap;}
-  .attraction-card-meta{padding:0 14px 12px;display:flex;gap:6px;flex-wrap:wrap;}
-  .attr-tag{font-size:10px;padding:2px 8px;border-radius:5px;font-weight:700;}
-  .tag-wait{background:#E8EAFF;color:var(--navy-mid);}
-  .tag-dpa{background:var(--gold-pale);color:#B07D00;}
-  .tag-pp{background:var(--teal-pale);color:var(--teal);}
-  .tag-closed{background:#FFE5E5;color:#D32F2F;}
-  .tag-thrill{background:#F3E5FF;color:#7B1FA2;}
-  .tag-family{background:#E8F5E9;color:#2E7D32;}
-  .tag-kids{background:#FFF8E1;color:#F57F17;}
-
-  /* DETAIL MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;display:none;align-items:flex-end;}
-  .modal-overlay.open{display:flex;}
-  .modal-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-height:94vh;overflow-y:auto;animation:slideUp 0.32s cubic-bezier(.22,.68,0,1.2);}
-  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.35);border-radius:2px;margin:14px auto 0;}
-  /* HERO SECTION — zone-based gradient */
-  .modal-hero{padding:0;position:relative;overflow:hidden;}
-  .modal-hero-bg{width:100%;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;}
-  .modal-hero-art{font-size:90px;text-align:center;padding:16px 0 8px;line-height:1;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.3));}
-  .modal-hero-gradient{position:absolute;inset:0;background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.65) 100%);}
-  .modal-hero-info{position:relative;padding:14px 18px 18px;}
-  .modal-zone-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-  .modal-zone-badge{font-size:11px;font-weight:700;color:var(--white);background:rgba(255,255,255,0.22);backdrop-filter:blur(8px);padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;}
-  .modal-status-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
-  .modal-status-dpa{background:rgba(255,184,0,0.9);color:#1A1F3A;}
-  .modal-status-pp{background:rgba(0,194,178,0.9);color:#FFF;}
-  .modal-status-closed{background:rgba(211,47,47,0.9);color:#FFF;}
-  .modal-title{font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:var(--white);line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
-  .modal-close{position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);border:none;color:var(--white);font-size:16px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
-  /* BODY */
-  .modal-body{padding:0;}
-  /* DESC CARD */
-  .modal-desc-card{padding:16px 18px;border-bottom:1px solid var(--light-gray);font-size:14px;color:#444;line-height:1.7;}
-  /* STATUS CARD like original app */
-  .modal-status-card{margin:14px 18px;border-radius:14px;overflow:hidden;border:1px solid var(--light-gray);}
-  .modal-status-card-header{padding:12px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
-  .modal-status-card-header.dpa{background:#FFF8E6;color:#B07D00;}
-  .modal-status-card-header.pp{background:#E0FAF8;color:#007A72;}
-  .modal-status-card-header.open{background:#E8F5E9;color:#2E7D32;}
-  .modal-status-card-header.closed{background:#FFE5E5;color:#C62828;}
-  .modal-status-card-body{padding:10px 16px 14px;background:var(--white);font-size:13px;color:var(--gray);line-height:1.6;}
-  .modal-status-icons{display:flex;gap:0;border-top:1px solid var(--light-gray);}
-  .modal-status-icon-btn{flex:1;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--navy);border:none;background:var(--white);cursor:pointer;border-right:1px solid var(--light-gray);}
-  .modal-status-icon-btn:last-child{border-right:none;}
-  .modal-status-icon-btn .si-icon{font-size:22px;}
-  /* SECTION */
-  .modal-section{padding:16px 18px;border-bottom:1px solid var(--light-gray);}
-  .modal-section:last-child{border-bottom:none;}
-  .modal-section-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:12px;}
-  /* TYPE TAGS */
-  .type-tags{display:flex;flex-wrap:wrap;gap:8px;}
-  .type-tag{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600;}
-  .type-tag-thrill{background:#F3E5FF;color:#7B1FA2;}
-  .type-tag-family{background:#E8F5E9;color:#2E7D32;}
-  .type-tag-kids{background:#FFF8E1;color:#E65100;}
-  .type-tag-default{background:var(--light-gray);color:var(--navy);}
-  /* GOOD TO KNOW / RESTRICTIONS */
-  .info-list-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--light-gray);}
-  .info-list-item:last-child{border-bottom:none;}
-  .info-list-icon{font-size:20px;flex-shrink:0;line-height:1.3;}
-  .info-list-text{font-size:14px;color:#333;line-height:1.5;padding-top:1px;}
-  /* WAIT BAR */
-  .wait-big-num{font-family:'Prompt',sans-serif;font-size:36px;font-weight:700;line-height:1;}
-  .wait-meter{background:var(--light-gray);border-radius:8px;height:10px;overflow:hidden;margin-top:8px;}
-  .wait-fill{height:100%;border-radius:8px;transition:width 0.6s;}
-  .wait-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-top:3px;}
-  /* HEIGHT CARD */
-  .height-card{background:var(--pink-pale);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;}
-  .height-num{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;color:var(--pink);}
-  /* TIP CARD */
-  .tip-card{background:linear-gradient(135deg,var(--navy),#2D3561);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;}
-  .tip-card-icon{font-size:26px;flex-shrink:0;}
-  .tip-card-text{font-size:13px;color:var(--white);line-height:1.7;}
-  .tip-card-label{font-size:11px;font-weight:700;color:var(--gold-light);margin-bottom:4px;}
-
-
-  /* INFO MODE SWITCHER */
+  /* ===== INFO PAGE ===== */
   .info-mode-row{display:flex;gap:8px;padding:12px 0 8px;overflow-x:auto;scrollbar-width:none;}
   .info-mode-row::-webkit-scrollbar{display:none;}
   .info-mode-btn{flex:1;padding:8px 10px;border-radius:12px;border:2px solid var(--light-gray);background:var(--cream);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all 0.18s;display:flex;align-items:center;justify-content:center;gap:4px;}
   .info-mode-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .info-search-bar{margin-bottom:10px;}
+  .info-search-input{width:100%;padding:11px 16px 11px 40px;border-radius:14px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238892A4' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:13px center;}
+  .info-search-input:focus{border-color:var(--navy);}
+  .zone-filter-row{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:10px;}
+  .zone-filter-row::-webkit-scrollbar{display:none;}
+  .zone-filter-pill{flex-shrink:0;padding:6px 14px;border-radius:20px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:var(--gray);cursor:pointer;white-space:nowrap;transition:all 0.18s;}
+  .zone-filter-pill.active{background:var(--navy);border-color:var(--navy);color:#fff;}
 
-  /* RECOMMEND CARDS */
+  /* ===== ATTRACTION CARDS ===== */
+  .attraction-card{background:var(--white);border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;border:1.5px solid transparent;}
+  .attraction-card:active{transform:scale(0.99);}
+  .attraction-card:hover{border-color:var(--navy);}
+  .attraction-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;}
+  .attraction-card-name{font-size:14px;font-weight:700;color:var(--navy);line-height:1.3;}
+  .attraction-card-zone{font-size:11px;color:var(--gray);white-space:nowrap;}
+  .attraction-card-meta{display:flex;flex-wrap:wrap;gap:5px;}
+  .attr-card-fav{position:absolute;top:10px;right:10px;font-size:18px;cursor:pointer;z-index:2;transition:transform 0.15s;background:none;border:none;}
+  .attr-card-fav:active{transform:scale(1.3);}
+
+  /* ===== ATTR TAGS ===== */
+  .attr-tag{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700;}
+  .tag-thrill{background:#EDE8F8;color:#7C5CBF;}
+  .tag-family{background:#E0FAF8;color:#00A896;}
+  .tag-kids{background:#FFF3CC;color:#B88800;}
+  .tag-wait{background:var(--light-gray);color:var(--gray);}
+  .tag-dpa{background:#FFF3CC;color:#B88800;border:1px solid #FFD966;}
+  .tag-pp{background:#E0FAF8;color:#00A896;border:1px solid #7EEEE7;}
+  .tag-closed{background:#FFE0E8;color:#FF4F7B;}
+
+  /* ===== RECOMMEND ===== */
   .recommend-header{background:linear-gradient(135deg,var(--navy),#3D2B6B);border-radius:16px;padding:16px 18px;margin-bottom:14px;color:#fff;}
   .recommend-header h3{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
   .recommend-header p{font-size:12px;opacity:0.75;line-height:1.5;}
   .recommend-source{font-size:10px;color:var(--gold-light);background:rgba(255,255,255,0.12);padding:3px 9px;border-radius:10px;display:inline-block;margin-top:6px;}
   .recommend-rank-card{background:var(--white);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s;}
   .recommend-rank-card:active{transform:scale(0.98);}
-  .recommend-rank-header{display:flex;align-items:stretch;gap:0;}
-  .recommend-rank-num{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:#fff;}
-  .recommend-rank-body{flex:1;padding:11px 13px 11px 0;}
-  .recommend-rank-name{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;}
-  .recommend-rank-quote{font-size:12px;color:var(--gray);line-height:1.5;font-style:italic;}
-  .recommend-rank-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
-  .recommend-rank-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--light-gray);color:var(--navy);}
 
-  /* FAVORITES */
+  /* ===== FAVORITES ===== */
   .fav-btn{position:absolute;top:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:none;font-size:20px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s;}
-  .fav-btn.active{background:rgba(255,79,123,0.7);}
   .fav-heart{color:rgba(255,255,255,0.6);transition:all 0.2s;}
   .fav-heart.active{color:#fff;}
+
+  /* ===== MODAL ===== */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(3px);z-index:1000;display:none;align-items:flex-end;}
+  .modal-overlay.open{display:flex;}
+  .modal-sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-height:93vh;overflow-y:auto;animation:slideUp 0.32s cubic-bezier(.22,.68,0,1.2);}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-handle{width:36px;height:4px;background:rgba(0,0,0,0.12);border-radius:2px;margin:14px auto 0;}
+  .modal-hero{position:relative;overflow:hidden;}
+  .modal-close{background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);border:none;color:#fff;font-size:16px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .modal-title{font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
+  .modal-zone-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .modal-zone-badge{font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,0.18);backdrop-filter:blur(8px);padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;}
+  .modal-status-badge{font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
+  .modal-status-dpa{background:rgba(255,184,0,0.9);color:#fff;}
+  .modal-status-pp{background:rgba(0,194,178,0.9);color:#fff;}
+  .modal-status-closed{background:rgba(255,79,123,0.9);color:#fff;}
+  .modal-body{padding:0;}
+  .modal-desc-card{padding:16px 18px;border-bottom:1px solid var(--light-gray);font-size:14px;color:var(--gray);line-height:1.7;}
+  .modal-status-card{margin:14px 18px;border-radius:14px;overflow:hidden;border:1.5px solid var(--light-gray);}
+  .modal-status-card-header{padding:12px 16px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:8px;}
+  .modal-status-card-header.dpa{background:#FFF3CC;color:#B88800;}
+  .modal-status-card-header.pp{background:#E0FAF8;color:#007A6E;}
+  .modal-status-card-header.open{background:#E0FAF8;color:#007A6E;}
+  .modal-status-card-header.closed{background:#FFE0E8;color:#FF4F7B;}
+  .modal-status-card-body{padding:10px 16px 14px;font-size:13px;color:var(--gray);line-height:1.6;}
+  .modal-section{padding:16px 18px;border-bottom:1px solid var(--light-gray);}
+  .modal-section:last-child{border-bottom:none;}
+  .modal-section-title{font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;}
+  .type-tags{display:flex;flex-wrap:wrap;gap:8px;}
+  .type-tag{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;font-size:13px;font-weight:600;}
+  .type-tag-thrill{background:#EDE8F8;color:#7C5CBF;}
+  .type-tag-family{background:#E0FAF8;color:#00A896;}
+  .type-tag-kids{background:#FFF3CC;color:#B88800;}
+  .type-tag-default{background:var(--light-gray);color:var(--gray);}
+  .info-list-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--light-gray);}
+  .info-list-item:last-child{border-bottom:none;}
+  .info-list-icon{font-size:20px;flex-shrink:0;line-height:1.3;}
+  .info-list-text{font-size:14px;color:var(--gray);line-height:1.5;padding-top:1px;}
+  .wait-big-num{font-family:'Prompt',sans-serif;font-size:36px;font-weight:700;line-height:1;}
+  .wait-meter{background:var(--light-gray);border-radius:8px;height:10px;overflow:hidden;margin-top:8px;}
+  .wait-fill{height:100%;border-radius:8px;transition:width 0.6s;}
+  .wait-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-top:3px;}
+  .height-card{background:#FFE0E8;border:1.5px solid var(--pink-pale);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:16px;}
+  .height-num{font-family:'Prompt',sans-serif;font-size:32px;font-weight:700;color:var(--pink);}
+  .tip-card{background:linear-gradient(135deg,var(--navy),#3D2B6B);border-radius:14px;padding:16px;display:flex;gap:12px;align-items:flex-start;}
+  .tip-card-icon{font-size:26px;flex-shrink:0;}
+  .tip-card-text{font-size:13px;color:#fff;line-height:1.7;}
+  .tip-card-label{font-size:11px;font-weight:700;color:var(--gold-light);margin-bottom:4px;}
   .fav-empty-state{text-align:center;padding:50px 20px;color:var(--gray);}
-  .fav-empty-state .empty-big-icon{font-size:56px;margin-bottom:12px;}
-  .fav-empty-state p{font-size:14px;line-height:1.6;}
-  /* heart on attraction cards */
-  .attr-card-fav{position:absolute;top:10px;right:10px;font-size:18px;cursor:pointer;z-index:2;transition:transform 0.15s;}
-  .attr-card-fav:active{transform:scale(1.3);}
+
+  /* ===== CURRENCY NEW ===== */
+  .cur-new-wrap{display:flex;flex-direction:column;gap:8px;}
+  .cur-new-row{display:flex;border-radius:14px;overflow:hidden;border:2px solid var(--light-gray);background:var(--white);transition:border-color 0.2s;}
+  .cur-new-row:focus-within{border-color:var(--navy);}
+  .cur-new-selector{display:flex;align-items:center;gap:6px;padding:0 14px;background:var(--navy);color:#fff;border:none;cursor:pointer;font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;min-width:72px;justify-content:center;transition:background 0.15s;flex-shrink:0;}
+  .cur-new-selector:hover{background:#2d3561;}
+  .cur-new-input{flex:1;border:none;outline:none;font-family:'Prompt',sans-serif;font-size:22px;font-weight:700;color:var(--navy);padding:14px 16px;background:transparent;width:100%;-moz-appearance:textfield;}
+  .cur-new-input::-webkit-outer-spin-button,.cur-new-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .cur-new-dropdown{background:var(--white);border:2px solid var(--navy);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.12);}
+  .cur-dd-opt{display:flex;align-items:center;width:100%;padding:13px 16px;border:none;background:transparent;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer;text-align:left;transition:background 0.15s;}
+  .cur-dd-opt:hover{background:var(--cream);}
+  .cur-dd-opt.selected{background:var(--navy);color:#fff;}
+  .cur-dd-opt:not(:last-child){border-bottom:1px solid var(--light-gray);}
+  .cur-new-rate{background:var(--cream);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--gray);font-weight:600;display:none;}
+  .cur-new-rate.visible{display:block;}
+  .rate-inline-row{display:flex;align-items:center;gap:6px;padding:8px 12px;background:var(--cream);border-radius:10px;margin-top:4px;}
+  .rate-inline-label{font-size:12px;font-weight:700;color:var(--gray);white-space:nowrap;}
+  .rate-inline-symbol{font-size:14px;font-weight:700;color:var(--navy);}
+  .rate-inline-input{flex:1;border:none;border-bottom:2px solid var(--navy);background:transparent;font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--navy);padding:2px 4px;outline:none;min-width:0;-moz-appearance:textfield;}
+  .rate-inline-input::-webkit-outer-spin-button,.rate-inline-input::-webkit-inner-spin-button{-webkit-appearance:none;}
+  .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 </style>
-</head>
-<body>
 
 <div class="header">
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v1.0.0</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
 </div>
 
@@ -511,16 +505,26 @@
         <div class="divider"></div>
         <div class="form-row">
           <label class="form-label">💴 ค่าอาหาร</label>
-          <div class="currency-row">
-            <div class="currency-input-wrap">
-              <input type="number" class="form-input" id="food-price" placeholder="0" min="0"/>
+          <div class="cur-new-wrap">
+            <div class="cur-new-row">
+              <button class="cur-new-selector" id="food-cur-selector" onclick="toggleCurDropdown('food')">
+                <span id="food-cur-symbol">¥</span>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4"/></svg>
+              </button>
+              <input type="number" class="cur-new-input" id="food-price" placeholder="0" min="0" oninput="updateFoodConverted()"/>
             </div>
-            <div class="currency-toggle">
-              <button class="cur-btn active" id="food-cur-yen" onclick="setFoodCur('yen')">¥ JPY</button>
-              <button class="cur-btn" id="food-cur-thb" onclick="setFoodCur('thb')">฿ THB</button>
+            <div class="cur-new-dropdown" id="food-cur-dropdown" style="display:none;">
+              <button onclick="setFoodCurNew('yen')" class="cur-dd-opt" id="food-opt-yen">¥ JPY — เยน</button>
+              <button onclick="setFoodCurNew('thb')" class="cur-dd-opt" id="food-opt-thb">฿ THB — บาท</button>
             </div>
+            <div class="cur-new-rate" id="food-converted"></div>
+              <div class="rate-inline-row">
+                <span class="rate-inline-label">อัตรา ¥1 =</span>
+                <span class="rate-inline-symbol">฿</span>
+                <input class="rate-inline-input" id="rate-input-food" type="number" step="0.001" min="0.001"
+                  oninput="updateRateFromInput(this.value)"/>
+              </div>
           </div>
-          <div class="rate-info" id="food-converted"></div>
         </div>
 
         <div class="form-row">
@@ -554,10 +558,7 @@
     <div class="section-card">
       <div class="section-title"><span>💴</span>บันทึกค่าใช้จ่าย</div>
 
-      <div class="rate-card">
-        <div><div class="rate-label">อัตราแลกเปลี่ยน</div><div class="rate-value">1 ¥ = <span id="rate-display">0.23</span> ฿</div></div>
-        <span class="rate-edit" onclick="editRate()">✏️ แก้ไข</span>
-      </div>
+
 
       <div class="form-row">
         <label class="form-label">รายการ</label>
@@ -581,16 +582,26 @@
 
       <div class="form-row">
         <label class="form-label">จำนวนเงิน</label>
-        <div class="currency-row">
-          <div class="currency-input-wrap">
-            <input type="number" class="form-input" id="exp-price" placeholder="0" min="0" oninput="updateExpConverted()"/>
+        <div class="cur-new-wrap">
+          <div class="cur-new-row">
+            <button class="cur-new-selector" id="exp-cur-selector" onclick="toggleCurDropdown('exp')">
+              <span id="exp-cur-symbol">¥</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <input type="number" class="cur-new-input" id="exp-price" placeholder="0" min="0" oninput="updateExpConverted()"/>
           </div>
-          <div class="currency-toggle">
-            <button class="cur-btn active" id="exp-cur-yen" onclick="setExpCur('yen')">¥ JPY</button>
-            <button class="cur-btn" id="exp-cur-thb" onclick="setExpCur('thb')">฿ THB</button>
+          <div class="cur-new-dropdown" id="exp-cur-dropdown" style="display:none;">
+            <button onclick="setExpCurNew('yen')" class="cur-dd-opt" id="exp-opt-yen">¥ JPY — เยน</button>
+            <button onclick="setExpCurNew('thb')" class="cur-dd-opt" id="exp-opt-thb">฿ THB — บาท</button>
           </div>
+          <div class="cur-new-rate" id="exp-converted"></div>
+              <div class="rate-inline-row">
+                <span class="rate-inline-label">อัตรา ¥1 =</span>
+                <span class="rate-inline-symbol">฿</span>
+                <input class="rate-inline-input" id="rate-input-exp" type="number" step="0.001" min="0.001"
+                  oninput="updateRateFromInput(this.value)"/>
+              </div>
         </div>
-        <div class="rate-info" id="exp-converted"></div>
       </div>
 
       <div class="form-row">
@@ -872,7 +883,12 @@ function init() {
     const el = document.getElementById(id);
     if(el) el.value = t;
   });
-  document.getElementById('rate-display').textContent = exchangeRate;
+  const rdEl = document.getElementById('rate-display'); if(rdEl) rdEl.textContent = exchangeRate;
+  // sync rate inputs
+  const rif = document.getElementById('rate-input-food');
+  const rie = document.getElementById('rate-input-exp');
+  if(rif) rif.value = exchangeRate;
+  if(rie) rie.value = exchangeRate;
   renderShowOptions();
   renderTimeline();
   renderSummary();
@@ -1081,38 +1097,94 @@ function updateWait(v) {
 }
 
 // ========== CURRENCY ==========
-function setFoodCur(cur) {
+// ===== NEW CURRENCY UI =====
+function toggleCurDropdown(id) {
+  const dd = document.getElementById(id + '-cur-dropdown');
+  const isOpen = dd.style.display !== 'none';
+  // Close all dropdowns first
+  document.querySelectorAll('.cur-new-dropdown').forEach(el => el.style.display = 'none');
+  if(!isOpen) dd.style.display = 'block';
+  // Close on outside click
+  if(!isOpen) {
+    setTimeout(() => {
+      document.addEventListener('click', function closeDd(e) {
+        if(!e.target.closest('.cur-new-wrap')) {
+          document.querySelectorAll('.cur-new-dropdown').forEach(el => el.style.display = 'none');
+          document.removeEventListener('click', closeDd);
+        }
+      });
+    }, 10);
+  }
+}
+
+function setFoodCurNew(cur) {
   foodCurrency = cur;
-  document.getElementById('food-cur-yen').classList.toggle('active', cur==='yen');
-  document.getElementById('food-cur-thb').classList.toggle('active', cur==='thb');
+  const sym = cur === 'yen' ? '¥' : '฿';
+  document.getElementById('food-cur-symbol').textContent = sym;
+  document.getElementById('food-cur-dropdown').style.display = 'none';
+  document.getElementById('food-opt-yen').classList.toggle('selected', cur === 'yen');
+  document.getElementById('food-opt-thb').classList.toggle('selected', cur === 'thb');
   updateFoodConverted();
 }
-function setExpCur(cur) {
+function setFoodCur(cur) { setFoodCurNew(cur); } // backward compat
+
+function setExpCurNew(cur) {
   expCurrency = cur;
-  document.getElementById('exp-cur-yen').classList.toggle('active', cur==='yen');
-  document.getElementById('exp-cur-thb').classList.toggle('active', cur==='thb');
+  const sym = cur === 'yen' ? '¥' : '฿';
+  document.getElementById('exp-cur-symbol').textContent = sym;
+  document.getElementById('exp-cur-dropdown').style.display = 'none';
+  document.getElementById('exp-opt-yen').classList.toggle('selected', cur === 'yen');
+  document.getElementById('exp-opt-thb').classList.toggle('selected', cur === 'thb');
   updateExpConverted();
 }
+function setExpCur(cur) { setExpCurNew(cur); } // backward compat
+
 function updateFoodConverted() {
   const v = parseFloat(document.getElementById('food-price').value) || 0;
   const el = document.getElementById('food-converted');
-  if(v <= 0) { el.textContent = ''; return; }
-  if(foodCurrency === 'yen') el.textContent = `≈ ${(v * exchangeRate).toFixed(0)} บาท`;
-  else el.textContent = `≈ ¥${(v / exchangeRate).toFixed(0)}`;
+  if(v <= 0) { el.classList.remove('visible'); el.textContent = ''; return; }
+  el.classList.add('visible');
+  if(foodCurrency === 'yen')
+    el.textContent = `¥${v.toLocaleString()} = ฿${(v * exchangeRate).toFixed(2)}`;
+  else
+    el.textContent = `฿${v.toLocaleString()} = ¥${(v / exchangeRate).toFixed(0)}`;
 }
+
 function updateExpConverted() {
   const v = parseFloat(document.getElementById('exp-price').value) || 0;
   const el = document.getElementById('exp-converted');
-  if(v <= 0) { el.textContent = ''; return; }
-  if(expCurrency === 'yen') el.textContent = `≈ ${(v * exchangeRate).toFixed(0)} บาท`;
-  else el.textContent = `≈ ¥${(v / exchangeRate).toFixed(0)}`;
+  if(v <= 0) { el.classList.remove('visible'); el.textContent = ''; return; }
+  el.classList.add('visible');
+  if(expCurrency === 'yen')
+    el.textContent = `¥${v.toLocaleString()} = ฿${(v * exchangeRate).toFixed(2)}`;
+  else
+    el.textContent = `฿${v.toLocaleString()} = ¥${(v / exchangeRate).toFixed(0)}`;
 }
+
+function updateRateFromInput(val) {
+  const r = parseFloat(val);
+  if(!r || r <= 0) return;
+  exchangeRate = r;
+  localStorage.setItem('tdl_rate', exchangeRate);
+  // sync both inputs to same rate
+  const f = document.getElementById('rate-input-food');
+  const e = document.getElementById('rate-input-exp');
+  if(f && f !== document.activeElement) f.value = exchangeRate;
+  if(e && e !== document.activeElement) e.value = exchangeRate;
+  // update conversion displays
+  updateFoodConverted();
+  updateExpConverted();
+  // update rate display in header if exists
+  const rd = document.getElementById('rate-display');
+  if(rd) rd.textContent = exchangeRate;
+}
+
 function editRate() {
   const r = prompt('ใส่อัตราแลกเปลี่ยน (1 ¥ = ? ฿):', exchangeRate);
   if(r && !isNaN(r)) {
     exchangeRate = parseFloat(r);
     localStorage.setItem('tdl_rate', exchangeRate);
-    document.getElementById('rate-display').textContent = exchangeRate;
+    const rdEl = document.getElementById('rate-display'); if(rdEl) rdEl.textContent = exchangeRate;
     showToast('✅ อัปเดตอัตราแลกเปลี่ยนแล้ว');
   }
 }
