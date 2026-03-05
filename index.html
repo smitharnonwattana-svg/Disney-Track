@@ -78,7 +78,7 @@ window.FIREBASE_CONFIG = {
   .tab-btn.active{color:var(--pink);border-bottom-color:var(--pink);}
 
   /* PAGES */
-  .page{display:none;padding:14px;animation:fadeIn 0.3s ease;}
+  .page{display:none;padding:14px;padding-bottom:100px;animation:fadeIn 0.3s ease;}
   .page.active{display:block;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -179,15 +179,61 @@ window.FIREBASE_CONFIG = {
   .log-delete-btn:hover{opacity:1;}
 
   /* TIMELINE */
-  .timeline{position:relative;padding-left:20px;}
-  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--pink),var(--teal),var(--gold));border-radius:2px;}
-  .timeline-item{position:relative;margin-bottom:14px;}
-  .timeline-dot{position:absolute;left:-18px;top:11px;width:12px;height:12px;border-radius:50%;background:var(--pink);border:2px solid var(--white);box-shadow:0 0 0 2px var(--pink);}
-  .timeline-dot.show{background:var(--teal);box-shadow:0 0 0 2px var(--teal);}
-  .timeline-dot.food{background:var(--gold);box-shadow:0 0 0 2px var(--gold);}
-  .timeline-dot.expense{background:var(--purple);box-shadow:0 0 0 2px var(--purple);}
+  /* CENTER-LINE TIMELINE */
+  .tl-center{position:relative;padding:0 4px;}
+  .tl-center::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);background:linear-gradient(to bottom,var(--pink),var(--teal),var(--gold));border-radius:3px;z-index:0;}
+  .tl-row{display:flex;align-items:flex-start;margin-bottom:6px;position:relative;z-index:1;}
+  .tl-row.left{flex-direction:row-reverse;}
+  .tl-row.right{flex-direction:row;}
+  .tl-side{width:calc(50% - 22px);flex-shrink:0;}
+  .tl-dot-col{width:44px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding-top:14px;}
+  .tl-dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--white);box-shadow:0 0 0 2px var(--pink);background:var(--pink);flex-shrink:0;}
+  .tl-card{background:var(--white);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.09);overflow:hidden;position:relative;}
+  .tl-card-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 7px;}
+  .tl-card-title{font-size:13px;font-weight:700;color:var(--navy);flex:1;line-height:1.3;}
+  .tl-card-time{font-size:11px;color:var(--gray);white-space:nowrap;margin-left:6px;}
+  .tl-card-badges{display:flex;flex-wrap:wrap;gap:3px;padding:0 12px 7px;}
+  .tl-card-members{border-top:1px solid var(--light-gray);padding:7px 12px;}
+  .tl-card-strip{height:3px;width:100%;}
+  /* arrow connector */
+  .tl-row.right .tl-side::before{content:'';position:absolute;right:100%;top:17px;border:7px solid transparent;}
+  .tl-row.left .tl-side::before{content:'';position:absolute;left:100%;top:17px;border:7px solid transparent;}
+  /* old classes kept for compat */
+  .timeline-item{display:none;}
+  .timeline-dot{display:none;}
 
+  /* TIMELINE REDESIGN */
+  .tl-group-card{background:var(--white);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.09);overflow:hidden;position:relative;}
+  .tl-group-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px;}
+  .tl-group-name{font-size:14px;font-weight:700;color:var(--navy);flex:1;line-height:1.3;}
+  .tl-group-time{font-size:12px;color:var(--gray);margin-left:8px;white-space:nowrap;}
+  .tl-group-badges{display:flex;flex-wrap:wrap;gap:4px;padding:0 14px 6px;}
+  .tl-group-members{border-top:1px solid var(--light-gray);padding:8px 14px;}
+  .tl-member-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;}
+  .tl-member-row:last-child{border-bottom:none;}
+  .tl-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+  .tl-member-name{font-size:12px;font-weight:700;flex:1;}
+  .tl-member-stars{font-size:12px;}
+  .tl-delete-btn{background:none;border:none;color:#ddd;font-size:14px;cursor:pointer;padding:2px 4px;line-height:1;}
+  .tl-delete-btn:hover{color:#e74c3c;}
+  .tl-type-strip{width:4px;position:absolute;left:0;top:0;bottom:0;}
+  .tl-solo-card{background:var(--white);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.09);overflow:hidden;position:relative;}
+  .tl-solo-body{padding:9px 12px;}
+  .tl-solo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+  /* MULTI-MEMBER TIMELINE */
+
+  .tl-toggle-row{display:flex;gap:6px;padding:10px 0 8px;overflow-x:auto;scrollbar-width:none;align-items:center;}
+  .tl-toggle-row::-webkit-scrollbar{display:none;}
+  .tl-member-pill{padding:5px 12px;border-radius:20px;border:2px solid var(--light-gray);background:var(--cream);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.18s;color:var(--gray);}
+  .tl-member-pill.active{color:#fff;border-color:transparent;}
+  .tl-mode-btn{padding:6px 12px;border-radius:20px;border:2px solid var(--light-gray);background:var(--cream);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;color:var(--gray);transition:all 0.18s;}
+  .tl-mode-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .tl-stats-bar{display:flex;gap:10px;padding:8px 12px;background:var(--navy);border-radius:12px;margin-bottom:12px;flex-wrap:wrap;}
+  .tl-stat{font-size:12px;color:rgba(255,255,255,0.85);display:flex;align-items:center;gap:4px;}
+  .tl-stat span{font-weight:700;color:var(--gold-light);}
+  .tl-member-label{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;margin-left:4px;vertical-align:middle;}
   /* SUMMARY */
+
   .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px;}
   .summary-stat{background:linear-gradient(135deg,var(--navy),var(--navy-mid));color:var(--white);border-radius:14px;padding:13px 11px;text-align:center;}
   .summary-stat .stat-num{font-family:'Prompt',sans-serif;font-size:26px;font-weight:700;color:var(--gold-light);line-height:1;}
@@ -398,13 +444,13 @@ window.FIREBASE_CONFIG = {
 
 <!-- ===== SETUP OVERLAY ===== -->
 <!-- ===== LANDING OVERLAY (Trip Select) ===== -->
-<div id="setup-overlay" style="position:fixed;inset:0;background:linear-gradient(135deg,#1A1F3A 0%,#2D1B69 100%);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+<div id="setup-overlay" style="position:fixed;inset:0;background:linear-gradient(135deg,#1A1F3A 0%,#2D1B69 100%);z-index:5000;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-bottom:40px;overflow-y:auto;">
 
   <!-- Admin button top-right -->
   <button onclick="showAdminLogin()" style="position:fixed;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">⚙</button>
 
   <!-- Main card -->
-  <div style="background:#fff;border-radius:24px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.5);">
+  <div style="background:#fff;border-radius:24px;width:100%;max-width:380px;overflow:visible;box-shadow:0 24px 80px rgba(0,0,0,0.5);">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#1A1F3A,#2D1B69);padding:28px 22px 22px;text-align:center;">
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
@@ -413,7 +459,7 @@ window.FIREBASE_CONFIG = {
     </div>
 
     <!-- Step 1: Trip list -->
-    <div id="landing-step-trips" style="padding:20px 18px;">
+    <div id="landing-step-trips" style="padding:20px 18px 40px;">
       <div id="landing-trip-list" style="display:flex;flex-direction:column;gap:10px;min-height:80px;">
         <div style="text-align:center;padding:24px;color:#aaa;font-size:14px;">⏳ กำลังโหลดทริป...</div>
       </div>
@@ -421,7 +467,7 @@ window.FIREBASE_CONFIG = {
     </div>
 
     <!-- Step 2: Enter name (shown after picking trip) -->
-    <div id="landing-step-name" style="display:none;padding:20px 18px;">
+    <div id="landing-step-name" style="display:none;padding:20px 18px 40px;">
       <div style="text-align:center;margin-bottom:16px;">
         <div id="landing-chosen-trip" style="font-size:14px;font-weight:700;color:var(--navy);background:#f0f4ff;padding:10px 16px;border-radius:12px;"></div>
       </div>
@@ -440,7 +486,7 @@ window.FIREBASE_CONFIG = {
       </div>
 
       <!-- STEP B: เลือก/พิมพ์ชื่อ (หลังเลือกครอบครัวแล้ว) -->
-      <div id="step-name" style="display:none;">
+      <div id="step-name" style="display:none;padding-bottom:20px;">
         <div id="selected-family-badge" style="display:inline-flex;align-items:center;gap:6px;background:#f0f4ff;border:1.5px solid var(--navy);border-radius:12px;padding:6px 14px;margin-bottom:14px;cursor:pointer;" onclick="backToFamilyStep()">
           <span id="selected-family-label" style="font-size:13px;font-weight:700;color:var(--navy);"></span>
           <span style="font-size:11px;color:var(--gray);">เปลี่ยน</span>
@@ -468,7 +514,7 @@ window.FIREBASE_CONFIG = {
           <p style="font-size:11px;color:#bbb;margin-top:6px;">คนที่ไม่อยากบันทึกเอง ใส่ชื่อไว้ที่นี่เพื่อ rating ร่วมกันได้</p>
         </div>
 
-        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:10px;">✅ เข้าร่วมทริป!</button>
+        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:16px;padding:16px;font-size:16px;min-height:56px;border-radius:16px;box-shadow:0 6px 20px rgba(255,79,123,0.4);">✅ เข้าร่วมทริป!</button>
       </div>
 
       <button onclick="backToTrips()" style="width:100%;padding:10px;border:none;background:none;color:var(--gray);font-size:13px;cursor:pointer;margin-top:4px;">← กลับเลือกทริป</button>
@@ -489,20 +535,49 @@ window.FIREBASE_CONFIG = {
 </div>
 
 <!-- ===== ADMIN CREATE TRIP MODAL ===== -->
-<div id="admin-create-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:6000;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fff;border-radius:20px;padding:28px 22px;width:100%;max-width:340px;">
-    <h3 style="font-family:'Prompt',sans-serif;font-size:17px;color:var(--navy);margin-bottom:4px;text-align:center;">🗓️ สร้างทริปใหม่</h3>
-    <p style="font-size:12px;color:var(--gray);text-align:center;margin-bottom:18px;">ทริปที่สร้างจะแสดงให้ทุกคนเห็นในหน้าแรก</p>
-    <label style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">ชื่อทริป</label>
-    <input id="admin-trip-name" class="form-input" placeholder="เช่น ทริปซากุระ 🌸, ทริปครอบครัว..." style="margin-bottom:12px;" maxlength="30"/>
-    <label style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">วันที่เดินทาง</label>
-    <input id="admin-trip-date" class="form-input" type="date" style="margin-bottom:18px;"/>
-    <button onclick="adminCreateTrip()" class="btn btn-primary" style="margin-bottom:10px;">✅ สร้างทริป</button>
-    <div style="border-top:1px solid #eee;padding-top:14px;margin-top:4px;">
-      <p style="font-size:11px;color:var(--gray);margin-bottom:10px;text-align:center;">ทริปที่มีอยู่</p>
-      <div id="admin-trip-list" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;"></div>
+<div id="admin-create-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:6000;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:380px;margin:auto;overflow:hidden;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,var(--navy),#2D3561);padding:18px 20px 14px;">
+      <div style="font-family:'Prompt',sans-serif;font-size:17px;font-weight:700;color:#fff;text-align:center;">⚙️ Admin Panel</div>
     </div>
-    <button onclick="closeAdminCreateModal()" style="width:100%;padding:10px;border:none;background:none;color:var(--gray);font-size:13px;cursor:pointer;margin-top:8px;">ปิด</button>
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:2px solid #f0f0f0;">
+      <button class="admin-tab active" id="atab-trip" onclick="switchAdminTab('trip',this)" style="flex:1;padding:11px 4px;border:none;background:#fff;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;border-bottom:2px solid var(--navy);margin-bottom:-2px;">🗓️ ทริป</button>
+      <button class="admin-tab" id="atab-family" onclick="switchAdminTab('family',this)" style="flex:1;padding:11px 4px;border:none;background:#fff;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;">🏠 ครอบครัว</button>
+      <button class="admin-tab" id="atab-member" onclick="switchAdminTab('member',this)" style="flex:1;padding:11px 4px;border:none;background:#fff;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;">👤 สมาชิก</button>
+    </div>
+
+    <!-- Tab: ทริป -->
+    <div id="admin-panel-trip" style="padding:20px 20px 14px;">
+      <label style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">ชื่อทริป</label>
+      <input id="admin-trip-name" class="form-input" placeholder="เช่น ทริปซากุระ 🌸..." style="margin-bottom:10px;" maxlength="30"/>
+      <label style="font-size:12px;font-weight:700;color:var(--navy);display:block;margin-bottom:6px;">วันที่เดินทาง</label>
+      <input id="admin-trip-date" class="form-input" type="date" style="margin-bottom:14px;"/>
+      <button onclick="adminCreateTrip()" class="btn btn-primary" style="margin-bottom:14px;">✅ สร้างทริป</button>
+      <div style="border-top:1px solid #eee;padding-top:12px;">
+        <p style="font-size:11px;color:var(--gray);margin-bottom:10px;text-align:center;">ทริปที่มีอยู่</p>
+        <div id="admin-trip-list" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- Tab: ครอบครัว -->
+    <div id="admin-panel-family" style="display:none;padding:20px 20px 14px;">
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input id="admin-family-name-input" class="form-input" placeholder="ชื่อครอบครัว..." maxlength="20" style="flex:1;margin-bottom:0;"/>
+        <button onclick="adminAddFamily()" style="padding:10px 14px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">+ เพิ่ม</button>
+      </div>
+      <div id="admin-family-list" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- Tab: สมาชิก -->
+    <div id="admin-panel-member" style="display:none;padding:20px 20px 14px;">
+      <div id="admin-member-list" style="display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto;"></div>
+    </div>
+
+    <div style="padding:0 20px 20px;">
+      <button onclick="closeAdminCreateModal()" style="width:100%;padding:14px;border:none;background:var(--light-gray);border-radius:12px;color:var(--navy);font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">✕ ปิด</button>
+    </div>
   </div>
 </div>
 
@@ -639,7 +714,8 @@ window.FIREBASE_CONFIG = {
         <input class="form-input" id="show-name-custom" placeholder="หรือพิมพ์ชื่อเอง..." style="margin-top:8px"/>
       </div>
 
-      <div id="show-details">
+      <div id="show-details" style="display:none;">
+        <div class="divider"></div>
         <div class="form-row-2">
           <div>
             <label class="form-label">เวลา</label>
@@ -648,6 +724,21 @@ window.FIREBASE_CONFIG = {
           <div>
             <label class="form-label">ระยะเวลา (นาที)</label>
             <input type="number" class="form-input" id="show-duration" placeholder="เช่น 30" min="1"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">⏳ เวลารอ: <span id="show-wait-val">0</span> นาที &nbsp;<span style="font-size:12px;font-weight:600;color:var(--teal);" id="show-wait-show">ไม่รอเลย 🎉</span></label>
+          <input type="hidden" id="show-wait" value="0"/>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+            <button type="button" onclick="adjustShowWait(-5)" style="border:none;background:var(--light-gray);color:var(--navy);border-radius:10px;width:40px;height:40px;font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1;">−</button>
+            <input type="range" id="show-wait-slider" min="0" max="120" step="5" value="0"
+              oninput="updateShowWait(this.value)"
+              style="flex:1;height:6px;accent-color:var(--teal);cursor:pointer;"/>
+            <button type="button" onclick="adjustShowWait(5)" style="border:none;background:var(--teal);color:#fff;border-radius:10px;width:40px;height:40px;font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1;">+</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#bbb;margin-top:2px;padding:0 2px;">
+            <span>0</span><span>30น.</span><span>1ชม.</span><span>1:30</span><span>2ชม.+</span>
           </div>
         </div>
 
@@ -807,7 +898,26 @@ window.FIREBASE_CONFIG = {
 <!-- ===== PAGE: TIMELINE ===== -->
 <div class="page" id="page-timeline">
   <div class="section-card">
-    <div class="section-title"><span>⏱️</span>Timeline วันนี้</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <div class="section-title" style="margin-bottom:0;"><span>⏱️</span>Timeline วันนี้</div>
+      <div style="display:flex;gap:6px;">
+        <button class="tl-mode-btn active" id="tl-btn-me" onclick="setTlMode('me',this)">👤 ฉัน</button>
+        <button class="tl-mode-btn" id="tl-btn-all" onclick="setTlMode('all',this)">👥 ทุกคน</button>
+      </div>
+    </div>
+    <!-- member filter pills (shown in 'all' mode) -->
+    <div class="tl-toggle-row" id="tl-member-filters" style="display:none;"></div>
+    <!-- type filter pills -->
+    <div class="tl-toggle-row" id="tl-type-filters">
+      <button class="tl-member-pill active" style="background:var(--navy);border-color:var(--navy);color:#fff;" onclick="setTlType('all',this)">ทั้งหมด</button>
+      <button class="tl-member-pill" onclick="setTlType('ride',this)">🎢 เครื่องเล่น</button>
+      <button class="tl-member-pill" onclick="setTlType('show',this)">🎭 โชว์</button>
+      <button class="tl-member-pill" onclick="setTlType('food',this)">🍜 อาหาร</button>
+    </div>
+    <!-- family filter (shown in all-mode) -->
+    <div class="tl-toggle-row" id="tl-family-filters" style="display:none;"></div>
+    <!-- stats bar -->
+    <div class="tl-stats-bar" id="tl-stats-bar" style="display:none;"></div>
     <div id="timeline-list"><div class="empty-state"><div class="empty-icon">🏰</div><p>ยังไม่มีรายการ<br>เริ่มบันทึกกันเลย!</p></div></div>
   </div>
 </div>
@@ -836,10 +946,11 @@ window.FIREBASE_CONFIG = {
     <div id="family-leaderboard"><p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล — ให้ทุกคน rate หลังเล่นแต่ละอย่าง</p></div>
   </div>
 
-  <div class="section-card">
+  <div class="section-card" id="admin-manage-section" style="display:none;">
     <div class="section-title"><span>🗑️</span>จัดการข้อมูล</div>
-    <button class="btn btn-secondary" style="color:#e53935" onclick="clearAll()">🗑️ ล้างข้อมูลทั้งหมด</button>
+    <button class="btn" style="background:#fff0f0;color:#e74c3c;border:1.5px solid #ffc0c0;" onclick="clearAll()">🗑️ ล้างข้อมูลทริปปัจจุบัน</button>
   </div>
+
 </div>
 
 <!-- ===== PAGE: EXPORT ===== -->
@@ -916,6 +1027,17 @@ window.FIREBASE_CONFIG = {
 <div class="toast" id="toast"></div>
 
 
+
+<!-- ===== MERGE MODAL ===== -->
+<div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:7000;align-items:flex-end;justify-content:center;" onclick="closeMergeModal()">
+  <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:20px 18px 40px;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease;" onclick="event.stopPropagation()">
+    <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px;"></div>
+    <h3 style="font-family:'Prompt',sans-serif;font-size:16px;color:var(--navy);margin-bottom:4px;">🔗 รวมกับกลุ่มอื่น</h3>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:16px;" id="merge-source-label"></p>
+    <div id="merge-candidates" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+    <button onclick="closeMergeModal()" style="width:100%;padding:13px;border:none;background:var(--light-gray);border-radius:14px;font-family:'Sarabun',sans-serif;font-weight:700;color:var(--gray);cursor:pointer;">ยกเลิก</button>
+  </div>
+</div>
 
 <script>
 const RIDES_DATA = [
@@ -1528,6 +1650,7 @@ let foodCurrency='yen',expCurrency='yen';
 let exchangeRate=parseFloat(localStorage.getItem('tdl_rate')||'0.23');
 let rideOrderCount=0;
 let currentInfoMode='all',currentZoneFilter='all',infoSearchQuery='';
+let tlMode='me',tlTypeFilter='all',tlMemberFilter='all',tlFamilyFilter='all';
 
 // ========== DB HELPERS ==========
 function tripPath(sub){return `trips/${currentTripId}/${sub}`;}
@@ -1775,21 +1898,152 @@ function adminLogin(){
   localStorage.setItem('tdl_admin_mode','1');
   closeAdminModal();
   openAdminCreateModal();
+  // Show manage section immediately if on summary tab
+  const ms=document.getElementById('admin-manage-section');
+  if(ms)ms.style.display='';
   showToast('🔑 Admin Mode เปิดแล้ว');
 }
 
 function openAdminCreateModal(){
   const m=document.getElementById('admin-create-modal');
   m.style.display='flex';
-  // Set today's date as default
   const today=new Date().toISOString().split('T')[0];
   document.getElementById('admin-trip-date').value=today;
   document.getElementById('admin-trip-name').value='';
+  switchAdminTab('trip',document.getElementById('atab-trip'));
   renderAdminTripList();
 }
 
 function closeAdminCreateModal(){
   document.getElementById('admin-create-modal').style.display='none';
+}
+
+function switchAdminTab(tab, btn){
+  ['trip','family','member'].forEach(t=>{
+    document.getElementById('admin-panel-'+t).style.display=t===tab?'block':'none';
+    const b=document.getElementById('atab-'+t);
+    if(b){b.style.color=t===tab?'var(--navy)':'var(--gray)';b.style.borderBottomColor=t===tab?'var(--navy)':'transparent';}
+  });
+  if(tab==='family') renderAdminFamilyList();
+  if(tab==='member') renderAdminMemberList();
+}
+
+// ── FAMILY MANAGEMENT ──
+function adminAddFamily(){
+  const inp=document.getElementById('admin-family-name-input');
+  const name=inp.value.trim();if(!name){showToast('⚠️ ใส่ชื่อครอบครัวก่อน');return;}
+  const f=getFamilies();
+  if(f[name]){showToast('⚠️ มีครอบครัวนี้แล้ว');return;}
+  f[name]=[];saveFamilies(f);if(firebaseReady&&db)dbWrite('families',f);
+  inp.value='';renderAdminFamilyList();showToast('✅ เพิ่มครอบครัว '+name);
+}
+function adminDeleteFamily(name){
+  if(!confirm('ลบครอบครัว "'+name+'" ?\nสมาชิกในกลุ่มนี้จะไม่ถูกลบ แต่จะไม่มีครอบครัว'))return;
+  const f=getFamilies();delete f[name];saveFamilies(f);
+  if(firebaseReady&&db)dbWrite('families',f);
+  // Clear memberFamilies for this family
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  Object.keys(mf).forEach(m=>{if(mf[m]===name)delete mf[m];});
+  localStorage.setItem('tdl_member_families',JSON.stringify(mf));
+  renderAdminFamilyList();showToast('🗑️ ลบครอบครัว '+name);
+}
+function adminRenameFamily(oldName){
+  const newName=prompt('ชื่อใหม่ของครอบครัว "'+oldName+'":', oldName);
+  if(!newName||newName.trim()===oldName)return;
+  const nn=newName.trim();
+  const f=getFamilies();
+  if(f[nn]){showToast('⚠️ มีชื่อนี้แล้ว');return;}
+  f[nn]=f[oldName]||[];delete f[oldName];saveFamilies(f);
+  if(firebaseReady&&db)dbWrite('families',f);
+  // Update memberFamilies
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  Object.keys(mf).forEach(m=>{if(mf[m]===oldName)mf[m]=nn;});
+  localStorage.setItem('tdl_member_families',JSON.stringify(mf));
+  renderAdminFamilyList();showToast('✅ เปลี่ยนชื่อครอบครัวแล้ว');
+}
+function renderAdminFamilyList(){
+  const el=document.getElementById('admin-family-list');if(!el)return;
+  const f=getFamilies();
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const names=Object.keys(f);
+  if(!names.length){el.innerHTML='<p style="font-size:12px;color:#bbb;text-align:center;padding:16px;">ยังไม่มีครอบครัว</p>';return;}
+  el.innerHTML=names.map(name=>{
+    const members=allMembers.filter(m=>mf[m]===name);
+    const sf=name.replace(/'/g,"\'");
+    return `<div style="background:#f8f9ff;border-radius:12px;padding:12px;border:1.5px solid #e8eaf0;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:14px;font-weight:700;color:var(--navy);flex:1;">🏠 ${name}</span>
+        <button onclick="adminRenameFamily('${sf}')" style="padding:4px 10px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️ แก้</button>
+        <button onclick="adminDeleteFamily('${sf}')" style="padding:4px 10px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
+      </div>
+      <div style="font-size:11px;color:var(--gray);">สมาชิก: ${members.length?members.join(', '):'ยังไม่มี'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── MEMBER MANAGEMENT ──
+function adminDeleteMember(member){
+  if(!confirm('ลบสมาชิก "'+member+'" ?\nLog ที่บันทึกไว้จะยังอยู่'))return;
+  allMembers=allMembers.filter(m=>m!==member);
+  localStorage.setItem('tdl_members',JSON.stringify(allMembers));
+  if(firebaseReady&&db)dbWrite('members',allMembers);
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  delete mf[member];localStorage.setItem('tdl_member_families',JSON.stringify(mf));
+  renderAdminMemberList();renderFamilyStars('ride');renderFamilyStars('show');showToast('🗑️ ลบสมาชิก '+member);
+}
+function adminRenameMember(oldName){
+  const newName=prompt('ชื่อใหม่ของ "'+oldName+'":', oldName);
+  if(!newName||newName.trim()===oldName)return;
+  const nn=newName.trim();
+  if(allMembers.includes(nn)){showToast('⚠️ มีชื่อนี้แล้ว');return;}
+  // Rename in allMembers
+  const idx=allMembers.indexOf(oldName);
+  if(idx!==-1)allMembers[idx]=nn;
+  localStorage.setItem('tdl_members',JSON.stringify(allMembers));
+  if(firebaseReady&&db)dbWrite('members',allMembers);
+  // Rename in memberFamilies
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  if(mf[oldName]){mf[nn]=mf[oldName];delete mf[oldName];}
+  localStorage.setItem('tdl_member_families',JSON.stringify(mf));
+  // Rename in logs
+  logs.forEach(l=>{if(l.member===oldName)l.member=nn;});saveLogs();
+  // Rename currentMember if needed
+  if(currentMember===oldName){currentMember=nn;localStorage.setItem('tdl_member',nn);document.getElementById('member-name-display').textContent=nn;}
+  renderAdminMemberList();renderFamilyStars('ride');renderFamilyStars('show');renderTimeline();renderSummary();showToast('✅ เปลี่ยนชื่อเป็น '+nn);
+}
+function adminChangeMemberFamily(member){
+  const f=getFamilies();const fams=Object.keys(f);
+  if(!fams.length){showToast('⚠️ ยังไม่มีครอบครัว สร้างในแท็บครอบครัวก่อน');return;}
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const current=mf[member]||'';
+  const choice=prompt('เลือกครอบครัวสำหรับ "'+member+'"\n(ปล่อยว่างเพื่อไม่มีครอบครัว)\nครอบครัวที่มี: '+fams.join(', ')+'\n\nปัจจุบัน: '+(current||'ไม่มี'), current);
+  if(choice===null)return;
+  const chosen=choice.trim();
+  if(chosen&&!fams.includes(chosen)){showToast('⚠️ ไม่พบครอบครัว "'+chosen+'"');return;}
+  if(chosen)mf[member]=chosen;else delete mf[member];
+  localStorage.setItem('tdl_member_families',JSON.stringify(mf));
+  renderAdminMemberList();renderSummary();showToast(chosen?'✅ ย้าย '+member+' ไป '+chosen:'✅ ถอด '+member+' ออกจากครอบครัว');
+}
+function renderAdminMemberList(){
+  const el=document.getElementById('admin-member-list');if(!el)return;
+  if(!allMembers.length){el.innerHTML='<p style="font-size:12px;color:#bbb;text-align:center;padding:16px;">ยังไม่มีสมาชิก</p>';return;}
+  const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  el.innerHTML=allMembers.map(m=>{
+    const col=getMemberColor(m);const fam=mf[m]||'';const sf=m.replace(/'/g,"\'");
+    const isMe=m===currentMember;
+    return `<div style="background:#f8f9ff;border-radius:12px;padding:11px 12px;border:1.5px solid ${isMe?'#c8d8ff':'#e8eaf0'};">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${m.slice(0,2)}</div>
+        <span style="font-size:13px;font-weight:700;color:var(--navy);flex:1;">${m}${isMe?' <span style="font-size:10px;background:#e8f5e9;color:#27ae60;padding:1px 6px;border-radius:6px;">ฉัน</span>':''}</span>
+        <button onclick="adminRenameMember('${sf}')" style="padding:4px 9px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️</button>
+        <button onclick="adminDeleteMember('${sf}')" style="padding:4px 9px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray);">
+        <span>🏠 ${fam||'ไม่มีครอบครัว'}</span>
+        <button onclick="adminChangeMemberFamily('${sf}')" style="padding:2px 8px;background:#f5f0ff;color:#6C3483;border:none;border-radius:6px;font-size:11px;cursor:pointer;">เปลี่ยน</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderAdminTripList(){
@@ -2075,6 +2329,22 @@ function updateWait(val){
   document.getElementById('wait-show').textContent=labels[idx];
 }
 
+function adjustShowWait(delta){
+  const cur=parseInt(document.getElementById('show-wait').value)||0;
+  const newVal=Math.max(0,Math.min(120,cur+delta));
+  const slider=document.getElementById('show-wait-slider');if(slider)slider.value=newVal;
+  updateShowWait(newVal);
+}
+function updateShowWait(val){
+  val=parseInt(val)||0;
+  document.getElementById('show-wait').value=val;
+  const slider=document.getElementById('show-wait-slider');if(slider)slider.value=val;
+  document.getElementById('show-wait-val').textContent=val;
+  const labels=['ไม่รอเลย 🎉','รอนิดหน่อย 😊','รอพอสมควร 😐','รอนานพอดู 😮','รอนานมาก 😤','รอนานมากๆ 😫'];
+  const idx=val===0?0:val<=20?1:val<=45?2:val<=60?3:val<=90?4:5;
+  document.getElementById('show-wait-show').textContent=labels[idx];
+}
+
 // ========== SAVE FUNCTIONS ==========
 function saveRide(){
   if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}
@@ -2085,18 +2355,30 @@ function saveRide(){
   const order=parseInt(document.getElementById('ride-order').value)||rideOrderCount;
   const wait=parseInt(document.getElementById('ride-wait').value)||0;
   const time=document.getElementById('ride-time').value;
-  const myState=familyStarState.ride||{};
-  const myStars=myState[currentMember]||0;
-  const myFeeling=myState[currentMember+'_feeling']||'';
-  const myNote=myState[currentMember+'_note']||'';
+  const myNote='';//placeholder
   // Count previous plays this trip for round tracking
   const prevCount=tripLogs().filter(l=>l.type==='ride'&&l.name===name&&l.member===currentMember).length;
   const round=prevCount+1;
-  const log={id:Date.now(),type:'ride',name,zone:selectedRideZone,order,wait,time,stars:myStars,feeling:myFeeling,note:myNote,round,timestamp:Date.now(),member:currentMember,tripId:currentTripId};
-  logs.push(log);saveLogs();saveFamilyRatings(name,'ride');
-  dbPush(tripPath('logs'),log);
+  const myState=familyStarState.ride||{};
+  const groupId=Date.now(); // shared groupId for same-time logs
+  // Create one log per member who participated (has stars or is currentMember)
+  const allParticipants=[...new Set([currentMember,...allMembers])].filter(Boolean);
+  const logsToSave=[];
+  allParticipants.forEach((m,i)=>{
+    const mStars=myState[m]||0;
+    const mFeeling=myState[m+'_feeling']||'';
+    const mNote=m===currentMember?myNote:'';
+    // Include member if: they're currentMember OR they gave a rating
+    if(m!==currentMember&&mStars===0)return;
+    const mPrevCount=tripLogs().filter(l=>l.type==='ride'&&l.name===name&&l.member===m).length;
+    const mRound=mPrevCount+1;
+    const log={id:groupId+i,type:'ride',name,zone:selectedRideZone,order,wait,time,stars:mStars,feeling:mFeeling,note:mNote,round:mRound,timestamp:groupId,member:m,groupId,tripId:currentTripId};
+    logsToSave.push(log);
+  });
+  logsToSave.forEach(log=>{logs.push(log);dbPush(tripPath('logs'),log);});
+  saveLogs();saveFamilyRatings(name,'ride');
   resetRideForm();renderTimeline();renderSummary();renderAttractions();
-  showToast(round>1?'🔄 รอบ '+round+' — '+name+' บันทึกแล้ว!':'🎢 บันทึกเครื่องเล่นสำเร็จ!');
+  showToast(logsToSave.length>1?'🎢 บันทึก '+logsToSave.length+' คน — '+name+'!':round>1?'🔄 รอบ '+round+' — '+name+' บันทึกแล้ว!':'🎢 บันทึกเครื่องเล่นสำเร็จ!');
 }
 
 function saveShow(){
@@ -2109,9 +2391,20 @@ function saveShow(){
   const myStars=myState[currentMember]||0;
   const myFeeling=myState[currentMember+'_feeling']||'';
   const myNote=myState[currentMember+'_note']||'';
-  const log={id:Date.now(),type:'show',name,time,duration,stars:myStars,feeling:myFeeling,note:myNote,timestamp:Date.now(),member:currentMember,tripId:currentTripId};
-  logs.push(log);saveLogs();saveFamilyRatings(name,'show');dbPush(tripPath('logs'),log);
-  resetShowForm();renderTimeline();renderSummary();showToast('🎭 บันทึกโชว์สำเร็จ!');
+  const wait=parseInt(document.getElementById('show-wait').value)||0;
+  const showState=familyStarState.show||{};
+  const groupId=Date.now();
+  const allParticipants=[...new Set([currentMember,...allMembers])].filter(Boolean);
+  const logsToSave=[];
+  allParticipants.forEach((m,i)=>{
+    const mStars=showState[m]||0;const mFeeling=showState[m+'_feeling']||'';
+    if(m!==currentMember&&mStars===0)return;
+    const log={id:groupId+i,type:'show',name,time,duration,wait,stars:mStars,feeling:mFeeling,note:m===currentMember?myNote:'',timestamp:groupId,member:m,groupId,tripId:currentTripId};
+    logsToSave.push(log);
+  });
+  logsToSave.forEach(log=>{logs.push(log);dbPush(tripPath('logs'),log);});
+  saveLogs();saveFamilyRatings(name,'show');
+  resetShowForm();renderTimeline();renderSummary();showToast(logsToSave.length>1?'🎭 บันทึก '+logsToSave.length+' คน — '+name+'!':'🎭 บันทึกโชว์สำเร็จ!');
 }
 
 function saveFood(){
@@ -2166,6 +2459,8 @@ function resetShowForm(){
   document.getElementById('show-name-custom').value='';
   document.getElementById('show-duration').value='';
   const showTime=document.getElementById('show-time');if(showTime)showTime.value='';
+  updateShowWait(0);
+  const sd=document.getElementById('show-details');if(sd)sd.style.display='none';
   familyStarState.show={};renderFamilyStars('show');
 }
 function resetFoodForm(){
@@ -2187,25 +2482,303 @@ function saveExpenses(){localStorage.setItem('tdl_expenses',JSON.stringify(expen
 function saveFavorites(){localStorage.setItem('tdl_favorites',JSON.stringify(favorites));}
 
 // ========== TIMELINE ==========
+// ─── member color palette ───
+const MEMBER_COLORS=['#E91E8C','#0097A7','#FF6F00','#5E35B1','#2E7D32','#C62828','#00838F','#6A1B9A'];
+function getMemberColor(member){
+  const members=allMembers.length?allMembers:[...new Set(tripLogs().filter(l=>l.member).map(l=>l.member))];
+  const idx=members.indexOf(member);
+  return MEMBER_COLORS[idx>=0?idx%MEMBER_COLORS.length:0];
+}
+
+function setTlMode(mode,btn){
+  tlMode=mode;tlMemberFilter='all';tlFamilyFilter='all';
+  document.querySelectorAll('.tl-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const mf=document.getElementById('tl-member-filters');
+  const ff=document.getElementById('tl-family-filters');
+  if(mode==='all'){
+    mf.style.display='';buildMemberFilterPills();
+    ff.style.display='';buildFamilyFilterPills();
+  } else {
+    mf.style.display='none';
+    if(ff)ff.style.display='none';
+  }
+  renderTimeline();
+}
+function setTlType(type,btn){
+  tlTypeFilter=type;
+  document.querySelectorAll('#tl-type-filters .tl-member-pill').forEach(b=>{
+    b.classList.remove('active');b.style.background='';b.style.borderColor='';b.style.color='';
+  });
+  btn.classList.add('active');
+  const colors={ride:'var(--pink)',show:'var(--teal)',food:'var(--gold)',all:'var(--navy)'};
+  btn.style.background=colors[type]||'var(--navy)';btn.style.borderColor='transparent';btn.style.color='#fff';
+  renderTimeline();
+}
+function setTlMember(member,btn){
+  tlMemberFilter=member;
+  document.querySelectorAll('#tl-member-filters .tl-member-pill').forEach(b=>{
+    b.classList.remove('active');b.style.background='';b.style.borderColor='';b.style.color='';
+  });
+  btn.classList.add('active');
+  if(member!=='all'){const col=getMemberColor(member);btn.style.background=col;btn.style.borderColor='transparent';btn.style.color='#fff';}
+  else{btn.style.background='var(--navy)';btn.style.borderColor='transparent';btn.style.color='#fff';}
+  renderTimeline();
+}
+function buildFamilyFilterPills(){
+  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const tl=tripLogs();
+  const families=[...new Set(tl.filter(l=>l.member&&memberFamilies[l.member]).map(l=>memberFamilies[l.member]))];
+  const el=document.getElementById('tl-family-filters');if(!el)return;
+  if(!families.length){el.style.display='none';return;}
+  el.style.display='';
+  const allBtn='<span style="font-size:10px;color:#aaa;font-weight:700;white-space:nowrap;padding-top:6px;">ครอบครัว:</span>'
+    +'<button class="tl-member-pill active" style="background:#6C3483;border-color:transparent;color:#fff;" onclick="setTlFamily(\'all\',this)">ทั้งหมด</button>';
+  const famBtns=families.map(f=>{
+    const sf=f.replace(/'/g,"\\'");
+    return '<button class="tl-member-pill" onclick="setTlFamily(\''+sf+'\',this)">'+f+'</button>';
+  }).join('');
+  el.innerHTML=allBtn+famBtns;
+}
+function setTlFamily(fam,btn){
+  tlFamilyFilter=fam;tlMemberFilter='all';
+  document.querySelectorAll('#tl-family-filters .tl-member-pill').forEach(b=>{b.classList.remove('active');b.style.background='';b.style.borderColor='';b.style.color='';});
+  btn.classList.add('active');btn.style.background='#6C3483';btn.style.borderColor='transparent';btn.style.color='#fff';
+  // Reset member pills
+  document.querySelectorAll('#tl-member-filters .tl-member-pill').forEach((b,i)=>{b.classList.toggle('active',i===0);if(i===0){b.style.background='var(--navy)';b.style.borderColor='transparent';b.style.color='#fff';}else{b.style.background='';b.style.borderColor='';b.style.color='';}});
+  renderTimeline();
+}
+
+function buildMemberFilterPills(){
+  const tl=tripLogs();
+  const members=[...new Set(tl.filter(l=>l.member).map(l=>l.member))];
+  const el=document.getElementById('tl-member-filters');if(!el)return;
+  const allMBtn='<button class="tl-member-pill active" style="background:var(--navy);border-color:var(--navy);color:#fff;" onclick="setTlMember(\'all\',this)">ทั้งหมด</button>';
+  const memBtns=members.map(m=>{
+    const col=getMemberColor(m);const safe=m.replace(/'/g,"\\'");
+    return '<button class="tl-member-pill" onclick="setTlMember(\''+safe+'\',this)">'+m+'</button>';
+  }).join('');
+  el.innerHTML=allMBtn+memBtns;
+}
+
 function renderTimeline(){
   const container=document.getElementById('timeline-list');
   const tl=tripLogs(),te=tripExps();
-  const allItems=[...tl.map(l=>({...l,_isLog:true})),...te.filter(e=>e.cat!=='🍜 อาหาร').map(e=>({...e,type:'expense',_isLog:false}))].sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  if(!allItems.length){container.innerHTML='<div class="empty-state"><div class="empty-icon">🏰</div><p>ยังไม่มีรายการ<br>เริ่มบันทึกกันเลย!</p></div>';return;}
-  container.innerHTML='<div class="timeline">'+allItems.map(item=>timelineItem(item)).join('')+'</div>';
+  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+
+  // Filter logs
+  let logItems=tl.map(l=>({...l,_isLog:true}));
+  if(tlMode==='me'){
+    logItems=logItems.filter(l=>l.member===currentMember);
+  } else {
+    if(tlFamilyFilter!=='all') logItems=logItems.filter(l=>memberFamilies[l.member]===tlFamilyFilter);
+    if(tlMemberFilter!=='all') logItems=logItems.filter(l=>l.member===tlMemberFilter);
+  }
+  if(tlTypeFilter!=='all') logItems=logItems.filter(l=>l.type===tlTypeFilter);
+
+  // Include expenses
+  const expItems=tlTypeFilter==='all'?te.filter(e=>e.cat!=='🍜 อาหาร').map(e=>({...e,type:'expense',_isLog:false})):[];
+
+  // Stats bar
+  const statsEl=document.getElementById('tl-stats-bar');
+  if(statsEl){
+    const rides=logItems.filter(l=>l.type==='ride');
+    const uniqueRides=new Set(rides.map(l=>l.name)).size;
+    const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{
+      const rep=rides.find(l=>(l.groupId||l.id)===gid);return s+(rep&&rep.wait>0?rep.wait:0);
+    },0);
+    const rated=logItems.filter(l=>l.stars>0);
+    const avgStars=rated.length?(rated.reduce((s,l)=>s+l.stars,0)/rated.length).toFixed(1):'';
+    if(logItems.length){
+      statsEl.style.display='flex';
+      statsEl.innerHTML=
+        `<div class="tl-stat">📋 <span>${logItems.length} รายการ</span></div>`
+       +(uniqueRides?`<div class="tl-stat">🎢 <span>${uniqueRides} เครื่อง</span></div>`:'')
+       +(totalWait?`<div class="tl-stat">⏳ <span>${totalWait}น.</span></div>`:'')
+       +(avgStars?`<div class="tl-stat">⭐ <span>${avgStars}</span></div>`:'');
+    } else statsEl.style.display='none';
+  }
+
+  const allItems=[...logItems,...expItems].sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  if(!allItems.length){container.innerHTML='<div class="empty-state"><div class="empty-icon">🏰</div><p>ยังไม่มีรายการ</p></div>';return;}
+
+  // Group logs: 1) by groupId (same session) 2) auto-merge: same name + time within 30min + different member
+  const timeToMin=t=>{if(!t)return-1;const[h,m]=(t||'00:00').split(':').map(Number);return h*60+m;};
+  const grouped=[];const seen=new Set();
+  allItems.forEach(item=>{
+    if(item._isLog===false){grouped.push({type:'single',item});return;}
+    const gid=item.groupId||item.id;
+    if(seen.has(gid)){
+      const g=grouped.find(x=>x.groupId===gid);if(g)g.members.push(item);return;
+    }
+    // Auto-merge: find existing group with same ride name + time within 30min + different member
+    const t1=timeToMin(item.time);
+    const existing=grouped.find(g=>g.type==='group'
+      &&g.lead.name===item.name
+      &&g.lead.type===item.type
+      &&(item.type==='ride'||item.type==='show')
+      &&!g.members.find(m=>m.member===item.member)  // not same member
+      &&Math.abs(timeToMin(g.lead.time)-t1)<=30);    // within 30 min
+    if(existing){existing.members.push(item);seen.add(gid);return;}
+    seen.add(gid);
+    grouped.push({type:'group',groupId:gid,lead:item,members:[item]});
+  });
+
+  // Render as center-line timeline: odd=right, even=left
+  const rows=grouped.map((g,idx)=>{
+    const side=idx%2===0?'right':'left';
+    let cardHtml;
+    if(g.type==='single') cardHtml=timelineCardInner(g.item,false);
+    else if(g.members.length===1) cardHtml=timelineCardInner(g.members[0],false);
+    else cardHtml=timelineGroupInner(g.lead,g.members);
+    const dotColor=g.lead?(getMemberColor(g.lead.member)||'var(--pink)'):'var(--pink)';
+    const typeColor={ride:dotColor,show:'var(--teal)',food:'var(--gold)',expense:'var(--purple)'}[g.lead?g.lead.type:(g.item?g.item.type:'ride')]||dotColor;
+    return `<div class="tl-row ${side}">
+      <div class="tl-side" style="position:relative;">
+        <div class="tl-card">${cardHtml}</div>
+      </div>
+      <div class="tl-dot-col">
+        <div class="tl-dot" style="background:${typeColor};box-shadow:0 0 0 3px ${typeColor}40;border-color:#fff;"></div>
+      </div>
+      <div class="tl-side"></div>
+    </div>`;
+  });
+  container.innerHTML='<div class="tl-center">'+rows.join('')+'</div>';
 }
 
-function timelineItem(item){
-  const typeBadge={ride:'badge-pink',show:'badge-teal',food:'badge-gold',expense:'badge-purple'}[item.type];
-  const typeLabel={ride:'🎢 เครื่องเล่น',show:'🎭 โชว์',food:'🍜 อาหาร',expense:'💴 ค่าใช้จ่าย'}[item.type];
+function timelineCardInner(item, inGroup){
+  const TYPE_STRIP={ride:'var(--pink)',show:'var(--teal)',food:'var(--gold)',expense:'var(--purple)'};
+  const TYPE_LABEL={ride:'🎢',show:'🎭',food:'🍜',expense:'💴'};
+  const memberCol=item.member?getMemberColor(item.member):'var(--pink)';
+  const stripColor=item.type==='ride'&&tlMode==='all'?memberCol:TYPE_STRIP[item.type]||'var(--pink)';
   const starsStr=item.stars?'⭐'.repeat(item.stars):'';
-  let extra='';
-  if(item.type==='ride'){if(item.round&&item.round>1)extra+='<span class="badge" style="background:#fff3cd;color:#856404;border:1px solid #ffc107;">🔄 รอบ '+item.round+'</span>';if(item.order)extra+='<span class="badge badge-navy">ลำดับ '+item.order+'</span>';if(item.wait>0)extra+='<span class="badge badge-pink">⏳'+item.wait+'น.</span>';if(item.zone)extra+='<span class="badge badge-navy">'+item.zone+'</span>';if(item.member)extra+='<span class="badge badge-navy">👤'+item.member+'</span>';}
-  if(item.type==='food'){if(item.menu)extra+='<span class="badge badge-gold">'+item.menu+'</span>';if(item.priceYen>0)extra+='<span class="badge badge-gold">¥'+item.priceYen.toLocaleString()+'</span>';}
-  if(item.type==='show'&&item.duration)extra+='<span class="badge badge-teal">'+item.duration+'น.</span>';
-  if(item.type==='expense')extra+='<span class="badge badge-purple">'+item.cat+'</span><span class="badge badge-purple">¥'+(item.priceYen||0).toLocaleString()+'</span>';
   const isLog=item._isLog!==false;
-  return '<div class="timeline-item"><div class="timeline-dot '+item.type+'"></div><div class="log-item"><button class="log-delete-btn" onclick="'+(isLog?'deleteLog':'deleteExpense')+'('+item.id+')">✕</button><div class="log-item-header"><div class="log-item-title">'+item.name+'</div><div class="log-item-time">'+(item.time||'--:--')+'</div></div><div class="log-item-meta"><span class="badge '+typeBadge+'">'+typeLabel+'</span>'+extra+(starsStr?'<span style="font-size:12px">'+starsStr+'</span>':'')+(item.feeling?'<span style="font-size:18px">'+item.feeling+'</span>':'')+'</div>'+(item.note?'<div class="log-item-note">"'+item.note+'"</div>':'')+'</div></div>';
+  let badges='';
+  if(item.type==='ride'){
+    if(item.round&&item.round>1)badges+=`<span class="badge" style="background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:10px;">🔄${item.round}</span>`;
+    if(item.wait>0)badges+=`<span class="badge badge-pink" style="font-size:10px;">⏳${item.wait}น.</span>`;
+    if(item.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${item.zone}</span>`;
+    if(item.member&&tlMode==='all'&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>`;
+  }
+  if(item.type==='show'){
+    if(item.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${item.duration}น.</span>`;
+    if(item.wait>0)badges+=`<span class="badge badge-teal" style="font-size:10px;">⏳${item.wait}น.</span>`;
+    if(item.member&&tlMode==='all'&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>`;
+  }
+  if(item.type==='food'){if(item.menu)badges+=`<span class="badge badge-gold" style="font-size:10px;">${item.menu}</span>`;if(item.priceYen>0)badges+=`<span class="badge badge-gold" style="font-size:10px;">¥${item.priceYen.toLocaleString()}</span>`;}
+  if(item.type==='expense')badges+=`<span class="badge badge-purple" style="font-size:10px;">${item.cat}</span><span class="badge badge-purple" style="font-size:10px;">¥${(item.priceYen||0).toLocaleString()}</span>`;
+  const mergeBtn=(item.type==='ride'||item.type==='show')&&isLog
+    ?`<button class="tl-delete-btn" onclick="openMergeModal(${item.id})" title="รวมกับกลุ่มอื่น" style="color:#bbb;font-size:13px;margin-right:2px;">🔗</button>`:'';
+  return `<div class="tl-card-strip" style="background:${stripColor};"></div>
+    <div class="tl-card-header">
+      <div class="tl-card-title">${TYPE_LABEL[item.type]||''} ${item.name}</div>
+      <div class="tl-card-time">${item.time||'--:--'}</div>
+      ${mergeBtn}
+      <button class="tl-delete-btn" onclick="${isLog?'deleteLog':'deleteExpense'}(${item.id})">✕</button>
+    </div>
+    ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
+    ${starsStr||item.feeling?`<div style="padding:0 12px 8px;display:flex;gap:4px;align-items:center;">${starsStr?`<span style="font-size:12px;">${starsStr}</span>`:''} ${item.feeling?`<span style="font-size:16px;">${item.feeling}</span>`:''}</div>`:''}
+    ${item.note?`<div class="log-item-note" style="margin:0 12px 8px;">"${item.note}"</div>`:''}`;
+}
+
+function timelineGroupInner(lead,members){
+  const TYPE_STRIP={ride:'var(--pink)',show:'var(--teal)'};
+  const TYPE_LABEL={ride:'🎢',show:'🎭'};
+  const stripColor=TYPE_STRIP[lead.type]||'var(--pink)';
+  let badges='';
+  if(lead.type==='ride'){
+    if(lead.round&&lead.round>1)badges+=`<span class="badge" style="background:#fff3cd;color:#856404;border:1px solid #ffc107;font-size:10px;">🔄${lead.round}</span>`;
+    if(lead.wait>0)badges+=`<span class="badge badge-pink" style="font-size:10px;">⏳${lead.wait}น.</span>`;
+    if(lead.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${lead.zone}</span>`;
+  }
+  if(lead.type==='show'&&lead.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${lead.duration}น.</span>`;
+  const memberRows=members.map(m=>{
+    const col=getMemberColor(m.member);
+    const initials=(m.member||'?').slice(0,2);
+    const starsStr=m.stars?'⭐'.repeat(m.stars):'<span style="font-size:10px;color:#bbb;">—</span>';
+    return `<div class="tl-member-row">
+      <div class="tl-avatar" style="background:${col};width:24px;height:24px;font-size:10px;">${initials}</div>
+      <span class="tl-member-name" style="color:${col};font-size:12px;">${m.member}</span>
+      <span class="tl-member-stars" style="font-size:12px;">${starsStr}</span>
+      ${m.feeling?`<span style="font-size:15px;">${m.feeling}</span>`:''}
+      <button class="tl-delete-btn" onclick="deleteLog(${m.id})">✕</button>
+    </div>`;
+  }).join('');
+  return `<div class="tl-card-strip" style="background:${stripColor};"></div>
+    <div class="tl-card-header">
+      <div class="tl-card-title">${TYPE_LABEL[lead.type]||''} ${lead.name}</div>
+      <div class="tl-card-time">${lead.time||'--:--'}</div>
+    </div>
+    ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
+    <div class="tl-card-members">${memberRows}</div>`;
+}
+
+// Legacy wrappers
+function timelineItemSingle(item){return timelineCardInner(item,false);}
+function timelineItemGroup(lead,members){return timelineGroupInner(lead,members);}
+function timelineItem(item){return timelineCardInner(item,false);}
+
+
+
+function openMergeModal(logId){
+  const srcLog=logs.find(l=>l.id===logId);if(!srcLog)return;
+  const srcTime=(srcLog.time||'00:00').split(':').map(Number);
+  const srcMin=srcTime[0]*60+srcTime[1];
+  // Find candidates: same type, same/similar name, different member, within 60min
+  const tl=tripLogs();
+  const candidates=tl.filter(l=>
+    l.id!==logId&&l.type===srcLog.type
+    &&l.name===srcLog.name
+    &&l.member!==srcLog.member
+    &&(()=>{const t=(l.time||'00:00').split(':').map(Number);return Math.abs(t[0]*60+t[1]-srcMin)<=60;})()
+  );
+  // Also find different-name candidates (same type, same time window)
+  const anyCandidates=tl.filter(l=>
+    l.id!==logId&&l.type===srcLog.type
+    &&l.member!==srcLog.member
+    &&(()=>{const t=(l.time||'00:00').split(':').map(Number);return Math.abs(t[0]*60+t[1]-srcMin)<=60;})()
+    &&!candidates.find(c=>c.id===l.id)
+  );
+  const allCandidates=[...candidates,...anyCandidates];
+  const el=document.getElementById('merge-modal');
+  const labelEl=document.getElementById('merge-source-label');
+  const listEl=document.getElementById('merge-candidates');
+  labelEl.textContent='รวม "'+srcLog.name+'" ('+srcLog.member+', '+srcLog.time+') กับ:';
+  if(!allCandidates.length){
+    listEl.innerHTML='<p style="font-size:13px;color:var(--gray);text-align:center;padding:16px;">ไม่พบรายการที่สามารถรวมได้<br><span style="font-size:11px;">(ชื่อเดียวกัน เวลาห่างกันไม่เกิน 60 นาที)</span></p>';
+  } else {
+    listEl.innerHTML=allCandidates.map(l=>{
+      const col=getMemberColor(l.member);
+      const stars=l.stars?'⭐'.repeat(l.stars):'ไม่มีคะแนน';
+      const sameRide=l.name===srcLog.name;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:${sameRide?'#f0f9ff':'#fff8f0'};border:1.5px solid ${sameRide?'#bde0f7':'#fde0b7'};">
+        <div style="width:32px;height:32px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${(l.member||'?').slice(0,2)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);">${l.member}</div>
+          <div style="font-size:11px;color:var(--gray);">${l.name} · ${l.time||'--:--'} · ${stars}</div>
+        </div>
+        <button onclick="doMerge(${logId},${l.id})" style="padding:7px 14px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">รวม</button>
+      </div>`;
+    }).join('');
+  }
+  el.style.display='flex';
+}
+function closeMergeModal(){document.getElementById('merge-modal').style.display='none';}
+function doMerge(srcId,targetId){
+  const src=logs.find(l=>l.id===srcId);
+  const tgt=logs.find(l=>l.id===targetId);
+  if(!src||!tgt)return;
+  // Assign same groupId to both
+  const sharedGroupId=tgt.groupId||tgt.id;
+  src.groupId=sharedGroupId;
+  tgt.groupId=sharedGroupId;
+  // Sync name and time to target (target is the "lead")
+  src.name=tgt.name;
+  src.time=tgt.time;
+  saveLogs();
+  closeMergeModal();
+  renderTimeline();
+  showToast('🔗 รวมกลุ่มสำเร็จ!');
 }
 
 function deleteLog(id){if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถลบได้');return;}logs=logs.filter(l=>l.id!==id);saveLogs();renderTimeline();renderSummary();renderAttractions();showToast('🗑️ ลบรายการแล้ว');}
@@ -2235,16 +2808,18 @@ function renderSummary(){
   else{topDiv.innerHTML=topAll.map((r,i)=>{
     const typeIcon=r.type==='show'?'🎭':'🎢';
     const stars=Math.round(r.avg);
-    return '<div class="expense-row"><div class="expense-cat">'+['🥇','🥈','🥉','4️⃣','5️⃣'][i]+' '+typeIcon+' '+r.name+'</div><div style="display:flex;align-items:center;gap:4px;"><span>'+'⭐'.repeat(stars)+'</span>'+(r.count>1?'<span style="font-size:10px;color:#aaa;">('+r.count+'ครั้ง avg '+r.avg.toFixed(1)+')</span>':'')+'</div></div>';
+    const safeName=r.name.replace(/'/g,"\\'");
+    return '<div class="expense-row" onclick="openAttractionDetail(\''+safeName+'\')" style="cursor:pointer;border-radius:10px;transition:background 0.15s;" onmouseover="this.style.background=\'#f8f0ff\'" onmouseout="this.style.background=\'\'">'+'<div class="expense-cat">'+['🥇','🥈','🥉','4️⃣','5️⃣'][i]+' '+typeIcon+' '+r.name+'</div>'+'<div style="display:flex;align-items:center;gap:4px;"><span>'+'⭐'.repeat(stars)+'</span>'+(r.count>1?'<span style="font-size:10px;color:#aaa;">('+r.count+'ครั้ง avg '+r.avg.toFixed(1)+')</span>':'')+'<span style="font-size:11px;color:#ccc;margin-left:4px;">›</span></div></div>';
   }).join('');}
   renderFamilyLeaderboard(tl);
+  const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display=isAdminMode?'':'none';
 }
 
 function renderFamilyLeaderboard(tl){
   const el=document.getElementById('family-leaderboard');if(!el)return;
+  // Only use logs from current trip - do NOT mix in global familyRatings
   const mm={};
   tl.filter(l=>l.stars>0&&l.member).forEach(l=>{if(!mm[l.member])mm[l.member]={total:0,count:0};mm[l.member].total+=l.stars;mm[l.member].count++;});
-  Object.values(familyRatings).forEach(rMap=>{Object.entries(rMap).forEach(([m,s])=>{if(m.includes('_')||typeof s!=='number'||s<=0)return;if(!mm[m])mm[m]={total:0,count:0};mm[m].total+=s;mm[m].count++;});});
   if(!Object.keys(mm).length){el.innerHTML='<p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล — ให้ทุกคน rate หลังเล่น</p>';return;}
   const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
   el.innerHTML=Object.entries(mm).sort((a,b)=>(b[1].total/b[1].count)-(a[1].total/a[1].count)).map(([m,s],i)=>{
@@ -2253,13 +2828,15 @@ function renderFamilyLeaderboard(tl){
     const rank=i<3?`<span style="font-size:20px;">${medals[i]}</span>`:`<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">${i+1}</span>`;
     const fam=memberFamilies[m]?`<span style="font-size:10px;background:#f0f4ff;color:var(--navy);padding:1px 7px;border-radius:8px;margin-left:5px;font-weight:600;">${memberFamilies[m]}</span>`:'';
     const bar=Math.round((s.total/s.count)/5*100);
-    return `<div class="family-leaderboard-row" style="flex-direction:column;gap:6px;padding:10px 0;">
+    const safeM=m.replace(/'/g,"\\'");
+    return `<div class="family-leaderboard-row" style="flex-direction:column;gap:6px;padding:10px 0;cursor:pointer;border-radius:10px;transition:background 0.15s;" onclick="openMemberHistory('${safeM}')" onmouseover="this.style.background='#f8f0ff'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:center;gap:8px;">
         ${rank}
         <span style="font-size:14px;font-weight:700;color:var(--navy);">${m}</span>${fam}
-        <div style="margin-left:auto;text-align:right;">
+        <div style="margin-left:auto;text-align:right;display:flex;align-items:center;gap:6px;">
           <span style="font-size:16px;font-weight:700;color:var(--gold);">⭐ ${avg}</span>
-          <span style="font-size:11px;color:var(--gray);margin-left:4px;">${s.count} รายการ</span>
+          <span style="font-size:11px;color:var(--gray);">${s.count} รายการ</span>
+          <span style="font-size:14px;color:#ccc;">›</span>
         </div>
       </div>
       <div style="height:5px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-left:32px;">
@@ -2268,6 +2845,98 @@ function renderFamilyLeaderboard(tl){
     </div>`;
   }).join('');
 }
+
+function openMemberHistory(member){
+  const modal=document.getElementById('detail-modal');
+  const hero=document.getElementById('modal-hero');
+  const body=document.getElementById('modal-body');
+  if(!modal||!hero||!body)return;
+
+  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const fam=memberFamilies[member]||'';
+
+  // All logs for this member across all trips
+  const memberLogs=logs.filter(l=>l.member===member&&l.type==='ride');
+  // Also count ratings given via familyRatings
+  const ratingEntries=[];
+  Object.entries(familyRatings).forEach(([rideName,rMap])=>{
+    const s=rMap[member];const feel=rMap[member+'_feeling']||'';const note=rMap[member+'_note']||'';
+    if(typeof s==='number'&&s>0)ratingEntries.push({rideName,stars:s,feeling:feel,note});
+  });
+
+  // Stats
+  const totalRides=memberLogs.length;
+  const rated=memberLogs.filter(l=>l.stars>0);
+  const avgStars=rated.length?(rated.reduce((s,l)=>s+l.stars,0)/rated.length).toFixed(1):'—';
+  const totalWait=memberLogs.reduce((s,l)=>s+(l.wait||0),0);
+  const isMe=member===currentMember;
+
+  // Hero
+  hero.innerHTML=`<div style="min-height:140px;background:linear-gradient(135deg,#1A1F3A,#6C3483);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+    <div style="font-size:64px;opacity:0.15;position:absolute;">🎡</div>
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,0.6));"></div>
+    <div style="position:absolute;top:10px;right:10px;"><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div style="position:absolute;bottom:16px;left:16px;">
+      <div style="font-size:22px;font-weight:700;color:#fff;">${member}${fam?' <span style="font-size:12px;background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:8px;">${fam}</span>':''}</div>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <span style="font-size:12px;color:rgba(255,255,255,0.8);">🎢 ${totalRides} ครั้ง</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.8);">⭐ avg ${avgStars}</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.8);">⏳ ${totalWait} น.</span>
+      </div>
+    </div>
+  </div>`;
+
+  let bodyHtml='';
+
+  // Per-trip breakdown
+  const tripsWithLogs=trips.filter(t=>logs.some(l=>l.member===member&&l.type==='ride'&&l.tripId===t.id));
+  if(tripsWithLogs.length){
+    tripsWithLogs.forEach(t=>{
+      const tLogs=memberLogs.filter(l=>l.tripId===t.id);
+      if(!tLogs.length)return;
+      const tAvg=tLogs.filter(l=>l.stars>0).length?(tLogs.reduce((s,l)=>s+l.stars,0)/tLogs.filter(l=>l.stars>0).length).toFixed(1):'';
+      const tWait=tLogs.reduce((s,l)=>s+(l.wait||0),0);
+      bodyHtml+=`<div class="modal-section">
+        <div class="modal-section-title">📅 ${t.name}
+          <span style="font-size:11px;font-weight:400;color:#aaa;margin-left:6px;">${tLogs.length}ครั้ง${tWait?' · ⏳'+tWait+'น.':''}${tAvg?' · ⭐'+tAvg:''}</span>
+        </div>`;
+      tLogs.forEach(l=>{
+        const d=l.timestamp?new Date(l.timestamp):null;
+        const dateStr=d?d.toLocaleDateString('th-TH',{day:'numeric',month:'short'})+' ':' ';
+        bodyHtml+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+          <span style="color:#aaa;font-size:11px;min-width:70px;">${dateStr}${l.time||''}</span>
+          <span style="font-weight:600;flex:1;">${l.name}</span>
+          ${l.stars?`<span>${'⭐'.repeat(l.stars)}</span>`:''}
+          ${l.feeling?`<span style="font-size:16px;">${l.feeling}</span>`:''}
+          ${l.wait>0?`<span style="font-size:11px;color:#bbb;">⏳${l.wait}น.</span>`:''}
+        </div>`;
+      });
+      bodyHtml+='</div>';
+    });
+  } else {
+    bodyHtml+='<div class="modal-desc-card" style="text-align:center;color:#aaa;">ยังไม่มีประวัติการเล่น</div>';
+  }
+
+  // Top rated rides for this member (from familyRatings)
+  if(ratingEntries.length){
+    const topRated=[...ratingEntries].sort((a,b)=>b.stars-a.stars).slice(0,5);
+    bodyHtml+=`<div class="modal-section"><div class="modal-section-title">⭐ เครื่องเล่นที่ชอบที่สุด</div>`;
+    topRated.forEach((r,i)=>{
+      bodyHtml+=`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;">
+        <span>${['🥇','🥈','🥉','4️⃣','5️⃣'][i]||'·'}</span>
+        <span style="flex:1;font-weight:600;">${r.rideName}</span>
+        <span>${'⭐'.repeat(r.stars)}</span>
+        ${r.feeling?`<span style="font-size:15px;">${r.feeling}</span>`:''}
+      </div>`;
+    });
+    bodyHtml+='</div>';
+  }
+
+  body.innerHTML=bodyHtml;
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
 
 // ========== EXPORT ==========
 function generateExport(){
@@ -2286,7 +2955,25 @@ function generateExport(){
 }
 
 function copyExport(){const text=document.getElementById('export-text').textContent;if(text.startsWith('กด')){showToast('⚠️ กรุณากด "สร้างสรุป" ก่อน');return;}navigator.clipboard.writeText(text).then(()=>showToast('✅ คัดลอกแล้ว!')).catch(()=>showToast('⚠️ คัดลอกไม่สำเร็จ'));}
-function clearAll(){if(!confirm('ต้องการล้างข้อมูลทริปปัจจุบัน?'))return;logs=logs.filter(l=>l.tripId&&l.tripId!==currentTripId);expenses=expenses.filter(e=>e.tripId&&e.tripId!==currentTripId);rideOrderCount=0;saveLogs();saveExpenses();renderTimeline();renderSummary();renderAttractions();showToast('🗑️ ล้างข้อมูลแล้ว');}
+function clearAll(){
+  if(!isAdminMode){showToast('❌ ต้องเปิด Admin Mode ก่อน');return;}
+  const trip=trips.find(t=>t.id===currentTripId);
+  const tripName=trip?trip.name:'ทริปนี้';
+  if(!confirm('⚠️ ลบข้อมูลทั้งหมดใน "'+tripName+'" ?\nการกระทำนี้ไม่สามารถย้อนกลับได้'))return;
+  logs=logs.filter(l=>l.tripId&&l.tripId!==currentTripId);
+  expenses=expenses.filter(e=>e.tripId&&e.tripId!==currentTripId);
+  rideOrderCount=0;
+  // Clear family ratings for this trip
+  familyRatings={};
+  localStorage.setItem('tdl_family_ratings',JSON.stringify(familyRatings));
+  // Clear from Firebase if connected
+  if(firebaseReady&&currentTripId){
+    if(_remove&&_ref)_remove(_ref(db,tripPath('familyRatings'))).catch(()=>{});
+  }
+  saveLogs();saveExpenses();
+  renderTimeline();renderSummary();renderAttractions();
+  showToast('🗑️ ล้างข้อมูล "'+tripName+'" แล้ว');
+}
 
 // ========== TOAST ==========
 let toastTimer;
@@ -2297,7 +2984,7 @@ function setStars(val,type){stars[type]=val;const c=document.getElementById(type
 function setFeeling(type,emoji,label){feelings[type]=emoji;const c=document.getElementById(type+'-feelings');if(!c)return;c.querySelectorAll('.feeling-btn').forEach(b=>b.classList.remove('selected'));if(emoji){const btn=[...c.querySelectorAll('.feeling-btn')].find(b=>b.querySelector('.f-emoji')?.textContent===emoji);if(btn)btn.classList.add('selected');}}
 
 // ========== TABS ==========
-function showTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name)?.classList.add('active');document.getElementById('tab-'+name)?.classList.add('active');if(name==='timeline')renderTimeline();if(name==='summary')renderSummary();if(name==='info'){renderAttractions();updateFavBadge();}if(name==='export')generateExport();}
+function showTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name)?.classList.add('active');document.getElementById('tab-'+name)?.classList.add('active');if(name==='timeline')renderTimeline();if(name==='summary'){renderSummary();const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display=isAdminMode?'':'none';}if(name==='info'){renderAttractions();updateFavBadge();}if(name==='export')generateExport();}
 function selectType(type){currentType=type;['ride','show','food','expense'].forEach(t=>{const f=document.getElementById('form-'+t);if(f)f.style.display=t===type?'block':'none';const b=document.getElementById('type-'+t);if(b)b.className='type-btn'+(t===type?' active-'+t:'');});}
 
 // ========== RIDE ZONE/SELECT ==========
@@ -2318,6 +3005,7 @@ function selectRide(name,zone){
   document.querySelectorAll('#ride-option-list .ride-option').forEach(o=>o.classList.toggle('selected',o.querySelector('.ride-option-name')?.textContent.startsWith(name)));
   document.getElementById('ride-details').style.display='';
   document.getElementById('ride-name-custom').value='';
+  setTimeout(()=>{const el=document.getElementById('ride-time');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},80);
   // Always reset ratings fresh for new round
   familyStarState.ride={};
   // Check previous plays this trip
@@ -2362,11 +3050,23 @@ function renderFoodOptions(zone){const list=document.getElementById('food-option
 function selectFoodRestaurant(name,zone){selectedFoodRestaurant=name;selectedFoodZone=zone;document.getElementById('food-step2').style.display='none';document.getElementById('food-step3').style.display='';renderFoodMenus(name);}
 function resetFoodRestaurant(){selectedFoodRestaurant='';document.getElementById('food-step2').style.display='';document.getElementById('food-step3').style.display='none';document.getElementById('food-details').style.display='none';}
 function renderFoodMenus(restaurantName){const list=document.getElementById('food-menu-list');const menus=(MENUS_DATA[restaurantName]||[]);document.getElementById('food-menu-custom').style.display='';if(!menus.length){list.innerHTML='';return;}list.innerHTML=menus.map(m=>'<div class="ride-option" onclick="selectFoodMenu(\''+m.replace(/'/g,"\\'")+'\')"><div class="ride-option-name">'+m+'</div></div>').join('');}
-function selectFoodMenu(menu){selectedFoodMenu=menu;document.querySelectorAll('#food-menu-list .ride-option').forEach(o=>o.classList.toggle('selected',o.querySelector('.ride-option-name')?.textContent.trim()===menu));document.getElementById('food-menu-custom').value='';document.getElementById('food-details').style.display='';}
+function selectFoodMenu(menu){
+  selectedFoodMenu=menu;
+  document.querySelectorAll('#food-menu-list .ride-option').forEach(o=>o.classList.toggle('selected',o.querySelector('.ride-option-name')?.textContent.trim()===menu));
+  document.getElementById('food-menu-custom').value='';
+  document.getElementById('food-details').style.display='';
+  setTimeout(()=>{const el=document.getElementById('food-price');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},80);
+}
 
 // ========== SHOW OPTIONS ==========
 function renderShowOptions(){const list=document.getElementById('show-option-list');if(!list)return;list.innerHTML=SHOWS_DATA.map(s=>'<div class="ride-option" onclick="selectShow(\''+s.name.replace(/'/g,"\\'")+'\')" ><div class="ride-option-name">'+s.name+'</div><div class="ride-option-meta">'+(s.note||'')+'</div></div>').join('');}
-function selectShow(name){document.getElementById('show-name-custom').value=name;document.querySelectorAll('#show-option-list .ride-option').forEach(o=>o.classList.toggle('selected',o.querySelector('.ride-option-name')?.textContent.trim()===name));}
+function selectShow(name){
+  document.getElementById('show-name-custom').value=name;
+  document.querySelectorAll('#show-option-list .ride-option').forEach(o=>o.classList.toggle('selected',o.querySelector('.ride-option-name')?.textContent.trim()===name));
+  document.getElementById('show-details').style.display='';
+  renderFamilyStars('show');
+  setTimeout(()=>{const el=document.getElementById('show-time');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},80);
+}
 
 // ========== INFO PAGE ==========
 function setInfoMode(mode,btn){
@@ -2552,11 +3252,27 @@ function openAttractionDetail(name){
     const tLogs=allPlayed.filter(l=>l.tripId===t.id);if(!tLogs.length)return '';
     const avg=tLogs.filter(l=>l.stars>0).length?(tLogs.reduce((s,l)=>s+(l.stars||0),0)/tLogs.filter(l=>l.stars>0).length).toFixed(1):'';
     const waitAvg=tLogs.filter(l=>l.wait>0).length?Math.round(tLogs.reduce((s,l)=>s+(l.wait||0),0)/tLogs.filter(l=>l.wait>0).length):'';
-    const mNotes=tLogs.map(l=>(l.member||'?')+(l.stars?': '+'⭐'.repeat(l.stars):'')+(l.feeling?' '+l.feeling:'')).join(' · ');
-    return '<div class="history-row"><div style="flex:1;">'
-      +'<div class="history-trip-name">📅 '+t.name+'</div>'
-      +'<div class="history-trip-detail">'+tLogs.length+'ครั้ง'+(waitAvg?' · ⏳'+waitAvg+'น.':'')+(mNotes?' · '+mNotes:'')+'</div>'
-      +'</div><div style="font-size:14px;font-weight:700;color:var(--gold);">'+(avg?'⭐'+avg:'')+'</div></div>';
+    // Build per-play rows with date
+    const playRows=tLogs.map(l=>{
+      const d=l.timestamp?new Date(l.timestamp):null;
+      const dateStr=d?d.toLocaleDateString('th-TH',{day:'numeric',month:'short'}):'';
+      const timeStr=l.time||'';
+      const when=[dateStr,timeStr].filter(Boolean).join(' ');
+      return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;color:var(--gray);">'
+        +(when?'<span style="min-width:80px;color:#aaa;">'+when+'</span>':'')
+        +'<span style="font-weight:600;">'+(l.member||'?')+'</span>'
+        +(l.stars?'<span>'+'⭐'.repeat(l.stars)+'</span>':'')
+        +(l.feeling?'<span style="font-size:15px;">'+l.feeling+'</span>':'')
+        +(l.wait>0?'<span style="margin-left:auto;color:#bbb;font-size:11px;">⏳'+l.wait+'น.</span>':'')
+        +'</div>';
+    }).join('');
+    return '<div class="history-row" style="flex-direction:column;align-items:stretch;gap:4px;">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">'
+        +'<div class="history-trip-name">📅 '+t.name+'</div>'
+        +'<div style="font-size:14px;font-weight:700;color:var(--gold);">'+(avg?'⭐'+avg:'')+'</div>'
+      +'</div>'
+      +playRows
+    +'</div>';
   }).filter(Boolean).join('');
   if(historyHtml)bodyHtml+='<div class="modal-section"><div class="modal-section-title">📅 ประวัติการเล่น</div>'+historyHtml+'</div>';
 
