@@ -1731,7 +1731,7 @@ function getFamilies(){
   // families = {familyName: [memberName, ...]}
   return JSON.parse(localStorage.getItem('tdl_families')||'{}');
 }
-function saveFamiliesLocal(f){
+function saveFamilies(f){
   localStorage.setItem('tdl_families',JSON.stringify(f));
   if(firebaseReady&&db)dbWrite('families',f);
 }
@@ -1808,7 +1808,7 @@ function confirmNewFamily(){
   const name=input.value.trim();if(!name){input.focus();return;}
   const families=getFamilies();
   if(!families[name])families[name]=[];
-  saveFamiliesLocal(families);
+  saveFamilies(families);
   input.value='';
   selectFamily(name);
 }
@@ -1969,16 +1969,24 @@ function renderAdminFamilyList(){
   if(!names.length){el.innerHTML='<p style="font-size:12px;color:#bbb;text-align:center;padding:16px;">ยังไม่มีครอบครัว</p>';return;}
   el.innerHTML=names.map(name=>{
     const members=allMembers.filter(m=>mf[m]===name);
-    const sf=name.replace(/'/g,"\'");
-    return `<div style="background:#f8f9ff;border-radius:12px;padding:12px;border:1.5px solid #e8eaf0;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="font-size:14px;font-weight:700;color:var(--navy);flex:1;">🏠 ${name}</span>
-        <button onclick="adminRenameFamily('${sf}')" style="padding:4px 10px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️ แก้</button>
-        <button onclick="adminDeleteFamily('${sf}')" style="padding:4px 10px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
-      </div>
-      <div style="font-size:11px;color:var(--gray);">สมาชิก: ${members.length?members.join(', '):'ยังไม่มี'}</div>
-    </div>`;
+    const enc=encodeURIComponent(name);
+    return '<div style="background:#f8f9ff;border-radius:12px;padding:12px;border:1.5px solid #e8eaf0;">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+      +'<span style="font-size:14px;font-weight:700;color:var(--navy);flex:1;">🏠 '+name+'</span>'
+      +'<button data-action="rename-family" data-name="'+enc+'" style="padding:4px 10px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️ แก้</button>'
+      +'<button data-action="delete-family" data-name="'+enc+'" style="padding:4px 10px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--gray);">สมาชิก: '+(members.length?members.join(', '):'ยังไม่มี')+'</div>'
+      +'</div>';
   }).join('');
+  el.querySelectorAll('[data-action]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const name=decodeURIComponent(btn.getAttribute('data-name'));
+      const action=btn.getAttribute('data-action');
+      if(action==='rename-family') adminRenameFamily(name);
+      else adminDeleteFamily(name);
+    });
+  });
 }
 
 // ── MEMBER MANAGEMENT ──
@@ -2029,21 +2037,33 @@ function renderAdminMemberList(){
   if(!allMembers.length){el.innerHTML='<p style="font-size:12px;color:#bbb;text-align:center;padding:16px;">ยังไม่มีสมาชิก</p>';return;}
   const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
   el.innerHTML=allMembers.map(m=>{
-    const col=getMemberColor(m);const fam=mf[m]||'';const sf=m.replace(/'/g,"\'");
+    const col=getMemberColor(m);const fam=mf[m]||'';
     const isMe=m===currentMember;
-    return `<div style="background:#f8f9ff;border-radius:12px;padding:11px 12px;border:1.5px solid ${isMe?'#c8d8ff':'#e8eaf0'};">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
-        <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">${m.slice(0,2)}</div>
-        <span style="font-size:13px;font-weight:700;color:var(--navy);flex:1;">${m}${isMe?' <span style="font-size:10px;background:#e8f5e9;color:#27ae60;padding:1px 6px;border-radius:6px;">ฉัน</span>':''}</span>
-        <button onclick="adminRenameMember('${sf}')" style="padding:4px 9px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️</button>
-        <button onclick="adminDeleteMember('${sf}')" style="padding:4px 9px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray);">
-        <span>🏠 ${fam||'ไม่มีครอบครัว'}</span>
-        <button onclick="adminChangeMemberFamily('${sf}')" style="padding:2px 8px;background:#f5f0ff;color:#6C3483;border:none;border-radius:6px;font-size:11px;cursor:pointer;">เปลี่ยน</button>
-      </div>
-    </div>`;
+    const border=isMe?'#c8d8ff':'#e8eaf0';
+    const meTag=isMe?' <span style="font-size:10px;background:#e8f5e9;color:#27ae60;padding:1px 6px;border-radius:6px;">ฉัน</span>':'';
+    const enc=encodeURIComponent(m);
+    return '<div style="background:#f8f9ff;border-radius:12px;padding:11px 12px;border:1.5px solid '+border+';">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
+      +'<div style="width:28px;height:28px;border-radius:50%;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">'+m.slice(0,2)+'</div>'
+      +'<span style="font-size:13px;font-weight:700;color:var(--navy);flex:1;">'+m+meTag+'</span>'
+      +'<button data-action="rename-member" data-name="'+enc+'" style="padding:4px 9px;background:#f0f4ff;color:var(--navy);border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">✏️</button>'
+      +'<button data-action="delete-member" data-name="'+enc+'" style="padding:4px 9px;background:#fff0f0;color:#e74c3c;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gray);">'
+      +'<span>🏠 '+(fam||'ไม่มีครอบครัว')+'</span>'
+      +'<button data-action="change-family" data-name="'+enc+'" style="padding:2px 8px;background:#f5f0ff;color:#6C3483;border:none;border-radius:6px;font-size:11px;cursor:pointer;">เปลี่ยน</button>'
+      +'</div>'
+      +'</div>';
   }).join('');
+  el.querySelectorAll('[data-action]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const member=decodeURIComponent(btn.getAttribute('data-name'));
+      const action=btn.getAttribute('data-action');
+      if(action==='rename-member') adminRenameMember(member);
+      else if(action==='delete-member') adminDeleteMember(member);
+      else if(action==='change-family') adminChangeMemberFamily(member);
+    });
+  });
 }
 
 function renderAdminTripList(){
@@ -2161,7 +2181,7 @@ function setupDone(){
     const families=getFamilies();
     if(!families[selectedFamilyName])families[selectedFamilyName]=[];
     allNew.forEach(m=>{if(!families[selectedFamilyName].includes(m))families[selectedFamilyName].push(m);});
-    saveFamiliesLocal(families);
+    saveFamilies(families);
     // Tag each member with family for badge display
     let memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
     allNew.forEach(m=>{memberFamilies[m]=selectedFamilyName;});
@@ -2210,13 +2230,19 @@ function deleteTrip(e,id){e.stopPropagation();if(!confirm('ลบทริปน
 // ========== FAMILY STARS ==========
 function renderFamilyStars(type){
   const container=document.getElementById('family-stars-'+type);if(!container)return;
-  const members=[currentMember,...allMembers.filter(m=>m!==currentMember)];
+  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const myFamily=memberFamilies[currentMember]||'';
+  // Show: self + same family + no-family members + all if admin
+  const members=[currentMember,...allMembers.filter(m=>m!==currentMember&&(
+    isAdminMode ||
+    !memberFamilies[m] ||           // no family assigned → always visible
+    !myFamily ||                     // I have no family → see all
+    memberFamilies[m]===myFamily     // same family
+  ))];
   if(!members.length||!currentMember){
     container.innerHTML='<p style="font-size:12px;color:var(--gray);">ยังไม่มีสมาชิก</p>';return;
   }
   const state=familyStarState[type]||{};
-  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const myFamily=memberFamilies[currentMember]||'';
   const FEELINGS={
     ride:['😨','😵','😐','😊','😄','🤩','😱'],
     show:['🥱','😐','😊','😄','😭','🤩'],
@@ -3302,7 +3328,7 @@ function openAttractionDetail(name){
   const thisCount=thisTrip.length;
   bodyHtml+='<div class="modal-section" style="padding-bottom:28px;display:flex;flex-direction:column;gap:8px;">';
   // Primary: go log this ride (always available)
-  bodyHtml+='<button class="btn btn-primary" onclick="closeModal();showTab(\'add\');setTimeout(()=>{const zone=\''+r.zone.replace(/'/g,"\\'")+'\';selectRideZone(zone);setTimeout(()=>selectRide(\''+safe+'\',\''+r.zone.replace(/'/g,"\\'")+'\'),100);},50);">'
+  bodyHtml+='<button class="btn btn-primary" onclick="closeModal();showTab(\'add\');selectType(\'ride\');setTimeout(()=>{const zone=\''+r.zone.replace(/'/g,"\\'")+'\';selectRideZone(zone);setTimeout(()=>selectRide(\''+safe+'\',\''+r.zone.replace(/'/g,"\\'")+'\'),100);},50);">'
     +(thisCount>0?'🔄 บันทึกรอบที่ '+(thisCount+1):'🎢 บันทึกเครื่องเล่นนี้')+'</button>';
   // Secondary: quick log (no rating)
   if(!alreadyRated)
