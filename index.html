@@ -84,7 +84,7 @@ window.FIREBASE_CONFIG = {
 
   /* CARDS */
   .section-card{background:var(--white);border-radius:16px;padding:15px;margin-bottom:13px;box-shadow:var(--shadow);}
-  .section-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--navy);margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+  .section-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:13px;display:flex;align-items:center;gap:7px;}
 
   /* FORMS */
   .form-row{margin-bottom:11px;}
@@ -180,24 +180,25 @@ window.FIREBASE_CONFIG = {
 
   /* TIMELINE */
   /* CENTER-LINE TIMELINE */
-  .tl-center{position:relative;padding:0 4px;}
+  .tl-center{position:relative;padding:0 2px 20px;}
   .tl-center::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);background:linear-gradient(to bottom,var(--pink),var(--teal),var(--gold));border-radius:3px;z-index:0;}
-  .tl-row{display:flex;align-items:flex-start;margin-bottom:6px;position:relative;z-index:1;}
-  .tl-row.left{flex-direction:row-reverse;}
-  .tl-row.right{flex-direction:row;}
-  .tl-side{width:calc(50% - 22px);flex-shrink:0;}
-  .tl-dot-col{width:44px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding-top:14px;}
-  .tl-dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--white);box-shadow:0 0 0 2px var(--pink);background:var(--pink);flex-shrink:0;}
-  .tl-card{background:var(--white);border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.09);overflow:hidden;position:relative;}
-  .tl-card-header{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 7px;}
-  .tl-card-title{font-size:13px;font-weight:700;color:var(--navy);flex:1;line-height:1.3;}
-  .tl-card-time{font-size:11px;color:var(--gray);white-space:nowrap;margin-left:6px;}
-  .tl-card-badges{display:flex;flex-wrap:wrap;gap:3px;padding:0 12px 7px;}
-  .tl-card-members{border-top:1px solid var(--light-gray);padding:7px 12px;}
+  .tl-row{display:grid;grid-template-columns:1fr 32px 1fr;align-items:flex-start;margin-bottom:10px;position:relative;z-index:1;gap:0;}
+  .tl-dot-col{display:flex;justify-content:center;padding-top:12px;}
+  .tl-dot{width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;flex-shrink:0;}
+  .tl-card-wrap{padding:0 6px;}
+  .tl-card{background:var(--white);border-radius:13px;box-shadow:0 2px 8px rgba(0,0,0,0.09);overflow:hidden;position:relative;}
+  .tl-empty{} /* placeholder for opposite side */
+  .tl-card-header{display:flex;align-items:center;justify-content:space-between;padding:9px 10px 6px;}
+  .tl-card-title{font-size:12px;font-weight:700;color:var(--navy);flex:1;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .tl-card-time{font-size:10px;color:var(--gray);white-space:nowrap;margin-left:4px;flex-shrink:0;}
+  .tl-card-badges{display:flex;flex-wrap:wrap;gap:3px;padding:0 10px 6px;}
+  .tl-card-members{border-top:1px solid var(--light-gray);padding:6px 10px;}
   .tl-card-strip{height:3px;width:100%;}
-  /* arrow connector */
-  .tl-row.right .tl-side::before{content:'';position:absolute;right:100%;top:17px;border:7px solid transparent;}
-  .tl-row.left .tl-side::before{content:'';position:absolute;left:100%;top:17px;border:7px solid transparent;}
+  .tl-delete-btn{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:1px 3px;line-height:1;flex-shrink:0;}
+  .tl-member-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f5f5f5;font-size:12px;}
+  .tl-member-row:last-child{border-bottom:none;}
+  .tl-member-name{font-size:12px;font-weight:700;flex:1;}
+  .tl-member-stars{font-size:11px;}
   /* old classes kept for compat */
   .timeline-item{display:none;}
   .timeline-dot{display:none;}
@@ -454,27 +455,55 @@ window.FIREBASE_CONFIG = {
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#1A1F3A,#2D1B69);padding:28px 22px 22px;text-align:center;">
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
-      <h2 style="font-family:'Prompt',sans-serif;font-size:20px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
-      <p style="font-size:12px;color:rgba(255,255,255,0.6);">เลือกทริปเพื่อเข้าร่วม</p>
+      <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
+      <p style="font-size:12px;color:rgba(255,255,255,0.65);">บันทึกความทรงจำในดิสนีย์แลนด์</p>
     </div>
 
     <!-- Step 1: Trip list -->
-    <div id="landing-step-trips" style="padding:20px 18px 40px;">
-      <div id="landing-trip-list" style="display:flex;flex-direction:column;gap:10px;min-height:80px;">
-        <div style="text-align:center;padding:24px;color:#aaa;font-size:14px;">⏳ กำลังโหลดทริป...</div>
+    <div id="landing-step-trips" style="padding:18px 18px 36px;">
+      <!-- How it works - 3 steps -->
+      <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:18px;">
+        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:4px;">🏰</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">เลือกทริป</div>
+        </div>
+        <div style="display:flex;align-items:center;color:rgba(255,255,255,0.3);font-size:14px;">›</div>
+        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:4px;">👤</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">ใส่ชื่อ</div>
+        </div>
+        <div style="display:flex;align-items:center;color:rgba(255,255,255,0.3);font-size:14px;">›</div>
+        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:4px;">🎢</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">บันทึกได้เลย!</div>
+        </div>
       </div>
-      <p style="font-size:11px;color:#bbb;text-align:center;margin-top:12px;">กดที่ทริปเพื่อเข้าร่วม</p>
+
+      <!-- Trip list label -->
+      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:10px;letter-spacing:0.5px;">📅 ทริปที่มีอยู่</div>
+      <div id="landing-trip-list" style="display:flex;flex-direction:column;gap:10px;min-height:60px;">
+        <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.4);font-size:13px;">⏳ กำลังโหลด...</div>
+      </div>
+      <p style="font-size:11px;color:rgba(255,255,255,0.45);text-align:center;margin-top:10px;">กดที่ทริปเพื่อเข้าร่วม</p>
     </div>
 
     <!-- Step 2: Enter name (shown after picking trip) -->
-    <div id="landing-step-name" style="display:none;padding:20px 18px 40px;">
-      <div style="text-align:center;margin-bottom:16px;">
-        <div id="landing-chosen-trip" style="font-size:14px;font-weight:700;color:var(--navy);background:#f0f4ff;padding:10px 16px;border-radius:12px;"></div>
+    <div id="landing-step-name" style="display:none;padding:18px 18px 36px;">
+      <!-- Progress: step 2 of 2 -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+        <div style="width:28px;height:4px;border-radius:2px;background:#e0e0e0;"></div>
+        <div style="flex:1;height:4px;border-radius:2px;background:var(--pink);"></div>
+        <span style="font-size:11px;color:var(--gray);">ขั้นตอน 2/2</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;background:#f0f4ff;padding:10px 14px;border-radius:12px;">
+        <span style="font-size:16px;">🏰</span>
+        <div id="landing-chosen-trip" style="font-size:14px;font-weight:700;color:var(--navy);flex:1;"></div>
       </div>
 
       <!-- STEP A: เลือกครอบครัว -->
       <div id="step-family" style="display:block;">
-        <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;">🏠 คุณมากับครอบครัวไหน?</p>
+        <p style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">🏠 คุณมากับครอบครัวไหน?</p>
+        <p style="font-size:11px;color:var(--gray);margin-bottom:10px;">เลือกครอบครัวที่มาด้วยกัน หรือสร้างใหม่</p>
         <div id="family-list-chips" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
         <div style="border-top:1px solid #eee;padding-top:12px;margin-bottom:4px;">
           <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">+ สร้างครอบครัวใหม่</p>
@@ -500,8 +529,9 @@ window.FIREBASE_CONFIG = {
 
         <!-- Name input: hidden by default, shown if no chips or typing new name -->
         <div id="name-input-section" style="display:none;margin-bottom:14px;">
-          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;">👤 พิมพ์ชื่อของคุณ</p>
-          <input id="setup-name-input" class="form-input" placeholder="ชื่อของคุณ..." style="font-size:16px;font-weight:700;" maxlength="20" onkeydown="if(event.key==='Enter')setupDone()"/>
+          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">👤 พิมพ์ชื่อของคุณ</p>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:6px;">ชื่อนี้จะแสดงใน timeline และ rating</p>
+          <input id="setup-name-input" class="form-input" placeholder="เช่น สมชาย, น้องเฟิร์น..." style="font-size:16px;font-weight:700;" maxlength="20" onkeydown="if(event.key==='Enter')setupDone()"/>
         </div>
 
         <!-- สมาชิกเพิ่มเติมในกลุ่ม -->
@@ -514,7 +544,7 @@ window.FIREBASE_CONFIG = {
           <p style="font-size:11px;color:#bbb;margin-top:6px;">คนที่ไม่อยากบันทึกเอง ใส่ชื่อไว้ที่นี่เพื่อ rating ร่วมกันได้</p>
         </div>
 
-        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:16px;padding:16px;font-size:16px;min-height:56px;border-radius:16px;box-shadow:0 6px 20px rgba(255,79,123,0.4);">✅ เข้าร่วมทริป!</button>
+        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:16px;padding:16px;font-size:16px;min-height:56px;border-radius:16px;box-shadow:0 6px 20px rgba(255,79,123,0.4);">🏰 เข้าร่วมทริป!</button>
       </div>
 
       <button onclick="backToTrips()" style="width:100%;padding:10px;border:none;background:none;color:var(--gray);font-size:13px;cursor:pointer;margin-top:4px;">← กลับเลือกทริป</button>
@@ -535,8 +565,8 @@ window.FIREBASE_CONFIG = {
 </div>
 
 <!-- ===== ADMIN CREATE TRIP MODAL ===== -->
-<div id="admin-create-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:6000;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
-  <div style="background:#fff;border-radius:20px;width:100%;max-width:380px;margin:auto;overflow:hidden;">
+<div id="admin-create-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:6000;align-items:flex-start;justify-content:center;padding:16px 16px 40px;overflow-y:auto;" onclick="closeAdminCreateModal()">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:380px;margin:auto;overflow:hidden;" onclick="event.stopPropagation()">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,var(--navy),#2D3561);padding:18px 20px 14px;">
       <div style="font-family:'Prompt',sans-serif;font-size:17px;font-weight:700;color:#fff;text-align:center;">⚙️ Admin Panel</div>
@@ -575,8 +605,8 @@ window.FIREBASE_CONFIG = {
       <div id="admin-member-list" style="display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto;"></div>
     </div>
 
-    <div style="padding:0 20px 20px;">
-      <button onclick="closeAdminCreateModal()" style="width:100%;padding:14px;border:none;background:var(--light-gray);border-radius:12px;color:var(--navy);font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">✕ ปิด</button>
+    <div style="padding:0 20px 24px;">
+      <button onclick="closeAdminCreateModal()" style="width:100%;padding:16px;border:none;background:#f0f0f0;border-radius:14px;color:#333;font-size:15px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;min-height:52px;">✕ ปิด</button>
     </div>
   </div>
 </div>
@@ -1695,22 +1725,33 @@ function renderLandingTrips(){
   const container=document.getElementById('landing-trip-list');
   if(!container)return;
   if(!trips.length){
-    container.innerHTML='<div style="text-align:center;padding:28px 16px;color:#aaa;"><div style="font-size:36px;margin-bottom:8px;">🏰</div><p style="font-size:14px;">ยังไม่มีทริป<br><span style="font-size:12px;">รอ Admin สร้างทริปก่อนนะคะ</span></p></div>';
+    container.innerHTML='<div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,0.08);border-radius:16px;">'
+      +'<div style="font-size:36px;margin-bottom:8px;">🏰</div>'
+      +'<p style="font-size:14px;color:rgba(255,255,255,0.7);">ยังไม่มีทริป</p>'
+      +'<p style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">รอ Admin สร้างทริปก่อนนะคะ</p>'
+      +'</div>';
     return;
   }
-  container.innerHTML=trips.map(trip=>{
+  const els = trips.map(trip=>{
     const d=trip.date?new Date(trip.date).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}):'';
-    return '<div onclick="selectLandingTrip(\''+trip.id+'\',\''+trip.name.replace(/'/g,"\\'")+'\',this)" style="border:2px solid #e8eaf0;border-radius:16px;padding:16px 18px;cursor:pointer;transition:all 0.2s;background:#fff;" onmouseover="this.style.borderColor=\'var(--pink)\'" onmouseout="this.style.borderColor=\'#e8eaf0\'">'
-      +'<div style="display:flex;align-items:center;gap:12px;">'
-      +'<div style="font-size:32px;">🏰</div>'
-      +'<div style="flex:1;">'
-      +'<div style="font-family:\'Prompt\',sans-serif;font-size:15px;font-weight:700;color:var(--navy);">'+trip.name+'</div>'
-      +(d?'<div style="font-size:12px;color:var(--gray);margin-top:2px;">📅 '+d+'</div>':'')
+    const locked=trip.locked?'<span style="font-size:10px;background:#ffe0e0;color:#e74c3c;padding:1px 7px;border-radius:6px;font-weight:700;">🔒</span>':'';
+    const el=document.createElement('div');
+    el.style.cssText='background:rgba(255,255,255,0.95);border:2px solid transparent;border-radius:16px;padding:14px 16px;cursor:pointer;transition:all 0.18s;';
+    el.innerHTML='<div style="display:flex;align-items:center;gap:12px;">'
+      +'<div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--gold));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏰</div>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:15px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">'+trip.name+' '+locked+'</div>'
+      +(d?'<div style="font-size:11px;color:var(--gray);margin-top:2px;">📅 '+d+'</div>':'')
       +'</div>'
-      +'<div style="font-size:20px;color:var(--pink);">→</div>'
-      +'</div>'
+      +'<div style="width:32px;height:32px;background:var(--pink);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0;">›</div>'
       +'</div>';
-  }).join('');
+    el.addEventListener('click',()=>selectLandingTrip(trip.id,trip.name,el));
+    el.addEventListener('mouseover',()=>el.style.borderColor='var(--pink)');
+    el.addEventListener('mouseout',()=>el.style.borderColor='transparent');
+    return el;
+  });
+  container.innerHTML='';
+  els.forEach(el=>container.appendChild(el));
 }
 
 function selectLandingTrip(id,name,el){
@@ -2659,14 +2700,13 @@ function renderTimeline(){
     else cardHtml=timelineGroupInner(g.lead,g.members);
     const dotColor=g.lead?(getMemberColor(g.lead.member)||'var(--pink)'):'var(--pink)';
     const typeColor={ride:dotColor,show:'var(--teal)',food:'var(--gold)',expense:'var(--purple)'}[g.lead?g.lead.type:(g.item?g.item.type:'ride')]||dotColor;
-    return `<div class="tl-row ${side}">
-      <div class="tl-side" style="position:relative;">
-        <div class="tl-card">${cardHtml}</div>
-      </div>
-      <div class="tl-dot-col">
-        <div class="tl-dot" style="background:${typeColor};box-shadow:0 0 0 3px ${typeColor}40;border-color:#fff;"></div>
-      </div>
-      <div class="tl-side"></div>
+    // Grid: col1=left-side, col2=dot, col3=right-side
+    const leftHtml  = side==='left'  ? `<div class="tl-card-wrap"><div class="tl-card">${cardHtml}</div></div>` : '<div class="tl-empty"></div>';
+    const rightHtml = side==='right' ? `<div class="tl-card-wrap"><div class="tl-card">${cardHtml}</div></div>` : '<div class="tl-empty"></div>';
+    return `<div class="tl-row">
+      ${leftHtml}
+      <div class="tl-dot-col"><div class="tl-dot" style="background:${typeColor};box-shadow:0 0 0 3px ${typeColor}40;"></div></div>
+      ${rightHtml}
     </div>`;
   });
   container.innerHTML='<div class="tl-center">'+rows.join('')+'</div>';
@@ -2720,13 +2760,11 @@ function timelineGroupInner(lead,members){
   if(lead.type==='show'&&lead.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${lead.duration}น.</span>`;
   const memberRows=members.map(m=>{
     const col=getMemberColor(m.member);
-    const initials=(m.member||'?').slice(0,2);
     const starsStr=m.stars?'⭐'.repeat(m.stars):'<span style="font-size:10px;color:#bbb;">—</span>';
     return `<div class="tl-member-row">
-      <div class="tl-avatar" style="background:${col};width:24px;height:24px;font-size:10px;">${initials}</div>
-      <span class="tl-member-name" style="color:${col};font-size:12px;">${m.member}</span>
-      <span class="tl-member-stars" style="font-size:12px;">${starsStr}</span>
-      ${m.feeling?`<span style="font-size:15px;">${m.feeling}</span>`:''}
+      <span class="tl-member-name" style="color:${col};">${m.member}</span>
+      <span class="tl-member-stars">${starsStr}</span>
+      ${m.feeling?`<span style="font-size:14px;">${m.feeling}</span>`:''}
       <button class="tl-delete-btn" onclick="deleteLog(${m.id})">✕</button>
     </div>`;
   }).join('');
