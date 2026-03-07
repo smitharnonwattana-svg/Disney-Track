@@ -257,6 +257,7 @@ window.FIREBASE_CONFIG = {
   /* TOAST */
   .toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:var(--white);padding:9px 20px;border-radius:20px;font-size:13px;font-weight:700;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;box-shadow:var(--shadow-lg);}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
 
   /* EXCHANGE RATE */
   .rate-card{background:linear-gradient(135deg,#1A1F3A,#2D3561);border-radius:12px;padding:12px 14px;margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;}
@@ -451,7 +452,7 @@ window.FIREBASE_CONFIG = {
   <button onclick="showAdminLogin()" style="position:fixed;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">⚙</button>
 
   <!-- Main card -->
-  <div style="background:#fff;border-radius:24px;width:100%;max-width:380px;overflow:visible;box-shadow:0 24px 80px rgba(0,0,0,0.5);">
+  <div style="background:#fff;border-radius:24px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.5);">
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#1A1F3A,#2D1B69);padding:28px 22px 22px;text-align:center;">
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
@@ -460,94 +461,70 @@ window.FIREBASE_CONFIG = {
     </div>
 
     <!-- Step 1: Trip list -->
-    <div id="landing-step-trips" style="padding:18px 18px 36px;">
-      <!-- How it works - 3 steps -->
-      <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:18px;">
-        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
-          <div style="font-size:22px;margin-bottom:4px;">🏰</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">เลือกทริป</div>
-        </div>
-        <div style="display:flex;align-items:center;color:rgba(255,255,255,0.3);font-size:14px;">›</div>
-        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
-          <div style="font-size:22px;margin-bottom:4px;">👤</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">ใส่ชื่อ</div>
-        </div>
-        <div style="display:flex;align-items:center;color:rgba(255,255,255,0.3);font-size:14px;">›</div>
-        <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:14px;padding:10px 8px;text-align:center;">
-          <div style="font-size:22px;margin-bottom:4px;">🎢</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;line-height:1.3;">บันทึกได้เลย!</div>
-        </div>
-      </div>
-
-      <!-- Trip list label -->
-      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:10px;letter-spacing:0.5px;">📅 ทริปที่มีอยู่</div>
+    <div id="landing-step-trips" style="padding:18px 18px 28px;">
+      <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:10px;letter-spacing:0.5px;">📅 เลือกทริป</div>
       <div id="landing-trip-list" style="display:flex;flex-direction:column;gap:10px;min-height:60px;">
         <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.4);font-size:13px;">⏳ กำลังโหลด...</div>
       </div>
-      <p style="font-size:11px;color:rgba(255,255,255,0.45);text-align:center;margin-top:10px;">กดที่ทริปเพื่อเข้าร่วม</p>
     </div>
 
-    <!-- Step 2: Enter name (shown after picking trip) -->
+    <!-- Step 2: Combined family + name (shown after picking trip) -->
     <div id="landing-step-name" style="display:none;padding:18px 18px 36px;">
-      <!-- Progress: step 2 of 2 -->
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
-        <div style="width:28px;height:4px;border-radius:2px;background:#e0e0e0;"></div>
-        <div style="flex:1;height:4px;border-radius:2px;background:var(--pink);"></div>
-        <span style="font-size:11px;color:var(--gray);">ขั้นตอน 2/2</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;background:#f0f4ff;padding:10px 14px;border-radius:12px;">
+      <!-- Trip badge -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;background:#f0f4ff;padding:10px 14px;border-radius:12px;">
         <span style="font-size:16px;">🏰</span>
         <div id="landing-chosen-trip" style="font-size:14px;font-weight:700;color:var(--navy);flex:1;"></div>
       </div>
 
-      <!-- STEP A: เลือกครอบครัว -->
+      <!-- SECTION A: ครอบครัว -->
       <div id="step-family" style="display:block;">
-        <p style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px;">🏠 คุณมากับครอบครัวไหน?</p>
-        <p style="font-size:11px;color:var(--gray);margin-bottom:10px;">เลือกครอบครัวที่มาด้วยกัน หรือสร้างใหม่</p>
-        <div id="family-list-chips" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
-        <div style="border-top:1px solid #eee;padding-top:12px;margin-bottom:4px;">
-          <p style="font-size:12px;color:var(--gray);margin-bottom:8px;">+ สร้างครอบครัวใหม่</p>
+        <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">🏠 คุณมากับครอบครัวไหน?</p>
+        <div id="family-list-chips" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div style="border-top:1px solid #f0f0f0;padding-top:10px;margin-bottom:4px;">
           <div style="display:flex;gap:8px;">
-            <input id="new-family-input" class="form-input" placeholder="ชื่อครอบครัว..." style="flex:1;margin:0;font-size:14px;" maxlength="30" onkeydown="if(event.key==='Enter')confirmNewFamily()"/>
-            <button onclick="confirmNewFamily()" style="border:none;background:var(--pink);color:#fff;border-radius:12px;padding:0 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">สร้าง</button>
+            <input id="new-family-input" class="form-input" placeholder="+ สร้างครอบครัวใหม่..." style="flex:1;margin:0;font-size:13px;" maxlength="30" onkeydown="if(event.key==='Enter')confirmNewFamily()"/>
+            <button onclick="confirmNewFamily()" style="border:none;background:var(--navy);color:#fff;border-radius:12px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">สร้าง</button>
           </div>
         </div>
       </div>
 
-      <!-- STEP B: เลือก/พิมพ์ชื่อ (หลังเลือกครอบครัวแล้ว) -->
-      <div id="step-name" style="display:none;padding-bottom:20px;">
-        <div id="selected-family-badge" style="display:inline-flex;align-items:center;gap:6px;background:#f0f4ff;border:1.5px solid var(--navy);border-radius:12px;padding:6px 14px;margin-bottom:14px;cursor:pointer;" onclick="backToFamilyStep()">
-          <span id="selected-family-label" style="font-size:13px;font-weight:700;color:var(--navy);"></span>
-          <span style="font-size:11px;color:var(--gray);">เปลี่ยน</span>
+      <!-- SECTION B: ชื่อ — ปรากฏทันทีหลังเลือกครอบครัว (animate) -->
+      <div id="step-name" style="display:none;padding-bottom:4px;">
+        <div style="height:1px;background:#f0f0f0;margin:14px 0;"></div>
+
+        <!-- Family badge + change -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+          <div id="selected-family-badge" style="display:inline-flex;align-items:center;gap:5px;background:#f0f4ff;border:1.5px solid var(--navy);border-radius:10px;padding:5px 12px;cursor:pointer;" onclick="backToFamilyStep()">
+            <span id="selected-family-label" style="font-size:12px;font-weight:700;color:var(--navy);"></span>
+            <span style="font-size:10px;color:var(--gray);">✕ เปลี่ยน</span>
+          </div>
         </div>
 
         <!-- สมาชิกในครอบครัวที่เลือก -->
-        <div id="family-member-chips-section" style="display:none;margin-bottom:14px;">
-          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">🙋 คุณเป็นใคร?</p>
+        <div id="family-member-chips-section" style="display:none;margin-bottom:12px;">
+          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:7px;">🙋 คุณเป็นใคร?</p>
           <div id="family-member-chips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
         </div>
 
-        <!-- Name input: hidden by default, shown if no chips or typing new name -->
-        <div id="name-input-section" style="display:none;margin-bottom:14px;">
-          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;">👤 พิมพ์ชื่อของคุณ</p>
-          <p style="font-size:11px;color:var(--gray);margin-bottom:6px;">ชื่อนี้จะแสดงใน timeline และ rating</p>
-          <input id="setup-name-input" class="form-input" placeholder="เช่น สมชาย, น้องเฟิร์น..." style="font-size:16px;font-weight:700;" maxlength="20" onkeydown="if(event.key==='Enter')setupDone()"/>
+        <!-- Name input -->
+        <div id="name-input-section" style="display:none;margin-bottom:12px;">
+          <p style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px;">👤 พิมพ์ชื่อของคุณ</p>
+          <input id="setup-name-input" class="form-input" placeholder="เช่น สมชาย, น้องเฟิร์น..." style="font-size:15px;font-weight:700;" maxlength="20" onkeydown="if(event.key==='Enter')setupDone()"/>
         </div>
 
-        <!-- สมาชิกเพิ่มเติมในกลุ่ม -->
+        <!-- สมาชิกเพิ่มเติม -->
         <div style="margin-bottom:16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-size:12px;font-weight:700;color:var(--navy);">👥 สมาชิกในกลุ่ม <span style="font-weight:400;color:var(--gray);">(ไม่บังคับ)</span></span>
-            <button onclick="addExtraMemberRow()" style="border:none;background:var(--pink);color:#fff;border-radius:10px;padding:4px 12px;font-size:12px;font-weight:700;cursor:pointer;">+ เพิ่ม</button>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:11px;font-weight:700;color:var(--gray);">👥 สมาชิกที่มาด้วย <span style="font-weight:400;">(ไม่บังคับ)</span></span>
+            <button onclick="addExtraMemberRow()" style="border:none;background:var(--light-gray);color:var(--navy);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;">+ เพิ่ม</button>
           </div>
           <div id="extra-members-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-          <p style="font-size:11px;color:#bbb;margin-top:6px;">คนที่ไม่อยากบันทึกเอง ใส่ชื่อไว้ที่นี่เพื่อ rating ร่วมกันได้</p>
         </div>
 
-        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:16px;padding:16px;font-size:16px;min-height:56px;border-radius:16px;box-shadow:0 6px 20px rgba(255,79,123,0.4);">🏰 เข้าร่วมทริป!</button>
+        <button onclick="setupDone()" class="btn btn-primary" style="margin-bottom:12px;padding:15px;font-size:16px;min-height:54px;border-radius:16px;box-shadow:0 6px 20px rgba(255,79,123,0.4);">🏰 เข้าร่วมทริป!</button>
       </div>
 
-      <button onclick="backToTrips()" style="width:100%;padding:10px;border:none;background:none;color:var(--gray);font-size:13px;cursor:pointer;margin-top:4px;">← กลับเลือกทริป</button>
+      <button onclick="backToTrips()" style="width:100%;padding:10px;border:none;background:none;color:var(--gray);font-size:12px;cursor:pointer;">← กลับเลือกทริป</button>
     </div>
   </div>
 </div>
@@ -689,15 +666,9 @@ window.FIREBASE_CONFIG = {
       <!-- Step 3: Details (shown after ride selected) -->
       <div id="ride-details" style="display:none;position:relative;">
         <div class="divider"></div>
-        <div class="form-row-2">
-          <div>
-            <label class="form-label">เวลา</label>
-            <input type="time" class="form-input" id="ride-time"/>
-          </div>
-          <div>
-            <label class="form-label">ลำดับที่</label>
-            <input type="number" class="form-input" id="ride-order" placeholder="อัตโนมัติ" min="1"/>
-          </div>
+        <div style="display:none;">
+          <input type="time" class="form-input" id="ride-time"/>
+          <input type="number" class="form-input" id="ride-order" placeholder="อัตโนมัติ" min="1"/>
         </div>
 
         <div class="form-row">
@@ -746,15 +717,10 @@ window.FIREBASE_CONFIG = {
 
       <div id="show-details" style="display:none;">
         <div class="divider"></div>
-        <div class="form-row-2">
-          <div>
-            <label class="form-label">เวลา</label>
-            <input type="time" class="form-input" id="show-time"/>
-          </div>
-          <div>
-            <label class="form-label">ระยะเวลา (นาที)</label>
-            <input type="number" class="form-input" id="show-duration" placeholder="เช่น 30" min="1"/>
-          </div>
+        <div style="display:none;"><input type="time" class="form-input" id="show-time"/></div>
+        <div class="form-row">
+          <label class="form-label">ระยะเวลา (นาที)</label>
+          <input type="number" class="form-input" id="show-duration" placeholder="เช่น 30" min="1"/>
         </div>
 
         <div class="form-row">
@@ -1758,7 +1724,7 @@ function selectLandingTrip(id,name,el){
   landingSelectedTripId=id;
   document.getElementById('landing-step-trips').style.display='none';
   document.getElementById('landing-step-name').style.display='block';
-  document.getElementById('landing-chosen-trip').textContent='🏰 '+name;
+  document.getElementById('landing-chosen-trip').textContent=name;
   document.getElementById('setup-name-input').value='';
   document.getElementById('new-family-input').value='';
   document.getElementById('extra-members-list').innerHTML='';
@@ -1797,7 +1763,7 @@ function renderFamilyChips(){
     const members=families[fName]||[];
     return `<button data-family="${fName}" style="display:flex;align-items:center;justify-content:space-between;width:100%;border:1.5px solid #e0e0e0;background:#f8f9ff;border-radius:14px;padding:12px 16px;cursor:pointer;font-family:'Sarabun',sans-serif;text-align:left;">
       <div>
-        <div style="font-size:14px;font-weight:700;color:var(--navy);">🏠 ${fName}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);">${fName}</div>
         ${members.length?`<div style="font-size:11px;color:var(--gray);margin-top:2px;">${members.join(' · ')}</div>`:'<div style="font-size:11px;color:#bbb;">ยังไม่มีสมาชิก</div>'}
       </div>
       <span style="font-size:18px;color:var(--pink);">›</span>
@@ -1810,8 +1776,11 @@ function renderFamilyChips(){
 
 function selectFamily(fName){
   selectedFamilyName=fName;
+  // Keep step-family visible but collapse it (hide create-new input, gray out others)
   document.getElementById('step-family').style.display='none';
-  document.getElementById('step-name').style.display='block';
+  const stepName=document.getElementById('step-name');
+  stepName.style.display='block';
+  stepName.style.animation='slideDown 0.2s ease';
   document.getElementById('selected-family-label').textContent='🏠 '+fName;
   const families=getFamilies();
   const members=(families[fName]||[]).filter(m=>m);
@@ -2285,14 +2254,14 @@ function renderFamilyStars(type){
   }
   const state=familyStarState[type]||{};
   const FEELINGS={
-    ride:['😨','😵','😐','😊','😄','🤩','😱'],
+    ride:['😨','😵','😐','😊','😄','🤩'],
     show:['🥱','😐','😊','😄','😭','🤩'],
     food:['😣','😐','😊','😄','🤤','🤩']
   };
   const FEELING_LABELS={
-    ride:['กลัวมาก','เวียนหัว','ธรรมดา','ดี','สนุกมาก','สุดยอด!','ตื่นเต้น!'],
-    show:['น่าเบื่อ','ธรรมดา','ดี','สนุกมาก','ซาบซึ้ง','สุดยอด!'],
-    food:['แย่','ธรรมดา','ดี','อร่อย','อร่อยมาก','สุดยอด!']
+    ride:['กลัวมาก','เวียนหัว','ธรรมดา','ดี','สนุกมาก','ต้องซ้ำ!'],
+    show:['น่าเบื่อ','ธรรมดา','ดี','สนุกมาก','ซาบซึ้ง','ต้องซ้ำ!'],
+    food:['แย่','ธรรมดา','ดี','อร่อย','อร่อยมาก','ต้องกิน!']
   };
   const feelings=FEELINGS[type]||FEELINGS.ride;
   const feelingLabels=FEELING_LABELS[type]||FEELING_LABELS.ride;
@@ -2710,6 +2679,18 @@ function renderTimeline(){
     </div>`;
   });
   container.innerHTML='<div class="tl-center">'+rows.join('')+'</div>';
+  // Inline star click handler
+  container.querySelectorAll('.tl-istar').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const lid=parseInt(el.dataset.lid), n=parseInt(el.dataset.n);
+      const log=logs.find(l=>l.id===lid);
+      if(!log)return;
+      log.stars=log.stars===n?0:n;
+      saveLogs();
+      if(firebaseReady&&db) syncLogToFirebase(log);
+      renderTimeline();
+    });
+  });
 }
 
 function timelineCardInner(item, inGroup){
@@ -2744,7 +2725,11 @@ function timelineCardInner(item, inGroup){
     </div>
     ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
     ${starsStr||item.feeling?`<div style="padding:0 12px 8px;display:flex;gap:4px;align-items:center;">${starsStr?`<span style="font-size:12px;">${starsStr}</span>`:''} ${item.feeling?`<span style="font-size:16px;">${item.feeling}</span>`:''}</div>`:''}
-    ${item.note?`<div class="log-item-note" style="margin:0 12px 8px;">"${item.note}"</div>`:''}`;
+    ${item.note?`<div class="log-item-note" style="margin:0 12px 8px;">"${item.note}"</div>`:''}
+    ${(item.type==='ride'||item.type==='show')&&isLog?`<div class="tl-inline-stars" data-logid="${item.id}" style="padding:0 12px 9px;display:flex;gap:2px;align-items:center;">
+      ${[1,2,3,4,5].map(n=>`<span class="tl-istar" data-lid="${item.id}" data-n="${n}" style="font-size:18px;cursor:pointer;line-height:1;">${n<=(item.stars||0)?'⭐':'☆'}</span>`).join('')}
+      ${item.feeling?`<span style="font-size:15px;margin-left:4px;">${item.feeling}</span>`:''}
+    </div>`:''}`;
 }
 
 function timelineGroupInner(lead,members){
@@ -3046,6 +3031,126 @@ function showToast(msg){const t=document.getElementById('toast');t.textContent=m
 // ========== STARS / FEELINGS ==========
 function setStars(val,type){stars[type]=val;const c=document.getElementById(type+'-stars');if(!c)return;c.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('active',i<val));const l=document.getElementById(type+'-rating-label');if(l)l.textContent=val>0?'⭐'.repeat(val)+' '+RATING_LABELS[val]:'แตะดาวเพื่อให้คะแนน';}
 function setFeeling(type,emoji,label){feelings[type]=emoji;const c=document.getElementById(type+'-feelings');if(!c)return;c.querySelectorAll('.feeling-btn').forEach(b=>b.classList.remove('selected'));if(emoji){const btn=[...c.querySelectorAll('.feeling-btn')].find(b=>b.querySelector('.f-emoji')?.textContent===emoji);if(btn)btn.classList.add('selected');}}
+
+// ========== QUICK SESSION ==========
+let qsQueue=[]; // [{name, zone, stars, time}]
+
+function openQuickSession(){
+  qsQueue=[];
+  const overlay=document.getElementById('qs-overlay');
+  const sheet=document.getElementById('qs-sheet');
+  overlay.style.display='block';
+  sheet.style.display='block';
+  document.getElementById('qs-search').value='';
+  document.getElementById('qs-suggestions').style.display='none';
+  renderQsQueue();
+  setTimeout(()=>document.getElementById('qs-search').focus(),200);
+}
+
+function closeQuickSession(){
+  document.getElementById('qs-overlay').style.display='none';
+  document.getElementById('qs-sheet').style.display='none';
+}
+
+function qsSearch(val){
+  const sug=document.getElementById('qs-suggestions');
+  if(!val.trim()){sug.style.display='none';return;}
+  const matches=RIDES_DATA.filter(r=>r.name.toLowerCase().includes(val.toLowerCase())||
+    r.name.includes(val)).slice(0,8);
+  if(!matches.length){sug.style.display='none';return;}
+  sug.innerHTML=matches.map(r=>{
+    const enc=encodeURIComponent(r.name);
+    const zoneEnc=encodeURIComponent(r.zone||'');
+    return `<div data-action="qs-pick" data-name="${enc}" data-zone="${zoneEnc}"
+      style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f5f5f5;font-size:13px;font-weight:600;color:var(--navy);display:flex;justify-content:space-between;align-items:center;">
+      <span>${r.name}</span>
+      <span style="font-size:10px;color:var(--gray);">${r.zone||''}</span>
+    </div>`;
+  }).join('');
+  sug.style.display='block';
+  sug.querySelectorAll('[data-action="qs-pick"]').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const name=decodeURIComponent(el.dataset.name);
+      const zone=decodeURIComponent(el.dataset.zone);
+      qsAddItem(name,zone);
+      document.getElementById('qs-search').value='';
+      sug.style.display='none';
+      document.getElementById('qs-search').focus();
+    });
+  });
+}
+
+function qsAddItem(name,zone){
+  const now=new Date();
+  const time=now.toTimeString().slice(0,5);
+  qsQueue.push({name,zone,stars:0,time,id:Date.now()+Math.random()});
+  renderQsQueue();
+}
+
+function qsRemoveItem(id){
+  qsQueue=qsQueue.filter(q=>q.id!==id);
+  renderQsQueue();
+}
+
+function qsSetStars(id,n){
+  const item=qsQueue.find(q=>q.id===id);
+  if(item) item.stars=item.stars===n?0:n;
+  renderQsQueue();
+}
+
+function renderQsQueue(){
+  const container=document.getElementById('qs-queue');
+  const saveBtn=document.getElementById('qs-save-btn');
+  const badge=document.getElementById('qs-count-badge');
+  if(!qsQueue.length){
+    container.innerHTML='<div style="text-align:center;padding:12px;font-size:12px;color:#bbb;">ค้นหาเครื่องเล่นแล้วกดเพิ่มได้เลย ☝️</div>';
+    saveBtn.style.display='none';
+    return;
+  }
+  saveBtn.style.display='block';
+  badge.textContent=qsQueue.length+' รายการ';
+  container.innerHTML=qsQueue.map((item,idx)=>{
+    const enc=encodeURIComponent(JSON.stringify({id:item.id}));
+    const stars=[1,2,3,4,5].map(n=>`<span data-action="qs-star" data-id="${item.id}" data-n="${n}"
+      style="font-size:20px;cursor:pointer;line-height:1;">${n<=item.stars?'⭐':'☆'}</span>`).join('');
+    return `<div style="background:#f8f9ff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;">
+      <div style="font-size:10px;font-weight:700;color:#bbb;min-width:16px;">${idx+1}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+        <div style="font-size:10px;color:var(--gray);">${item.zone||''} · ${item.time}</div>
+      </div>
+      <div style="display:flex;gap:1px;">${stars}</div>
+      <button data-action="qs-remove" data-id="${item.id}" style="border:none;background:none;color:#ccc;font-size:16px;cursor:pointer;padding:0 2px;flex-shrink:0;">✕</button>
+    </div>`;
+  }).join('');
+  // attach events via delegation
+  container.querySelectorAll('[data-action="qs-star"]').forEach(el=>{
+    el.addEventListener('click',()=>qsSetStars(parseFloat(el.dataset.id),parseInt(el.dataset.n)));
+  });
+  container.querySelectorAll('[data-action="qs-remove"]').forEach(el=>{
+    el.addEventListener('click',()=>qsRemoveItem(parseFloat(el.dataset.id)));
+  });
+}
+
+function saveQuickSession(){
+  if(!currentMember){showToast('กรุณาเลือกชื่อก่อน');return;}
+  if(!currentTripId){showToast('ยังไม่ได้เลือกทริป');return;}
+  if(!qsQueue.length){showToast('ยังไม่มีรายการ');return;}
+  const now=Date.now();
+  qsQueue.forEach((item,i)=>{
+    rideOrderCount++;
+    const log={id:now+i,type:'ride',name:item.name,zone:item.zone,
+      order:rideOrderCount,wait:0,time:item.time,stars:item.stars,
+      feeling:'',note:'',round:1,member:currentMember,
+      tripId:currentTripId,timestamp:now+i,groupId:now+i};
+    logs.push(log);
+    saveLogs();
+    if(firebaseReady&&db) syncLogToFirebase(log);
+  });
+  showToast(`✅ บันทึก ${qsQueue.length} รายการแล้ว`);
+  closeQuickSession();
+  if(document.getElementById('page-timeline')?.classList.contains('active')) renderTimeline();
+}
 
 // ========== TABS ==========
 function showTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+name)?.classList.add('active');document.getElementById('tab-'+name)?.classList.add('active');if(name==='timeline')renderTimeline();if(name==='summary'){renderSummary();const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display=isAdminMode?'':'none';}if(name==='info'){renderAttractions();updateFavBadge();}if(name==='export')generateExport();}
