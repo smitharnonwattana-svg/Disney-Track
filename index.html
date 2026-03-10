@@ -2448,15 +2448,19 @@ function saveRide(){
     // Edit mode: update only the single log being edited
     const idx=logs.findIndex(l=>l.id===editingLogId);
     if(idx!==-1){
-      const updated={...logs[idx],...logsToSave[0],id:editingLogId};
+      const ownerM=editingLogMember||logs[idx].member;
+      const ownerStars=(familyStarState.ride||{})[ownerM]||logsToSave[0].stars;
+      const ownerNote=(familyStarState.ride||{})[ownerM+'_note']||logsToSave[0].note||'';
+      const updated={...logs[idx],wait:logsToSave[0].wait,time:logsToSave[0].time,stars:ownerStars,note:ownerNote,id:editingLogId};
       logs[idx]=updated;
       dbSet(tripPath('logs/'+editingLogId),updated);
     }
-    editingLogId=null;
+    const savedEditId=editingLogId;
+    editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'ride');
     resetRideForm();renderTimeline();renderSummary();renderAttractions();
     showToast('✏️ แก้ไขสำเร็จ — '+name+'!');
-    showTab('timeline');setTimeout(()=>scrollToLog(logsToSave[0]?.id),300);
+    showTab('timeline');setTimeout(()=>scrollToLog(savedEditId),300);
   } else {
     logsToSave.forEach(log=>{logs.push(log);dbPush(tripPath('logs'),log);});
     saveLogs();saveFamilyRatings(name,'ride');
@@ -2489,11 +2493,18 @@ function saveShow(){
   });
   if(editingLogId){
     const idx=logs.findIndex(l=>l.id===editingLogId);
-    if(idx!==-1){const updated={...logs[idx],...logsToSave[0],id:editingLogId};logs[idx]=updated;dbSet(tripPath('logs/'+editingLogId),updated);}
-    editingLogId=null;
+    if(idx!==-1){
+      const ownerM=editingLogMember||logs[idx].member;
+      const ownerStars=(familyStarState.show||{})[ownerM]||logsToSave[0].stars;
+      const ownerNote=(familyStarState.show||{})[ownerM+'_note']||logsToSave[0].note||'';
+      const updated={...logs[idx],wait:logsToSave[0].wait,time:logsToSave[0].time,stars:ownerStars,note:ownerNote,id:editingLogId};
+      logs[idx]=updated;dbSet(tripPath('logs/'+editingLogId),updated);
+    }
+    const savedEditId=editingLogId;
+    editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'show');
     resetShowForm();renderTimeline();renderSummary();showToast('✏️ แก้ไขสำเร็จ — '+name+'!');
-    showTab('timeline');setTimeout(()=>scrollToLog(logsToSave[0]?.id),300);
+    showTab('timeline');setTimeout(()=>scrollToLog(savedEditId),300);
   } else {
     logsToSave.forEach(log=>{logs.push(log);dbPush(tripPath('logs'),log);});
     saveLogs();saveFamilyRatings(name,'show');
@@ -2902,6 +2913,7 @@ function openEditLog(id){
   const canEdit=isAdminMode||(log.member===currentMember)||(myFamily&&logFamily&&myFamily===logFamily);
   if(!canEdit){showToast('❌ แก้ไขได้เฉพาะข้อมูลของครอบครัวตัวเองเท่านั้น');return;}
   editingLogId=id;
+  editingLogMember=log.member; // track whose log we're editing
   const type=log.type;
   showTab('add');
   selectType(type);
@@ -2928,13 +2940,16 @@ function openEditLog(id){
       if(starBtns.length&&log.stars){
         starBtns.forEach((b,i)=>{b.classList.toggle('active',i<log.stars);});
       }
-      // Pre-fill note for the member
+      // Pre-fill note+stars for the log owner's card
       const noteInputs=document.querySelectorAll(`.family-note-input[data-member="${log.member}"]`);
       noteInputs.forEach(ni=>{ni.value=log.note||'';});
       if(!familyStarState[type])familyStarState[type]={};
       familyStarState[type][log.member+'_note']=log.note||'';
-      // Pre-fill stars in familyStarState
-      if(log.stars){familyStarState[type][log.member]=log.stars;}
+      familyStarState[type][log.member]=log.stars||0;
+      // Highlight the log owner's card with a border
+      document.querySelectorAll('.family-star-card').forEach(card=>{
+        card.style.outline=card.dataset.member===log.member?'2px solid var(--pink)':'';
+      });
       // Scroll to form
       const det=document.getElementById(type==='ride'?'ride-details':'show-details');
       if(det) det.scrollIntoView({behavior:'smooth',block:'start'});
@@ -2942,7 +2957,7 @@ function openEditLog(id){
     },150);
   },100);
 }
-let editingLogId=null;
+let editingLogId=null,editingLogMember=null;
 
 function deleteLog(id){
   if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถลบได้');return;}
@@ -2963,10 +2978,15 @@ function deleteExpense(id){expenses=expenses.filter(e=>e.id!==id);saveExpenses()
 function renderSummary(){
   const tl=tripLogs(),te=tripExps();
   const rides=tl.filter(l=>l.type==='ride'),shows=tl.filter(l=>l.type==='show'),food=tl.filter(l=>l.type==='food');
-  // Count unique sessions (not per-member logs)
-  const uniqueRideSessions=new Set(rides.map(l=>l.groupId||l.id)).size;
-  const uniqueShowSessions=new Set(shows.map(l=>l.groupId||l.id)).size;
-  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
+  // Find member with most logs → use as representative for counts
+  const memberLogCount={};
+  tl.filter(l=>l.type==='ride'||l.type==='show').forEach(l=>{if(l.member)memberLogCount[l.member]=(memberLogCount[l.member]||0)+1;});
+  const topMember=Object.entries(memberLogCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  const repRides=topMember?rides.filter(l=>l.member===topMember):rides;
+  const repShows=topMember?shows.filter(l=>l.member===topMember):shows;
+  const uniqueRideSessions=new Set(repRides.map(l=>l.groupId||l.id)).size;
+  const uniqueShowSessions=new Set(repShows.map(l=>l.groupId||l.id)).size;
+  const totalWait=[...new Set(repRides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
   document.getElementById('stat-rides').textContent=uniqueRideSessions;document.getElementById('stat-shows').textContent=uniqueShowSessions;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const ridesWithWait=rides.filter(r=>r.wait>0);const avgWait=ridesWithWait.length?Math.round(totalWait/ridesWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
   const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0),totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
   const catMap={};te.forEach(e=>{const c=e.cat||'💊 อื่นๆ';catMap[c]=(catMap[c]||0)+(e.priceYen||0);});
@@ -2995,35 +3015,39 @@ function renderSummary(){
 
 function renderFamilyLeaderboard(tl){
   const el=document.getElementById('family-leaderboard');if(!el)return;
-  // Only use logs from current trip - do NOT mix in global familyRatings
   const mm={};
-  tl.filter(l=>l.stars>0&&l.member).forEach(l=>{if(!mm[l.member])mm[l.member]={total:0,count:0};mm[l.member].total+=l.stars;mm[l.member].count++;});
-  if(!Object.keys(mm).length){el.innerHTML='<p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล — ให้ทุกคน rate หลังเล่น</p>';return;}
+  tl.filter(l=>l.stars>0&&l.member&&(l.type==='ride'||l.type==='show')).forEach(l=>{
+    if(!mm[l.member])mm[l.member]={total:0,count:0};
+    mm[l.member].total+=l.stars;mm[l.member].count++;
+  });
+  if(!Object.keys(mm).length){el.innerHTML='<p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล</p>';return;}
   const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
   el.innerHTML=Object.entries(mm).sort((a,b)=>(b[1].total/b[1].count)-(a[1].total/a[1].count)).map(([m,s],i)=>{
-    const avg=(s.total/s.count).toFixed(1);
+    const avgNum=s.total/s.count;
+    const avgR=Math.round(avgNum);
+    const col=TIER_COLOR[avgR]||'var(--gold)';
     const medals=['🥇','🥈','🥉'];
     const rank=i<3?`<span style="font-size:20px;">${medals[i]}</span>`:`<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">${i+1}</span>`;
     const fam=memberFamilies[m]?`<span style="font-size:10px;background:#f0f4ff;color:var(--navy);padding:1px 7px;border-radius:8px;margin-left:5px;font-weight:600;">${memberFamilies[m]}</span>`:'';
-    const bar=Math.round((s.total/s.count)/5*100);
-    const safeM=m.replace(/'/g,"\\'");
+    const bar=Math.round(avgNum/5*100);
+    const safeM=m.replace(/'/g,"\'");
     return `<div class="family-leaderboard-row" style="flex-direction:column;gap:6px;padding:10px 0;cursor:pointer;border-radius:10px;transition:background 0.15s;" onclick="openMemberHistory('${safeM}')" onmouseover="this.style.background='#f8f0ff'" onmouseout="this.style.background=''">
       <div style="display:flex;align-items:center;gap:8px;">
         ${rank}
         <span style="font-size:14px;font-weight:700;color:var(--navy);">${m}</span>${fam}
         <div style="margin-left:auto;text-align:right;display:flex;align-items:center;gap:6px;">
-          <span style="font-size:16px;font-weight:700;color:var(--gold);">${avg}</span>
-          <span style="font-size:11px;color:var(--gray);">${s.count} รายการ</span>
+          <span style="font-weight:900;font-size:18px;color:${col};">${TIER_LABEL[avgR]||''}</span>
+          <span style="font-size:11px;color:${col};font-weight:600;">${avgNum.toFixed(1)}</span>
+          <span style="font-size:10px;color:var(--gray);">${s.count} ครั้ง</span>
           <span style="font-size:14px;color:#ccc;">›</span>
         </div>
       </div>
       <div style="height:5px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-left:32px;">
-        <div style="height:100%;width:${bar}%;background:linear-gradient(90deg,var(--gold),var(--pink));border-radius:4px;"></div>
+        <div style="height:100%;width:${bar}%;background:${col};border-radius:4px;opacity:0.7;"></div>
       </div>
     </div>`;
   }).join('');
 }
-
 function openMemberHistory(member){
   const modal=document.getElementById('detail-modal');
   const hero=document.getElementById('modal-hero');
