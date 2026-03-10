@@ -2473,7 +2473,9 @@ function saveRide(){
   if(editingLogId){
     // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    const groupLogs=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    const groupLogs=sameGrp.length>1?sameGrp:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]);
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
@@ -2522,7 +2524,9 @@ function saveShow(){
   });
   if(editingLogId){
     const refLog=logs.find(l=>l.id===editingLogId);
-    const groupLogs=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    const groupLogs=sameGrp.length>1?sameGrp:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]);
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
@@ -2828,7 +2832,7 @@ function timelineCardInner(item, inGroup){
   if(item.type==='expense')badges+=`<span class="badge badge-purple" style="font-size:10px;">${item.cat}</span><span class="badge badge-purple" style="font-size:10px;">¥${(item.priceYen||0).toLocaleString()}</span>`;
   const mergeBtn=(item.type==='ride'||item.type==='show')&&isLog
     ?`<button class="tl-delete-btn" onclick="openMergeModal(${item.id})" title="รวมกับกลุ่มอื่น" style="color:#bbb;font-size:13px;margin-right:2px;">🔗</button>`:'';
-  const canAct=(()=>{const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');const myF=mf[currentMember];const logF=mf[item.member];return isAdminMode||(item.member===currentMember)||(myF&&logF&&myF===logF);})();
+  const canAct=true;
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
     <div class="tl-card-header">
       <div class="tl-card-title">${TYPE_LABEL[item.type]||''} ${item.name}</div>
@@ -2861,7 +2865,7 @@ function timelineGroupInner(lead,members){
     const starsStr=m.stars?tierBadge(m.stars,13,true):'<span style="font-size:10px;color:#bbb;">—</span>';
     return `<div class="tl-member-row">
       <span class="tl-member-name" style="color:${col};">${m.member} ${starsStr}${m.note&&m.note!=='เคยเล่น'?`<span style="font-size:11px;color:#888;font-weight:400;margin-left:2px;">"${m.note}"</span>`:''}</span>
-      ${(()=>{const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');const myF=mf[currentMember];const logF=mf[m.member];const ok=isAdminMode||(m.member===currentMember)||(myF&&logF&&myF===logF);return ok?`<div style="display:flex;gap:4px;margin-left:auto;"><button class="tl-edit-btn" data-edit-id="${m.id}" style="font-size:10px;padding:2px 7px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;cursor:pointer;color:var(--navy);">✏️</button><button class="tl-delete-btn" data-del-id="${m.id}" data-del-type="log">✕</button></div>`:'';})()} 
+      '<div style="display:flex;gap:4px;margin-left:auto;"><button class="tl-edit-btn" data-edit-id="'+m.id+'" style="font-size:10px;padding:2px 7px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;cursor:pointer;color:var(--navy);">✏️</button><button class="tl-delete-btn" data-del-id="'+m.id+'" data-del-type="log">✕</button></div>' 
     </div>`;
   }).join('');
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
@@ -2945,11 +2949,7 @@ function doMerge(srcId,targetId){
 function openEditLog(id){
   const log=logs.find(l=>l.id===id);
   if(!log)return;
-  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const myFamily=memberFamilies[currentMember];
-  const logFamily=memberFamilies[log.member];
-  const canEdit=isAdminMode||(log.member===currentMember)||(myFamily&&logFamily&&myFamily===logFamily);
-  if(!canEdit){showToast('❌ แก้ไขได้เฉพาะข้อมูลของครอบครัวตัวเองเท่านั้น');return;}
+  // All edits allowed
   editingLogId=id;
   editingLogMember=log.member; // track whose log we're editing
   const type=log.type;
@@ -2980,7 +2980,9 @@ function openEditLog(id){
       }
       // Restore ALL members' stars+notes from the same group session
       if(!familyStarState[type])familyStarState[type]={};
-      const groupLogs=logs.filter(l=>l.tripId===log.tripId&&(l.groupId===log.groupId||(l.groupId==null&&l.id===log.id))&&l.type===type&&l.name===log.name);
+      // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+      const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
+      const groupLogs=sameGroup.length>1?sameGroup:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name);
       groupLogs.forEach(gl=>{
         familyStarState[type][gl.member]=gl.stars||0;
         familyStarState[type][gl.member+'_note']=gl.note||'';
@@ -3013,12 +3015,7 @@ function deleteLog(id){
   if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถลบได้');return;}
   const log=logs.find(l=>l.id===id);
   if(!log)return;
-  // Check ownership: only same family or same member can delete
-  const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const myFamily=memberFamilies[currentMember];
-  const logFamily=memberFamilies[log.member];
-  const canDelete=isAdminMode||(log.member===currentMember)||(myFamily&&logFamily&&myFamily===logFamily);
-  if(!canDelete){showToast('❌ ลบได้เฉพาะข้อมูลของครอบครัวตัวเองเท่านั้น');return;}
+  // All deletes allowed
   if(!confirm('ลบรายการ "'+log.name+'" ของ '+log.member+' ?')){return;}
   logs=logs.filter(l=>l.id!==id);saveLogs();renderTimeline();renderSummary();renderAttractions();showToast('🗑️ ลบรายการแล้ว');
 }
@@ -3064,7 +3061,7 @@ function renderSummary(){
     const typeIcon=r.type==='show'?'🎭':'🎢';
     const stars=Math.round(r.avg);
     const safeName=r.name.replace(/'/g,"\\'");
-    return '<div class="expense-row" onclick="openAttractionDetail(\''+safeName+'\')" style="cursor:pointer;border-radius:10px;transition:background 0.15s;" onmouseover="this.style.background=\'#f8f0ff\'" onmouseout="this.style.background=\'\'">'+'<div class="expense-cat">'+['🥇','🥈','🥉','4️⃣','5️⃣'][i]+' '+typeIcon+' '+r.name+'</div>'+'<div style="display:flex;align-items:center;gap:4px;">'+tierBadge(stars,13,true)+'</span>'+(r.count>1?'<span style="font-size:10px;color:#aaa;">('+r.count+'ครั้ง avg '+r.avg.toFixed(1)+')</span>':'')+'<span style="font-size:11px;color:#ccc;margin-left:4px;">›</span></div></div>';
+    return '<div class="expense-row" onclick="openAttractionDetail(\''+safeName+'\')" style="cursor:pointer;border-radius:10px;transition:background 0.15s;" onmouseover="this.style.background=\'#f8f0ff\'" onmouseout="this.style.background=\'\'">'+'<div class="expense-cat">'+['🥇','🥈','🥉','4️⃣','5️⃣'][i]+' '+typeIcon+' '+r.name+'</div>'+'<div style="display:flex;align-items:center;gap:4px;">'+tierBadge(stars,13,true)+'</span>'+(r.count>1?'<span style="font-size:10px;color:#aaa;">('+r.count+'คน avg '+r.avg.toFixed(1)+')</span>':'')+'<span style="font-size:11px;color:#ccc;margin-left:4px;">›</span></div></div>';
   }).join('');}
   renderFamilyLeaderboard(tl);
   const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display=isAdminMode?'':'none';
