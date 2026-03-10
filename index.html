@@ -2963,8 +2963,11 @@ function deleteExpense(id){expenses=expenses.filter(e=>e.id!==id);saveExpenses()
 function renderSummary(){
   const tl=tripLogs(),te=tripExps();
   const rides=tl.filter(l=>l.type==='ride'),shows=tl.filter(l=>l.type==='show'),food=tl.filter(l=>l.type==='food');
-  const totalWait=rides.reduce((s,r)=>s+(r.wait||0),0);
-  document.getElementById('stat-rides').textContent=rides.length;document.getElementById('stat-shows').textContent=shows.length;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const ridesWithWait=rides.filter(r=>r.wait>0);const avgWait=ridesWithWait.length?Math.round(totalWait/ridesWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
+  // Count unique sessions (not per-member logs)
+  const uniqueRideSessions=new Set(rides.map(l=>l.groupId||l.id)).size;
+  const uniqueShowSessions=new Set(shows.map(l=>l.groupId||l.id)).size;
+  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
+  document.getElementById('stat-rides').textContent=uniqueRideSessions;document.getElementById('stat-shows').textContent=uniqueShowSessions;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const ridesWithWait=rides.filter(r=>r.wait>0);const avgWait=ridesWithWait.length?Math.round(totalWait/ridesWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
   const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0),totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
   const catMap={};te.forEach(e=>{const c=e.cat||'💊 อื่นๆ';catMap[c]=(catMap[c]||0)+(e.priceYen||0);});
   const expDiv=document.getElementById('expense-summary');
@@ -3119,7 +3122,7 @@ function generateExport(){
   const rides=tl.filter(l=>l.type==='ride').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   const shows=tl.filter(l=>l.type==='show').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   const food=tl.filter(l=>l.type==='food').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const totalWait=rides.reduce((s,r)=>s+(r.wait||0),0);const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0);const totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
+  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0);const totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
   const trip=trips.find(t=>t.id===currentTripId);const now=new Date();
   let text='🏰 บันทึกการเที่ยว Tokyo Disneyland\n📅 '+(trip?trip.name:now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}))+'\n'+'='.repeat(40)+'\n\n🎢 เครื่องเล่น ('+rides.length+' รายการ)\n'+'─'.repeat(30)+'\n';
   rides.forEach((r,i)=>{text+=(i+1)+'. '+r.name+' ['+(r.time||'--:--')+']'+(r.zone?' ('+r.zone+')':'')+'\n';if(r.wait>0)text+='   ⏳ รอ: '+r.wait+'น.\n';if(r.stars>0)text+='   ['+TIER_LABEL[r.stars]+'] '+RATING_LABELS[r.stars]+'\n';if(r.feeling)text+='   '+r.feeling+'\n';if(r.note)text+='   📝 "'+r.note+'"\n';const fr=getFamilyAvg(r.name);if(fr)text+='   👨‍👩‍👧 ครอบครัว: '+fr.avg.toFixed(1)+' ('+Object.entries(fr.ratings).map(([m,s])=>m+':'+s).join(', ')+')\n';text+='\n';});
