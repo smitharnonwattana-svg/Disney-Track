@@ -200,6 +200,8 @@ window.FIREBASE_CONFIG = {
   .tl-member-row:last-child{border-bottom:none;}
   .tl-member-name{font-size:12px;font-weight:700;flex:1;}
   .tl-member-stars{font-size:11px;}
+  .pin-btn{padding:14px;font-size:20px;font-weight:700;border:1.5px solid #ddd;border-radius:12px;background:#fff;cursor:pointer;color:var(--navy);transition:background 0.1s,transform 0.1s;-webkit-tap-highlight-color:transparent;}
+  .pin-btn:active{background:var(--light-gray);transform:scale(0.93);}
   /* old classes kept for compat */
   .timeline-item{display:none;}
   .timeline-dot{display:none;}
@@ -540,7 +542,22 @@ window.FIREBASE_CONFIG = {
     <div style="font-size:36px;margin-bottom:8px;">🔐</div>
     <h3 style="font-family:'Prompt',sans-serif;font-size:17px;color:var(--navy);margin-bottom:6px;">Admin Mode</h3>
     <p style="font-size:12px;color:var(--gray);margin-bottom:16px;">ใส่รหัสเพื่อสร้างทริปใหม่</p>
-    <input id="admin-code-input" type="password" class="form-input" placeholder="รหัส..." style="margin-bottom:14px;text-align:center;font-size:18px;letter-spacing:4px;" maxlength="10" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    <div id="admin-pin-display" style="text-align:center;font-size:24px;letter-spacing:8px;min-height:36px;margin-bottom:12px;color:var(--navy);font-weight:700;">&#8203;</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;max-width:220px;margin-left:auto;margin-right:auto;">
+      <button onclick="pinPress('1')" class="pin-btn">1</button>
+      <button onclick="pinPress('2')" class="pin-btn">2</button>
+      <button onclick="pinPress('3')" class="pin-btn">3</button>
+      <button onclick="pinPress('4')" class="pin-btn">4</button>
+      <button onclick="pinPress('5')" class="pin-btn">5</button>
+      <button onclick="pinPress('6')" class="pin-btn">6</button>
+      <button onclick="pinPress('7')" class="pin-btn">7</button>
+      <button onclick="pinPress('8')" class="pin-btn">8</button>
+      <button onclick="pinPress('9')" class="pin-btn">9</button>
+      <button onclick="pinPress('del')" class="pin-btn" style="font-size:18px;">⌫</button>
+      <button onclick="pinPress('0')" class="pin-btn">0</button>
+      <button onclick="adminLogin()" class="pin-btn" style="background:var(--pink);color:#fff;border-color:var(--pink);">✓</button>
+    </div>
+    <input id="admin-code-input" type="hidden" value=""/>
     <button onclick="adminLogin()" class="btn btn-primary" style="margin-bottom:10px;">เข้าสู่ระบบ</button>
     <button onclick="closeAdminModal()" style="width:100%;padding:8px;border:none;background:none;color:var(--gray);font-size:13px;cursor:pointer;">ยกเลิก</button>
   </div>
@@ -1940,7 +1957,16 @@ function closeAdminModal(){
   document.getElementById('admin-modal').style.display='none';
 }
 
-function adminLogin(){
+let _pinVal='';
+function pinPress(v){
+  if(v==='del'){_pinVal=_pinVal.slice(0,-1);}
+  else if(_pinVal.length<10){_pinVal+=v;}
+  const d=document.getElementById('admin-pin-display');
+  if(d)d.textContent=_pinVal?'●'.repeat(_pinVal.length):'';
+  const inp=document.getElementById('admin-code-input');
+  if(inp)inp.value=_pinVal;
+}
+function adminLogin(){_pinVal='';const disp=document.getElementById('admin-pin-display');if(disp)disp.textContent='';
   const code=document.getElementById('admin-code-input').value.trim();
   if(code!==ADMIN_CODE){showToast('❌ รหัสไม่ถูกต้อง');return;}
   isAdminMode=true;
@@ -2534,7 +2560,7 @@ function saveFood(){
   const myNote=myState[currentMember+'_note']||'';
   const log={id:Date.now(),type:'food',name:selectedFoodRestaurant,zone:selectedFoodZone,menu,time,priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),stars:myStars,feeling:'',note:myNote,timestamp:Date.now(),member:currentMember,tripId:currentTripId};
   logs.push(log);
-  if(priceYen>0){const exp={id:Date.now()+1,name:'🍜 '+selectedFoodRestaurant+(menu?' - '+menu:''),priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),cat:'🍜 อาหาร',tripId:currentTripId};expenses.push(exp);saveExpenses();dbPush(tripPath('expenses'),exp);}
+  // expense is tracked via the food log itself (priceYen in log)
   saveLogs();saveFamilyRatings(selectedFoodRestaurant,'food');dbPush(tripPath('logs'),log);
   const savedFoodId=log.id;
   resetFoodForm();renderTimeline();renderSummary();showToast('🍜 บันทึกร้านอาหารสำเร็จ!');
@@ -3012,8 +3038,15 @@ function renderSummary(){
   const uniqueShowSessions=new Set(repShows.map(l=>l.groupId||l.id)).size;
   const totalWait=[...new Set(repRides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
   document.getElementById('stat-rides').textContent=uniqueRideSessions;document.getElementById('stat-shows').textContent=uniqueShowSessions;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const ridesWithWait=rides.filter(r=>r.wait>0);const avgWait=ridesWithWait.length?Math.round(totalWait/ridesWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
-  const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0),totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
-  const catMap={};te.forEach(e=>{const c=e.cat||'💊 อื่นๆ';catMap[c]=(catMap[c]||0)+(e.priceYen||0);});
+  // Food costs: use food logs as single source of truth (exclude old food expense records to avoid double-count)
+  const nonFoodExps=te.filter(e=>!(e.cat||'').includes('อาหาร'));
+  const foodLogYen=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceYen||0),0);
+  const foodLogThb=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceThb||0),0);
+  const totalYen=nonFoodExps.reduce((s,e)=>s+(e.priceYen||0),0)+foodLogYen;
+  const totalThb=nonFoodExps.reduce((s,e)=>s+(e.priceThb||0),0)+foodLogThb;
+  const catMap={};
+  nonFoodExps.forEach(e=>{const c=e.cat||'💊 อื่นๆ';catMap[c]=(catMap[c]||0)+(e.priceYen||0);});
+  if(foodLogYen>0)catMap['🍜 อาหาร']=(catMap['🍜 อาหาร']||0)+foodLogYen;
   const expDiv=document.getElementById('expense-summary');
   if(!te.length){expDiv.innerHTML='<div class="empty-state" style="padding:16px 0"><p style="font-size:13px">ยังไม่มีข้อมูล</p></div>';}
   else{let h='';Object.entries(catMap).sort((a,b)=>b[1]-a[1]).forEach(([cat,amt])=>{const pct=totalYen>0?(amt/totalYen*100):0;h+='<div class="expense-row"><div class="expense-cat">'+cat+'</div><div class="expense-amount">¥'+amt.toLocaleString()+'</div></div><div class="expense-bar"><div class="expense-fill" style="width:'+pct+'%"></div></div>';});h+='<div class="expense-row" style="margin-top:10px;border-top:2px solid var(--pink);padding-top:10px"><div class="expense-cat" style="font-size:15px;color:var(--navy)">💴 รวมทั้งหมด</div><div style="text-align:right"><div class="expense-amount" style="font-size:17px">¥'+totalYen.toLocaleString()+'</div><div style="font-size:12px;color:var(--gray)">฿'+Math.round(totalThb).toLocaleString()+'</div></div></div>';expDiv.innerHTML=h;}
@@ -3170,7 +3203,7 @@ function generateExport(){
   const rides=tl.filter(l=>l.type==='ride').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   const shows=tl.filter(l=>l.type==='show').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   const food=tl.filter(l=>l.type==='food').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);const totalYen=te.reduce((s,e)=>s+(e.priceYen||0),0);const totalThb=te.reduce((s,e)=>s+(e.priceThb||0),0);
+  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);const _nonFoodE=te.filter(e=>!(e.cat||'').includes('อาหาร'));const _foodY=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceYen||0),0);const _foodT=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceThb||0),0);const totalYen=_nonFoodE.reduce((s,e)=>s+(e.priceYen||0),0)+_foodY;const totalThb=_nonFoodE.reduce((s,e)=>s+(e.priceThb||0),0)+_foodT;
   const trip=trips.find(t=>t.id===currentTripId);const now=new Date();
   let text='🏰 บันทึกการเที่ยว Tokyo Disneyland\n📅 '+(trip?trip.name:now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}))+'\n'+'='.repeat(40)+'\n\n🎢 เครื่องเล่น ('+rides.length+' รายการ)\n'+'─'.repeat(30)+'\n';
   rides.forEach((r,i)=>{text+=(i+1)+'. '+r.name+' ['+(r.time||'--:--')+']'+(r.zone?' ('+r.zone+')':'')+'\n';if(r.wait>0)text+='   ⏳ รอ: '+r.wait+'น.\n';if(r.stars>0)text+='   ['+TIER_LABEL[r.stars]+'] '+RATING_LABELS[r.stars]+'\n';if(r.feeling)text+='   '+r.feeling+'\n';if(r.note)text+='   📝 "'+r.note+'"\n';const fr=getFamilyAvg(r.name);if(fr)text+='   👨‍👩‍👧 ครอบครัว: '+fr.avg.toFixed(1)+' ('+Object.entries(fr.ratings).map(([m,s])=>m+':'+s).join(', ')+')\n';text+='\n';});
