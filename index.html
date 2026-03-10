@@ -2445,16 +2445,19 @@ function saveRide(){
     logsToSave.push(log);
   });
   if(editingLogId){
-    // Edit mode: update only the single log being edited
-    const idx=logs.findIndex(l=>l.id===editingLogId);
-    if(idx!==-1){
-      const ownerM=editingLogMember||logs[idx].member;
-      const ownerStars=(familyStarState.ride||{})[ownerM]||logsToSave[0].stars;
-      const ownerNote=(familyStarState.ride||{})[ownerM+'_note']||logsToSave[0].note||'';
-      const updated={...logs[idx],wait:logsToSave[0].wait,time:logsToSave[0].time,stars:ownerStars,note:ownerNote,id:editingLogId};
-      logs[idx]=updated;
-      dbSet(tripPath('logs/'+editingLogId),updated);
-    }
+    // Edit mode: update ALL logs in the same group session
+    const refLog=logs.find(l=>l.id===editingLogId);
+    const groupLogs=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    logsToUpdate.forEach(gl=>{
+      const gi=logs.findIndex(l=>l.id===gl.id);
+      if(gi===-1)return;
+      const mStars=(familyStarState.ride||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.ride||{})[gl.member+'_note']??gl.note??'';
+      const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
+      logs[gi]=updated;
+      dbSet(tripPath('logs/'+gl.id),updated);
+    });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'ride');
@@ -2492,14 +2495,17 @@ function saveShow(){
     logsToSave.push(log);
   });
   if(editingLogId){
-    const idx=logs.findIndex(l=>l.id===editingLogId);
-    if(idx!==-1){
-      const ownerM=editingLogMember||logs[idx].member;
-      const ownerStars=(familyStarState.show||{})[ownerM]||logsToSave[0].stars;
-      const ownerNote=(familyStarState.show||{})[ownerM+'_note']||logsToSave[0].note||'';
-      const updated={...logs[idx],wait:logsToSave[0].wait,time:logsToSave[0].time,stars:ownerStars,note:ownerNote,id:editingLogId};
-      logs[idx]=updated;dbSet(tripPath('logs/'+editingLogId),updated);
-    }
+    const refLog=logs.find(l=>l.id===editingLogId);
+    const groupLogs=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    logsToUpdate.forEach(gl=>{
+      const gi=logs.findIndex(l=>l.id===gl.id);
+      if(gi===-1)return;
+      const mStars=(familyStarState.show||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
+      const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
+      logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
+    });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'show');
@@ -2765,6 +2771,12 @@ function renderTimeline(){
       if(t==='expense') deleteExpense(id); else deleteLog(id);
     });
   });
+  container.querySelectorAll('[data-edit-id]').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      openEditLog(parseInt(btn.getAttribute('data-edit-id')));
+    });
+  });
 }
 
 function timelineCardInner(item, inGroup){
@@ -2823,7 +2835,7 @@ function timelineGroupInner(lead,members){
     const starsStr=m.stars?tierBadge(m.stars,13,true):'<span style="font-size:10px;color:#bbb;">—</span>';
     return `<div class="tl-member-row">
       <span class="tl-member-name" style="color:${col};">${m.member} ${starsStr}${m.note&&m.note!=='เคยเล่น'?`<span style="font-size:11px;color:#888;font-weight:400;margin-left:2px;">"${m.note}"</span>`:''}</span>
-      ${(()=>{const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');const myF=mf[currentMember];const logF=mf[m.member];const ok=isAdminMode||(m.member===currentMember)||(myF&&logF&&myF===logF);return ok?`<button class="tl-delete-btn" data-del-id="${m.id}" data-del-type="log">✕</button>`:'';})()} 
+      ${(()=>{const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');const myF=mf[currentMember];const logF=mf[m.member];const ok=isAdminMode||(m.member===currentMember)||(myF&&logF&&myF===logF);return ok?`<div style="display:flex;gap:4px;margin-left:auto;"><button class="tl-edit-btn" data-edit-id="${m.id}" style="font-size:10px;padding:2px 7px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;cursor:pointer;color:var(--navy);">✏️</button><button class="tl-delete-btn" data-del-id="${m.id}" data-del-type="log">✕</button></div>`:'';})()} 
     </div>`;
   }).join('');
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
@@ -2940,13 +2952,25 @@ function openEditLog(id){
       if(starBtns.length&&log.stars){
         starBtns.forEach((b,i)=>{b.classList.toggle('active',i<log.stars);});
       }
-      // Pre-fill note+stars for the log owner's card
-      const noteInputs=document.querySelectorAll(`.family-note-input[data-member="${log.member}"]`);
-      noteInputs.forEach(ni=>{ni.value=log.note||'';});
+      // Restore ALL members' stars+notes from the same group session
       if(!familyStarState[type])familyStarState[type]={};
-      familyStarState[type][log.member+'_note']=log.note||'';
-      familyStarState[type][log.member]=log.stars||0;
-      // Highlight the log owner's card with a border
+      const groupLogs=logs.filter(l=>l.tripId===log.tripId&&(l.groupId===log.groupId||(l.groupId==null&&l.id===log.id))&&l.type===type&&l.name===log.name);
+      groupLogs.forEach(gl=>{
+        familyStarState[type][gl.member]=gl.stars||0;
+        familyStarState[type][gl.member+'_note']=gl.note||'';
+        // Update note input if visible
+        document.querySelectorAll(`.family-note-input[data-member="${gl.member}"]`).forEach(ni=>{ni.value=gl.note||'';});
+      });
+      // Also update tier button visual state for all members
+      document.querySelectorAll('.family-star[data-type="'+type+'"]').forEach(btn=>{
+        const bm=btn.dataset.member,bn=parseInt(btn.dataset.n);
+        const sel=bn===(familyStarState[type][bm]||0);
+        const col=TIER_COLOR[bn];const bg=TIER_BG[bn];
+        btn.style.background=sel?bg:'#fff';
+        btn.style.color=sel?'#fff':col;
+        btn.style.boxShadow=sel?'0 2px 8px '+col+'55':'';
+      });
+      // Highlight the log owner's card
       document.querySelectorAll('.family-star-card').forEach(card=>{
         card.style.outline=card.dataset.member===log.member?'2px solid var(--pink)':'';
       });
