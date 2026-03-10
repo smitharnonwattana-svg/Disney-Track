@@ -961,10 +961,6 @@ window.FIREBASE_CONFIG = {
     <div class="summary-stat"><div class="stat-num" id="stat-wait">0</div><div class="stat-label">⏳ นาทีรอรวม</div><div id="stat-wait-avg" style="font-size:10px;color:var(--gray);margin-top:1px;"></div></div>
   </div>
 
-  <div class="section-card">
-    <div class="section-title"><span>💴</span>สรุปค่าใช้จ่าย</div>
-    <div id="expense-summary"><div class="empty-state" style="padding:18px 0"><p style="font-size:13px">ยังไม่มีข้อมูล</p></div></div>
-  </div>
 
   <div class="section-card">
     <div class="section-title"><span>🌟</span>เครื่องเล่น/โชว์ดาวสูงสุด</div>
@@ -974,6 +970,10 @@ window.FIREBASE_CONFIG = {
   <div class="section-card">
     <div class="section-title"><span>👨‍👩‍👧</span>คะแนนครอบครัว</div>
     <div id="family-leaderboard"><p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล — ให้ทุกคน rate หลังเล่นแต่ละอย่าง</p></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title"><span>💴</span>สรุปค่าใช้จ่าย</div>
+    <div id="expense-summary"><div class="empty-state" style="padding:18px 0"><p style="font-size:13px">ยังไม่มีข้อมูล</p></div></div>
   </div>
 
   <div class="section-card" id="admin-manage-section" style="display:none;">
@@ -990,7 +990,12 @@ window.FIREBASE_CONFIG = {
     <p style="font-size:13px;color:var(--gray);margin-bottom:13px">สร้างสรุปบันทึกการเดินทางเพื่อแชร์หรือเก็บไว้เป็นที่ระลึก</p>
     <div class="export-preview" id="export-text">กด "สร้างสรุป" เพื่อดูตัวอย่าง</div>
     <button class="btn btn-primary" onclick="generateExport()" style="margin-bottom:9px">✨ สร้างสรุป</button>
-    <button class="btn btn-teal" onclick="copyExport()">📋 คัดลอกข้อความ</button>
+    <button class="btn btn-teal" onclick="copyExport()" style="margin-bottom:9px">📋 คัดลอกข้อความ</button>
+    <button class="btn btn-pink" onclick="generateShareImage()" style="margin-bottom:9px">📸 สร้างภาพแชร์</button>
+    <div id="share-image-preview" style="display:none;margin-top:12px;">
+      <canvas id="share-canvas" style="width:100%;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);"></canvas>
+      <button class="btn btn-primary" onclick="downloadShareImage()" style="margin-top:10px;width:100%">⬇️ บันทึกรูป</button>
+    </div>
   </div>
 </div>
 
@@ -3235,17 +3240,238 @@ function openMemberHistory(member){
 // ========== EXPORT ==========
 function generateExport(){
   const tl=tripLogs(),te=tripExps();
-  const rides=tl.filter(l=>l.type==='ride').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const shows=tl.filter(l=>l.type==='show').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  // Deduplicate rides/shows: one entry per session (by groupId or id)
+  const allRideLogs=tl.filter(l=>l.type==='ride');
+  const allShowLogs=tl.filter(l=>l.type==='show');
+  const getUniqueSessions=(logs)=>{
+    const seen=new Set();const sessions=[];
+    logs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
+      const key=l.groupId||l.id;
+      if(!seen.has(key)){seen.add(key);sessions.push({lead:l,members:logs.filter(x=>(x.groupId||x.id)===key)});}
+    });
+    return sessions;
+  };
+  const rideSessions=getUniqueSessions(allRideLogs);
+  const showSessions=getUniqueSessions(allShowLogs);
   const food=tl.filter(l=>l.type==='food').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const totalWait=[...new Set(rides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=rides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);const _nonFoodE=te.filter(e=>!(e.cat||'').includes('อาหาร'));const _foodY=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceYen||0),0);const _foodT=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceThb||0),0);const totalYen=_nonFoodE.reduce((s,e)=>s+(e.priceYen||0),0)+_foodY;const totalThb=_nonFoodE.reduce((s,e)=>s+(e.priceThb||0),0)+_foodT;
+  const totalWait=[...new Set(allRideLogs.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=allRideLogs.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);const _nonFoodE=te.filter(e=>!(e.cat||'').includes('อาหาร'));const _foodY=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceYen||0),0);const _foodT=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceThb||0),0);const totalYen=_nonFoodE.reduce((s,e)=>s+(e.priceYen||0),0)+_foodY;const totalThb=_nonFoodE.reduce((s,e)=>s+(e.priceThb||0),0)+_foodT;
   const trip=trips.find(t=>t.id===currentTripId);const now=new Date();
-  let text='🏰 บันทึกการเที่ยว Tokyo Disneyland\n📅 '+(trip?trip.name:now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}))+'\n'+'='.repeat(40)+'\n\n🎢 เครื่องเล่น ('+rides.length+' รายการ)\n'+'─'.repeat(30)+'\n';
-  rides.forEach((r,i)=>{text+=(i+1)+'. '+r.name+' ['+(r.time||'--:--')+']'+(r.zone?' ('+r.zone+')':'')+'\n';if(r.wait>0)text+='   ⏳ รอ: '+r.wait+'น.\n';if(r.stars>0)text+='   ['+TIER_LABEL[r.stars]+'] '+RATING_LABELS[r.stars]+'\n';if(r.feeling)text+='   '+r.feeling+'\n';if(r.note)text+='   📝 "'+r.note+'"\n';const fr=getFamilyAvg(r.name);if(fr)text+='   👨‍👩‍👧 ครอบครัว: '+fr.avg.toFixed(1)+' ('+Object.entries(fr.ratings).map(([m,s])=>m+':'+s).join(', ')+')\n';text+='\n';});
-  text+='\n🎭 โชว์ ('+shows.length+' รายการ)\n'+'─'.repeat(30)+'\n';shows.forEach((s,i)=>{text+=(i+1)+'. '+s.name+' ['+(s.time||'--:--')+']\n'+(s.stars>0?'   ['+TIER_LABEL[s.stars]+']\n':'')+(s.note?'   📝 "'+s.note+'"\n':'')+'\n';});
+  let text='🏰 บันทึกการเที่ยว Tokyo Disneyland\n📅 '+(trip?trip.name:now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}))+'\n'+'='.repeat(40)+'\n\n🎢 เครื่องเล่น ('+rideSessions.length+' รายการ)\n'+'─'.repeat(30)+'\n';
+  rideSessions.forEach(({lead,members},i)=>{
+    text+=(i+1)+'. '+lead.name+' ['+(lead.time||'--:--')+']'+(lead.zone?' ('+lead.zone+')':'')+'\n';
+    if(lead.wait>0)text+='   ⏳ รอ: '+lead.wait+'น.\n';
+    const rated=members.filter(m=>m.stars>0);
+    if(rated.length)text+='   '+rated.map(m=>m.member+' ['+TIER_LABEL[m.stars]+']'+(m.note&&m.note!=='เคยเล่น'?' "'+m.note+'"':'')).join(' | ')+'\n';
+    text+='\n';
+  });
+  text+='\n🎭 โชว์ ('+showSessions.length+' รายการ)\n'+'─'.repeat(30)+'\n';
+  showSessions.forEach(({lead,members},i)=>{
+    text+=(i+1)+'. '+lead.name+' ['+(lead.time||'--:--')+']\n';
+    const rated=members.filter(m=>m.stars>0);
+    if(rated.length)text+='   '+rated.map(m=>m.member+' ['+TIER_LABEL[m.stars]+']'+(m.note?' "'+m.note+'"':'')).join(' | ')+'\n';
+    text+='\n';
+  });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rides.length+' | 🎭 '+shows.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.0.0';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.0.0';
   document.getElementById('export-text').textContent=text;
+}
+
+function generateShareImage(){
+  const medals=['🥇','🥈','🥉'];
+  const tl=tripLogs();
+  const allRideLogs=tl.filter(l=>l.type==='ride');
+  const allShowLogs=tl.filter(l=>l.type==='show');
+  const food=tl.filter(l=>l.type==='food');
+  const seen=new Set();const rideSessions=[];
+  allRideLogs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
+    const key=l.groupId||l.id;
+    if(!seen.has(key)){seen.add(key);rideSessions.push({lead:l,members:allRideLogs.filter(x=>(x.groupId||x.id)===key)});}
+  });
+  const seen2=new Set();const showSessions=[];
+  allShowLogs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
+    const key=l.groupId||l.id;
+    if(!seen2.has(key)){seen2.add(key);showSessions.push({lead:l,members:allShowLogs.filter(x=>(x.groupId||x.id)===key)});}
+  });
+  const _nonFoodE=tripExps().filter(e=>!(e.cat||'').includes('อาหาร'));
+  const foodY=food.reduce((s,l)=>s+(l.priceYen||0),0);
+  const totalWait=[...new Set(allRideLogs.map(l=>l.groupId||l.id))].reduce((s,gid)=>{
+    const rep=allRideLogs.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
+  const totalYen=_nonFoodE.reduce((s,e)=>s+(e.priceYen||0),0)+foodY;
+  const trip=trips.find(t=>t.id===currentTripId);
+
+  // Top 5 rides by avg
+  const nameMap={};
+  tl.filter(l=>l.stars>0&&(l.type==='ride'||l.type==='show')).forEach(l=>{
+    if(!nameMap[l.name])nameMap[l.name]={total:0,count:0,type:l.type};
+    nameMap[l.name].total+=l.stars;nameMap[l.name].count++;
+  });
+  const topItems=Object.entries(nameMap).map(([name,v])=>({name,avg:v.total/v.count,count:v.count,type:v.type}))
+    .sort((a,b)=>b.avg-a.avg).slice(0,5);
+
+  // Member leaderboard
+  const mm={};
+  tl.filter(l=>l.stars>0&&l.member&&(l.type==='ride'||l.type==='show')).forEach(l=>{
+    if(!mm[l.member])mm[l.member]={total:0,count:0};
+    mm[l.member].total+=l.stars;mm[l.member].count++;
+  });
+  const members=Object.entries(mm).sort((a,b)=>(b[1].total/b[1].count)-(a[1].total/a[1].count));
+
+  // Canvas setup — 420×650 at 2x for retina
+  const W=420,scale=2;
+  const canvas=document.getElementById('share-canvas');
+  canvas.width=W*scale;
+  // We'll compute height after drawing
+  const ctx=canvas.getContext('2d');
+  ctx.scale(scale,scale);
+
+  // Layout
+  const pad=20;
+  let y=pad;
+  const lineH=22;
+
+  // Helper functions
+  const rr=(x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();};
+  const txt=(t,x,yp,col,size,bold,align)=>{ctx.fillStyle=col||'#1a1f3c';ctx.font=(bold?'700 ':'400 ')+size+'px "Prompt",sans-serif';ctx.textAlign=align||'left';ctx.fillText(t,x,yp);};
+
+  // Estimate total height first
+  const estH=180 + topItems.length*36 + members.length*34 + 100;
+  canvas.height=estH*scale;
+  canvas.style.height='auto';
+  ctx.scale(scale,scale); // re-apply after resize
+
+  // Background gradient
+  const grad=ctx.createLinearGradient(0,0,0,estH);
+  grad.addColorStop(0,'#1a1f3c');grad.addColorStop(1,'#2d1b4e');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,estH);
+
+  // Header
+  y=30;
+  txt('🏰 Tokyo Disneyland',pad,y,'#ffffff',18,true);y+=28;
+  const tripName=trip?trip.name:new Date().toLocaleDateString('th-TH',{month:'long',day:'numeric'});
+  txt('📅 '+tripName,pad,y,'rgba(255,255,255,0.7)',12,false);y+=20;
+  txt('บันทึกโดย TDL Trip Logger',W-pad,y,'rgba(255,255,255,0.4)',10,false,'right');y+=16;
+
+  // Stats bar
+  y+=6;
+  const statW=(W-pad*2)/4;
+  const stats=[
+    {icon:'🎢',val:rideSessions.length,label:'เครื่องเล่น'},
+    {icon:'🎭',val:showSessions.length,label:'โชว์'},
+    {icon:'⏳',val:totalWait+'น.',label:'รอรวม'},
+    {icon:'💴',val:'¥'+Math.round(totalYen/1000)+'K',label:'ค่าใช้จ่าย'},
+  ];
+  stats.forEach((s,i)=>{
+    const sx=pad+i*statW;
+    ctx.fillStyle='rgba(255,255,255,0.08)';rr(sx,y,statW-6,52,10);ctx.fill();
+    txt(s.icon,sx+8,y+18,'#fff',13);
+    txt(String(s.val),sx+8,y+34,'#FFD700',13,true);
+    txt(s.label,sx+8,y+47,'rgba(255,255,255,0.55)',9);
+  });
+  y+=66;
+
+  // Top rides/shows
+  if(topItems.length){
+    y+=4;
+    txt('🌟 ไฮไลท์',pad,y,'#FFD700',13,true);y+=18;
+    topItems.forEach((r,i)=>{
+      const avgR=Math.round(r.avg);
+      const tierCol=TIER_COLOR[avgR]||'#888';
+      const tierL=TIER_LABEL[avgR]||'';
+      ctx.fillStyle='rgba(255,255,255,0.06)';rr(pad,y,W-pad*2,28,8);ctx.fill();
+      txt(['🥇','🥈','🥉','4️⃣','5️⃣'][i],pad+6,y+19,'#fff',12);
+      // truncate name
+      const nameStr=r.name.length>22?r.name.slice(0,20)+'…':r.name;
+      txt(nameStr,pad+28,y+19,'#ffffff',11,false);
+      txt(tierL,W-pad-26,y+20,tierCol,13,true,'right');
+      txt(r.avg.toFixed(1),W-pad,y+19,'rgba(255,255,255,0.6)',10,false,'right');
+      y+=32;
+    });
+  }
+
+  // Member leaderboard
+  if(members.length){
+    y+=8;
+    txt('👨‍👩‍👧 ความประทับใจ',pad,y,'#FFD700',13,true);y+=18;
+    members.slice(0,6).forEach(([name,s],i)=>{
+      const avg=s.total/s.count;
+      const avgR=Math.round(avg);
+      const col=TIER_COLOR[avgR]||'#888';
+      ctx.fillStyle='rgba(255,255,255,0.06)';rr(pad,y,W-pad*2,26,8);ctx.fill();
+      txt(medals[i]||(i+1+'位'),pad+4,y+18,'#fff',11);
+      txt(name,pad+28,y+18,'#ffffff',11,false);
+      txt(TIER_LABEL[avgR]||'',W-pad-30,y+18,col,13,true,'right');
+      txt(avg.toFixed(1),W-pad,y+18,'rgba(255,255,255,0.6)',10,false,'right');
+      y+=30;
+    });
+  }
+
+  y+=16;
+  txt('สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม',W/2,y,'rgba(255,255,255,0.3)',10,false,'center');
+  y+=20;
+
+  // Trim canvas height
+  const finalH=y+pad;
+  canvas.height=finalH*scale;
+  ctx.scale(scale,scale);
+  // Redraw with correct height
+  ctx.clearRect(0,0,W,finalH);
+  const grad2=ctx.createLinearGradient(0,0,0,finalH);
+  grad2.addColorStop(0,'#1a1f3c');grad2.addColorStop(1,'#2d1b4e');
+  ctx.fillStyle=grad2;ctx.fillRect(0,0,W,finalH);
+
+  // Re-draw everything at correct height
+  y=30;
+  txt('🏰 Tokyo Disneyland',pad,y,'#ffffff',18,true);y+=28;
+  txt('📅 '+tripName,pad,y,'rgba(255,255,255,0.7)',12,false);y+=20;
+  txt('บันทึกโดย TDL Trip Logger',W-pad,y,'rgba(255,255,255,0.4)',10,false,'right');y+=16;
+  y+=6;
+  stats.forEach((s,i)=>{
+    const sx=pad+i*statW;
+    ctx.fillStyle='rgba(255,255,255,0.08)';rr(sx,y,statW-6,52,10);ctx.fill();
+    txt(s.icon,sx+8,y+18,'#fff',13);
+    txt(String(s.val),sx+8,y+34,'#FFD700',13,true);
+    txt(s.label,sx+8,y+47,'rgba(255,255,255,0.55)',9);
+  });
+  y+=66;
+  if(topItems.length){
+    y+=4;txt('🌟 ไฮไลท์',pad,y,'#FFD700',13,true);y+=18;
+    topItems.forEach((r,i)=>{
+      const avgR=Math.round(r.avg);const tierCol=TIER_COLOR[avgR]||'#888';const tierL=TIER_LABEL[avgR]||'';
+      ctx.fillStyle='rgba(255,255,255,0.06)';rr(pad,y,W-pad*2,28,8);ctx.fill();
+      txt(['🥇','🥈','🥉','4️⃣','5️⃣'][i],pad+6,y+19,'#fff',12);
+      const nameStr=r.name.length>22?r.name.slice(0,20)+'…':r.name;
+      txt(nameStr,pad+28,y+19,'#ffffff',11,false);
+      txt(tierL,W-pad-26,y+20,tierCol,13,true,'right');
+      txt(r.avg.toFixed(1),W-pad,y+19,'rgba(255,255,255,0.6)',10,false,'right');
+      y+=32;
+    });
+  }
+  if(members.length){
+    y+=8;txt('👨‍👩‍👧 ความประทับใจ',pad,y,'#FFD700',13,true);y+=18;
+    members.slice(0,6).forEach(([name,s],i)=>{
+      const avg=s.total/s.count;const avgR=Math.round(avg);const col=TIER_COLOR[avgR]||'#888';
+      ctx.fillStyle='rgba(255,255,255,0.06)';rr(pad,y,W-pad*2,26,8);ctx.fill();
+      txt(medals[i]||(i+1+'位'),pad+4,y+18,'#fff',11);
+      txt(name,pad+28,y+18,'#ffffff',11,false);
+      txt(TIER_LABEL[avgR]||'',W-pad-30,y+18,col,13,true,'right');
+      txt(avg.toFixed(1),W-pad,y+18,'rgba(255,255,255,0.6)',10,false,'right');
+      y+=30;
+    });
+  }
+  y+=16;
+  txt('สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม',W/2,y,'rgba(255,255,255,0.3)',10,false,'center');
+
+  document.getElementById('share-image-preview').style.display='';
+  showToast('📸 สร้างภาพสำเร็จ! กด "บันทึกรูป" เพื่อดาวน์โหลด');
+}
+
+function downloadShareImage(){
+  const canvas=document.getElementById('share-canvas');
+  const a=document.createElement('a');
+  a.download='TDL-trip-summary.png';
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+  showToast('✅ บันทึกรูปแล้ว!');
 }
 
 function copyExport(){const text=document.getElementById('export-text').textContent;if(text.startsWith('กด')){showToast('⚠️ กรุณากด "สร้างสรุป" ก่อน');return;}navigator.clipboard.writeText(text).then(()=>showToast('✅ คัดลอกแล้ว!')).catch(()=>showToast('⚠️ คัดลอกไม่สำเร็จ'));}
