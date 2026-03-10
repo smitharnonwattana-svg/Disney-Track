@@ -2565,6 +2565,20 @@ function saveFood(){
   const myStars=myState[currentMember]||0;
   const myNote=myState[currentMember+'_note']||'';
   const log={id:Date.now(),type:'food',name:selectedFoodRestaurant,zone:selectedFoodZone,menu,time,priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),stars:myStars,feeling:'',note:myNote,timestamp:Date.now(),member:currentMember,tripId:currentTripId};
+  if(editingLogId){
+    const idx=logs.findIndex(l=>l.id===editingLogId);
+    if(idx!==-1){
+      const updated={...logs[idx],name:selectedFoodRestaurant,zone:selectedFoodZone,menu,time,priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),note:myNote};
+      logs[idx]=updated;
+      dbSet(tripPath('logs/'+editingLogId),updated);
+    }
+    const savedEditId=editingLogId;
+    editingLogId=null;editingLogMember=null;
+    saveLogs();resetFoodForm();renderTimeline();renderSummary();
+    showToast('✏️ แก้ไขอาหารสำเร็จ!');
+    showTab('timeline');setTimeout(()=>scrollToLog(savedEditId),300);
+    return;
+  }
   logs.push(log);
   // expense is tracked via the food log itself (priceYen in log)
   saveLogs();saveFamilyRatings(selectedFoodRestaurant,'food');dbPush(tripPath('logs'),log);
@@ -2618,7 +2632,7 @@ function resetFoodForm(){
   document.getElementById('food-menu-custom').value='';
   document.getElementById('food-price').value='';
   const fc=document.getElementById('food-converted');if(fc){fc.textContent='';fc.classList.remove('visible');}
-  familyStarState.food={};renderFamilyStars('food');
+  familyStarState.food={};editingLogId=null;editingLogMember=null;renderFamilyStars('food');
 }
 
 // ========== STORAGE ==========
@@ -2962,10 +2976,30 @@ function openEditLog(id){
     if(type==='ride') selectRide(log.name, log.zone||'');
     else if(type==='show') selectShow(log.name, log.zone||'');
     else if(type==='food'){
-      const fi=document.getElementById('food-name-custom');if(fi)fi.value=log.name;
-      const fc=document.getElementById('food-category');if(fc)fc.value=log.zone||'';
+      // Set global state so food form knows which restaurant/zone
+      selectedFoodRestaurant=log.name||'';
+      selectedFoodZone=log.zone||'';
+      selectedFoodMenu=log.menu||'';
+      // Show step3 (menu+details), hide step1/2
+      const s1=document.getElementById('food-step1');if(s1)s1.style.display='none';
+      const s2=document.getElementById('food-step2');if(s2)s2.style.display='none';
+      const s3=document.getElementById('food-step3');if(s3)s3.style.display='';
+      const fd=document.getElementById('food-details');if(fd)fd.style.display='';
+      // Show restaurant name as label
+      const zl=document.getElementById('food-zone-label');if(zl)zl.textContent=log.zone||'';
+      // Show selected restaurant visually
+      const rl=document.getElementById('food-restaurant-label');if(rl)rl.textContent=log.name||'';
+      // Pre-fill menu
+      const fm=document.getElementById('food-menu-custom');
+      if(fm){fm.value=log.menu||'';fm.style.display='';}
+      // Pre-fill note
       const fn2=document.getElementById('food-note');if(fn2)fn2.value=log.note||'';
-      const fp=document.getElementById('food-price');if(fp)fp.value=log.price||'';
+      // Pre-fill price (use priceYen as display value in yen mode)
+      const fp=document.getElementById('food-price');
+      if(fp)fp.value=log.priceYen||log.priceThb||'';
+      // Set currency to yen if priceYen exists
+      if(log.priceYen){foodCurrency='yen';const sym=document.getElementById('food-cur-symbol');if(sym)sym.textContent='¥';}
+      // Pre-fill time
       const ft=document.getElementById('food-time');if(ft)ft.value=log.time||'';
     }
     setTimeout(()=>{
