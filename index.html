@@ -2475,7 +2475,8 @@ function saveRide(){
     const refLog=logs.find(l=>l.id===editingLogId);
     // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
     const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
-    const groupLogs=sameGrp.length>1?sameGrp:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]);
+    const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
+    const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
@@ -2526,7 +2527,8 @@ function saveShow(){
     const refLog=logs.find(l=>l.id===editingLogId);
     // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
     const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
-    const groupLogs=sameGrp.length>1?sameGrp:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]);
+    const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
+    const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
@@ -2597,14 +2599,14 @@ function resetRideForm(){
   const slider=document.getElementById('ride-wait-slider');if(slider)slider.value=0;
   updateWait(0);
   const ps=document.getElementById('ride-prev-summary');if(ps)ps.style.display='none';
-  familyStarState.ride={};renderFamilyStars('ride');
+  familyStarState.ride={};editingLogId=null;editingLogMember=null;renderFamilyStars('ride');
 }
 function resetShowForm(){
   document.getElementById('show-name-custom').value='';
   const showTime=document.getElementById('show-time');if(showTime)showTime.value='';
   updateShowWait(0);
   const sd=document.getElementById('show-details');if(sd)sd.style.display='none';
-  familyStarState.show={};renderFamilyStars('show');
+  familyStarState.show={};editingLogId=null;editingLogMember=null;renderFamilyStars('show');
 }
 function resetFoodForm(){
   selectedFoodZone='';selectedFoodRestaurant='';selectedFoodMenu='';
@@ -2865,7 +2867,7 @@ function timelineGroupInner(lead,members){
     const starsStr=m.stars?tierBadge(m.stars,13,true):'<span style="font-size:10px;color:#bbb;">—</span>';
     return `<div class="tl-member-row">
       <span class="tl-member-name" style="color:${col};">${m.member} ${starsStr}${m.note&&m.note!=='เคยเล่น'?`<span style="font-size:11px;color:#888;font-weight:400;margin-left:2px;">"${m.note}"</span>`:''}</span>
-      '<div style="display:flex;gap:4px;margin-left:auto;"><button class="tl-edit-btn" data-edit-id="'+m.id+'" style="font-size:10px;padding:2px 7px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;cursor:pointer;color:var(--navy);">✏️</button><button class="tl-delete-btn" data-del-id="'+m.id+'" data-del-type="log">✕</button></div>' 
+      <div style="display:flex;gap:4px;margin-left:auto;"><button class="tl-edit-btn" data-edit-id="${m.id}" style="font-size:10px;padding:2px 7px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;cursor:pointer;color:var(--navy);">✏️</button><button class="tl-delete-btn" data-del-id="${m.id}" data-del-type="log">✕</button></div>
     </div>`;
   }).join('');
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
@@ -2982,7 +2984,9 @@ function openEditLog(id){
       if(!familyStarState[type])familyStarState[type]={};
       // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
       const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
-      const groupLogs=sameGroup.length>1?sameGroup:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name);
+      // Fallback: same name+trip, but limit to logs within 2 hours of the edited log
+      const nearbyFallback=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&Math.abs((l.timestamp||l.id)-(log.timestamp||log.id))<7200000);
+      const groupLogs=sameGroup.length>1?sameGroup:(nearbyFallback.length>0?nearbyFallback:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name));
       groupLogs.forEach(gl=>{
         familyStarState[type][gl.member]=gl.stars||0;
         familyStarState[type][gl.member+'_note']=gl.note||'';
