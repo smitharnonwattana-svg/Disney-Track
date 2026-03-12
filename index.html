@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.0.0</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.1.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.0.0 NEW FEATURES ===== */
+  /* ===== v2.1.0 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -633,7 +633,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.0.0</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.0</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -2522,19 +2522,41 @@ function saveRide(){
   if(editingLogId){
     // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Fix: only match groupId when it's defined (undefined===undefined would match unrelated logs)
+    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
+    // Update existing logs
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const mStars=(familyStarState.ride||{})[gl.member]??gl.stars;
-      const mNote=(familyStarState.ride||{})[gl.member+'_note']??gl.note??'';
+      const fss=familyStarState.ride||{};
+      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
+      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote,passUsed};
       logs[gi]=updated;
       dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who got rated but had no log yet
+    const fssRide=familyStarState.ride||{};
+    const sharedGroupId=refLog.groupId||refLog.id;
+    // Ensure refLog has a groupId so timeline groups it correctly
+    if(!refLog.groupId){
+      const ri=logs.findIndex(l=>l.id===refLog.id);
+      if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+    }
+    Object.keys(fssRide).forEach(key=>{
+      if(key.endsWith('_note'))return;
+      const member=key;
+      const mStars=fssRide[member]||0;
+      if(!mStars||existingMembers.has(member))return;
+      const mNote=fssRide[member+'_note']||'';
+      const newId=Date.now()+Math.floor(Math.random()*10000);
+      const newLog={id:newId,type:'ride',name,zone:refLog.zone||selectedRideZone,order:refLog.order,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,feeling:'',note:mNote,round:1,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,passUsed,tripId:currentTripId};
+      logs.push(newLog);
+      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -2574,18 +2596,38 @@ function saveShow(){
   });
   if(editingLogId){
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Fix: only match groupId when defined
+    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const mStars=(familyStarState.show||{})[gl.member]??gl.stars;
-      const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
+      const fss=familyStarState.show||{};
+      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
+      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who got rated but had no log yet
+    const fssShow=familyStarState.show||{};
+    const sharedGroupId=refLog.groupId||refLog.id;
+    if(!refLog.groupId){
+      const ri=logs.findIndex(l=>l.id===refLog.id);
+      if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+    }
+    Object.keys(fssShow).forEach(key=>{
+      if(key.endsWith('_note'))return;
+      const member=key;
+      const mStars=fssShow[member]||0;
+      if(!mStars||existingMembers.has(member))return;
+      const mNote=fssShow[member+'_note']||'';
+      const newId=Date.now()+Math.floor(Math.random()*10000);
+      const newLog={id:newId,type:'show',name,time:logsToSave[0].time,duration:'',wait:logsToSave[0].wait,stars:mStars,feeling:'',note:mNote,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,tripId:currentTripId};
+      logs.push(newLog);
+      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -3196,10 +3238,11 @@ function openEditLog(id){
         starBtns.forEach((b,i)=>{b.classList.toggle('active',i<log.stars);});
       }
       // Restore ALL members' stars+notes from the same group session
-      if(!familyStarState[type])familyStarState[type]={};
-      // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-      const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
-      // Fallback: same name+trip, but limit to logs within 2 hours of the edited log
+      // Always clear first so stale data from previous edit doesn't carry over
+      familyStarState[type]={};
+      // Group by shared groupId ONLY if defined (undefined===undefined would match wrongly)
+      const sameGroup=log.groupId!=null?logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId===log.groupId):[];
+      // Fallback: same name+trip, within 2 hours
       const nearbyFallback=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&Math.abs((l.timestamp||l.id)-(log.timestamp||log.id))<7200000);
       const groupLogs=sameGroup.length>1?sameGroup:(nearbyFallback.length>0?nearbyFallback:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name));
       groupLogs.forEach(gl=>{
@@ -3496,7 +3539,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.0.0';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.0';
   document.getElementById('export-text').textContent=text;
 }
 
