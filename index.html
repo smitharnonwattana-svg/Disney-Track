@@ -2726,14 +2726,21 @@ function buildMemberFilterPills(family){
 
 function scrollToLog(id){
   if(!id)return;
-  const el=document.querySelector(`[data-log-id="${id}"]`);
+  // Find by data-log-id directly, or by matching the log's groupId
+  let el=document.querySelector(`[data-log-id="${id}"]`);
+  if(!el){
+    const log=logs.find(l=>l.id===id);
+    if(log){
+      const gid=log.groupId||log.id;
+      el=document.querySelector(`[data-log-id="${gid}"]`);
+    }
+  }
   if(el){
     el.scrollIntoView({behavior:'smooth',block:'center'});
     el.style.transition='box-shadow 0.3s';
     el.style.boxShadow='0 0 0 3px var(--pink)';
     setTimeout(()=>{el.style.boxShadow='';},1800);
   } else {
-    // fallback: scroll to bottom of timeline list
     const tl=document.getElementById('timeline-list');
     if(tl)tl.lastElementChild?.scrollIntoView({behavior:'smooth',block:'end'});
   }
@@ -2865,16 +2872,23 @@ function renderTimeline(){
     if(item._isLog===false){grouped.push({type:'single',item});return;}
     const gid=item.groupId||item.id;
     if(seen.has(gid)){
-      const g=grouped.find(x=>x.groupId===gid);if(g)g.members.push(item);return;
+      // Find the group that contains this gid — check groupId AND members
+      const g=grouped.find(x=>x.groupId===gid||x.members?.find(m=>(m.groupId||m.id)===gid));
+      if(g&&!g.members.find(m=>m.id===item.id))g.members.push(item);
+      return;
     }
-    // Auto-merge: find existing group with same ride name + time within 30min + different member
-    const t1=timeToMin(item.time);
+    // Auto-merge by groupId: items sharing same groupId belong together
+    if(item.groupId){
+      const byGroup=grouped.find(x=>x.groupId===item.groupId);
+      if(byGroup){if(!byGroup.members.find(m=>m.id===item.id))byGroup.members.push(item);seen.add(gid);return;}
+    }
+    // Auto-merge: same name + timestamp within 2min + different member (time-agnostic)
     const existing=grouped.find(g=>g.type==='group'
       &&g.lead.name===item.name
       &&g.lead.type===item.type
       &&(item.type==='ride'||item.type==='show')
-      &&!g.members.find(m=>m.member===item.member)  // not same member
-      &&Math.abs(timeToMin(g.lead.time)-t1)<=30);    // within 30 min
+      &&!g.members.find(m=>m.member===item.member)
+      &&Math.abs((g.lead.timestamp||g.lead.id||0)-(item.timestamp||item.id||0))<120000);
     if(existing){existing.members.push(item);seen.add(gid);return;}
     seen.add(gid);
     grouped.push({type:'group',groupId:gid,lead:item,members:[item]});
@@ -3164,7 +3178,7 @@ function renderSummary(){
   const uniqueRideSessions=new Set(repRides.map(l=>l.groupId||l.id)).size;
   const uniqueShowSessions=new Set(repShows.map(l=>l.groupId||l.id)).size;
   const totalWait=[...new Set(repRides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
-  document.getElementById('stat-rides').textContent=uniqueRideSessions;document.getElementById('stat-shows').textContent=uniqueShowSessions;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const ridesWithWait=rides.filter(r=>r.wait>0);const avgWait=ridesWithWait.length?Math.round(totalWait/ridesWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
+  document.getElementById('stat-rides').textContent=uniqueRideSessions;document.getElementById('stat-shows').textContent=uniqueShowSessions;document.getElementById('stat-food').textContent=food.length;document.getElementById('stat-wait').textContent=totalWait;const uniqueRideGids=[...new Set(repRides.map(l=>l.groupId||l.id))];const sessionsWithWait=uniqueRideGids.filter(gid=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return (rep?.wait||0)>0;});const avgWait=sessionsWithWait.length?Math.round(totalWait/sessionsWithWait.length):0;const avgEl=document.getElementById('stat-wait-avg');if(avgEl)avgEl.textContent=avgWait?'เฉลี่ย '+avgWait+' น./เครื่อง':'';
   // Food costs: use food logs as single source of truth (exclude old food expense records to avoid double-count)
   const nonFoodExps=te.filter(e=>!(e.cat||'').includes('อาหาร'));
   const foodLogYen=tl.filter(l=>l.type==='food').reduce((s,l)=>s+(l.priceYen||0),0);
