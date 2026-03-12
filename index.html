@@ -2801,9 +2801,9 @@ function renderTimeline(){
   // Render as center-line timeline: odd=right, even=left
   const rows=grouped.map((g,idx)=>{
     let cardHtml;
-    if(g.type==='single') cardHtml=timelineCardInner(g.item,false);
-    else if(g.members.length===1) cardHtml=timelineCardInner(g.members[0],false);
-    else cardHtml=timelineGroupInner(g.lead,g.members);
+    if(g.type==='single') cardHtml=timelineCardInner(g.item,false,idx+1);
+    else if(g.members.length===1) cardHtml=timelineCardInner(g.members[0],false,idx+1);
+    else cardHtml=timelineGroupInner(g.lead,g.members,idx+1);
     const dotColor=g.lead?(getMemberColor(g.lead.member)||'var(--pink)'):'var(--pink)';
     const typeColor={ride:dotColor,show:'var(--teal)',food:'var(--gold)',expense:'var(--purple)'}[g.lead?g.lead.type:(g.item?g.item.type:'ride')]||dotColor;
     return `<div class="tl-row" data-log-id="${g.lead?g.lead.id:(g.item?g.item.id:'')}">
@@ -2830,7 +2830,7 @@ function renderTimeline(){
   });
 }
 
-function timelineCardInner(item, inGroup){
+function timelineCardInner(item, inGroup, orderNum){
   const TYPE_STRIP={ride:'var(--pink)',show:'var(--teal)',food:'var(--gold)',expense:'var(--purple)'};
   const TYPE_LABEL={ride:'🎢',show:'🎭',food:'🍜',expense:'💴'};
   const memberCol=item.member?getMemberColor(item.member):'var(--pink)';
@@ -2857,7 +2857,7 @@ function timelineCardInner(item, inGroup){
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
     <div class="tl-card-header">
       <div class="tl-card-title">${TYPE_LABEL[item.type]||''} ${item.name}</div>
-      <div class="tl-card-time">${item.time||'--:--'}</div>
+      <div class="tl-card-time">${orderNum?'#'+orderNum:''}</div>
       ${mergeBtn}
       ${canAct?`<button class="tl-delete-btn" data-del-id="${item.id}" data-del-type="${isLog?(item.type==='expense'?'expense':'log'):'expense'}">✕</button>`:''}
     </div>
@@ -2870,7 +2870,7 @@ function timelineCardInner(item, inGroup){
 
 }
 
-function timelineGroupInner(lead,members){
+function timelineGroupInner(lead,members,orderNum){
   const TYPE_STRIP={ride:'var(--pink)',show:'var(--teal)'};
   const TYPE_LABEL={ride:'🎢',show:'🎭'};
   const stripColor=TYPE_STRIP[lead.type]||'var(--pink)';
@@ -2892,7 +2892,7 @@ function timelineGroupInner(lead,members){
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
     <div class="tl-card-header">
       <div class="tl-card-title">${TYPE_LABEL[lead.type]||''} ${lead.name}</div>
-      <div class="tl-card-time">${lead.time||'--:--'}</div>
+      <div class="tl-card-time">${orderNum?'#'+orderNum:''}</div>
     </div>
     ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
     ${(()=>{const rated=members.filter(m=>m.stars>0);if(!rated.length)return '';const avg=rated.reduce((s,m)=>s+m.stars,0)/rated.length;const avgR=Math.round(avg);return `<div style="padding:2px 12px 6px;font-size:11px;color:#aaa;">avg <span style="font-weight:900;font-size:13px;color:${TIER_COLOR[avgR]};">${TIER_LABEL[avgR]}</span> <span style="color:${TIER_COLOR[avgR]};font-weight:600;">${RATING_LABELS[avgR]}</span></div>`;})()}
@@ -3282,6 +3282,16 @@ function generateShareImage(){
   const allRideLogs=tl.filter(l=>l.type==='ride');
   const allShowLogs=tl.filter(l=>l.type==='show');
   const food=tl.filter(l=>l.type==='food');
+  // Same representative-member logic as renderSummary for consistent counts
+  const memberLogCount={};
+  tl.filter(l=>l.type==='ride'||l.type==='show').forEach(l=>{if(l.member)memberLogCount[l.member]=(memberLogCount[l.member]||0)+1;});
+  const topMember=Object.entries(memberLogCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+  const repRides=topMember?allRideLogs.filter(l=>l.member===topMember):allRideLogs;
+  const repShows=topMember?allShowLogs.filter(l=>l.member===topMember):allShowLogs;
+  const uniqueRideSessions=new Set(repRides.map(l=>l.groupId||l.id)).size;
+  const uniqueShowSessions=new Set(repShows.map(l=>l.groupId||l.id)).size;
+  const totalWait=[...new Set(repRides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
+  // Build session lists for rendering
   const seen=new Set();const rideSessions=[];
   allRideLogs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
     const key=l.groupId||l.id;
@@ -3294,8 +3304,6 @@ function generateShareImage(){
   });
   const _nonFoodE=tripExps().filter(e=>!(e.cat||'').includes('อาหาร'));
   const foodY=food.reduce((s,l)=>s+(l.priceYen||0),0);
-  const totalWait=[...new Set(allRideLogs.map(l=>l.groupId||l.id))].reduce((s,gid)=>{
-    const rep=allRideLogs.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
   const totalYen=_nonFoodE.reduce((s,e)=>s+(e.priceYen||0),0)+foodY;
   const trip=trips.find(t=>t.id===currentTripId);
 
@@ -3355,8 +3363,8 @@ function generateShareImage(){
   y+=6;
   const statW=(W-pad*2)/4;
   const stats=[
-    {icon:'🎢',val:rideSessions.length,label:'เครื่องเล่น'},
-    {icon:'🎭',val:showSessions.length,label:'โชว์'},
+    {icon:'🎢',val:uniqueRideSessions,label:'เครื่องเล่น'},
+    {icon:'🎭',val:uniqueShowSessions,label:'โชว์'},
     {icon:'⏳',val:totalWait+'น.',label:'รอรวม'},
     {icon:'💴',val:'¥'+Math.round(totalYen/1000)+'K',label:'ค่าใช้จ่าย'},
   ];
@@ -3648,11 +3656,15 @@ function filterRideGlobal(q){
   const matches=RIDES_DATA.filter(r=>r.name.toLowerCase().includes(q.toLowerCase())||r.zone.toLowerCase().includes(q.toLowerCase()));
   if(!matches.length){box.innerHTML='<div style="padding:10px 14px;color:#aaa;font-size:13px;">ไม่พบเครื่องเล่น</div>';box.style.display='';return;}
   box.innerHTML=matches.slice(0,10).map(r=>{
-    const safe=r.name.replace(/'/g,"\'");
-    return `<div onclick="pickRideFromSearch('${safe}','${r.zone.replace(/'/g,"\'")}','${r.zone.replace(/'/g,"\'")}')" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;" onmouseover="this.style.background='#fef6f9'" onmouseout="this.style.background=''">
+    return `<div class="ride-search-result" data-name="${encodeURIComponent(r.name)}" data-zone="${encodeURIComponent(r.zone)}" style="padding:9px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:13px;" onmouseover="this.style.background='#fef6f9'" onmouseout="this.style.background=''">
       <span style="font-weight:700;">${r.name}</span> <span style="color:#aaa;font-size:11px;">${ZONE_EMOJI[r.zone]||''} ${r.zone}</span>
     </div>`;
   }).join('');
+  box.querySelectorAll('.ride-search-result').forEach(el=>{
+    el.addEventListener('click',()=>{
+      pickRideFromSearch(decodeURIComponent(el.dataset.name),decodeURIComponent(el.dataset.zone));
+    });
+  });
   box.style.display='';
 }
 function pickRideFromSearch(name,zone){
@@ -3844,15 +3856,15 @@ function renderAttractions(){
 function renderPlayed(){
   const container=document.getElementById('played-list');if(!container)return;
   const tl=tripLogs();
-  // Only MY own logs for this trip
-  const myLogs=tl.filter(l=>l.type==='ride'&&l.member===currentMember);
+  // Rides + shows logged in this trip
+  const myLogs=tl.filter(l=>(l.type==='ride'||l.type==='show')&&l.member===currentMember);
   if(!myLogs.length){
-    container.innerHTML='<div class="empty-state"><div class="empty-icon">🎢</div><p>ยังไม่ได้บันทึกเครื่องเล่น<br>ในทริปนี้</p></div>';return;
+    container.innerHTML='<div class="empty-state"><div class="empty-icon">🎢</div><p>ยังไม่ได้บันทึกเครื่องเล่น/โชว์<br>ในทริปนี้</p></div>';return;
   }
-  // Group by ride name — show unique rides with count + avg stars
+  // Group by name — show unique rides+shows with count + avg stars
   const rideMap={};
   myLogs.forEach(l=>{
-    if(!rideMap[l.name])rideMap[l.name]={logs:[],name:l.name,zone:l.zone};
+    if(!rideMap[l.name])rideMap[l.name]={logs:[],name:l.name,zone:l.zone,type:l.type};
     rideMap[l.name].logs.push(l);
   });
   const ZONE_EMOJI={'World Bazaar':'🗺️',Adventureland:'🌴',Westernland:'🤠','Critter Country':'🦦',Fantasyland:'🏰',Toontown:'🎨',Tomorrowland:'🚀'};
@@ -3871,7 +3883,7 @@ function renderPlayed(){
     const safe=entry.name.replace(/'/g,"\'");
     const fr=getFamilyAvg(entry.name);
     const frClean=fr?Object.entries(fr.ratings).filter(([m,s])=>!m.includes('_')&&typeof s==='number'&&s>0):[];
-    return '<div class="attraction-card" style="position:relative;" onclick="openAttractionDetail(\''+safe+'\')">'+'<div class="attraction-card-header"><div class="attraction-card-name">'+entry.name+'</div><div class="attraction-card-zone">'+(ZONE_EMOJI[entry.zone]||'📍')+' '+entry.zone+'</div></div><div class="attraction-card-meta">'+'<span class="played-badge">✅ '+cnt+' ครั้ง</span>'+(avg>0?'<span style="font-size:13px;">'+tierBadge(Math.round(avg),13,true)+'</span>':'<span style="font-size:11px;color:#bbb;">ยังไม่ให้คะแนน</span>')+(cnt>1?'<span class="attr-tag tag-wait">avg '+avg.toFixed(1)+'</span>':'')+(lastLog.feeling?'<span style="font-size:16px;">'+lastLog.feeling+'</span>':'')+(frClean.length?'<span class="attr-tag tag-family">👨\u200d👩\u200d👧 '+fr.avg.toFixed(1)+'</span>':'')+'</div>'+(lastLog.note&&lastLog.note!=='(quick log)'?'<div class="log-item-note">"'+lastLog.note+'"</div>':'')+'</div>';
+    return '<div class="attraction-card" style="position:relative;" onclick="openAttractionDetail(\''+safe+'\')">'+'<div class="attraction-card-header"><div class="attraction-card-name">'+entry.name+'</div><div class="attraction-card-zone">'+(ZONE_EMOJI[entry.zone]||'📍')+' '+entry.zone+'</div></div><div class="attraction-card-meta">'+'<span style="font-size:12px;margin-right:3px;">'+(entry.type==='show'?'🎭':'🎢')+'</span><span class="played-badge">✅ '+cnt+' ครั้ง</span>'+(avg>0?'<span style="font-size:13px;">'+tierBadge(Math.round(avg),13,true)+'</span>':'<span style="font-size:11px;color:#bbb;">ยังไม่ให้คะแนน</span>')+(cnt>1?'<span class="attr-tag tag-wait">avg '+avg.toFixed(1)+'</span>':'')+(lastLog.feeling?'<span style="font-size:16px;">'+lastLog.feeling+'</span>':'')+(frClean.length?'<span class="attr-tag tag-family">👨\u200d👩\u200d👧 '+fr.avg.toFixed(1)+'</span>':'')+'</div>'+(lastLog.note&&lastLog.note!=='(quick log)'?'<div class="log-item-note">"'+lastLog.note+'"</div>':'')+'</div>';
   }).join('');
 }
 
