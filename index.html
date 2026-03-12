@@ -308,6 +308,10 @@ window.FIREBASE_CONFIG = {
   .tag-wait{background:var(--light-gray);color:var(--gray);}
   .tag-dpa{background:#FFF3CC;color:#B88800;border:1px solid #FFD966;}
   .tag-pp{background:#E0FAF8;color:#00A896;border:1px solid #7EEEE7;}
+  .pass-toggle{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;border:2px solid #e0e0e0;background:#fff;cursor:pointer;transition:all 0.15s;user-select:none;font-size:13px;font-weight:700;}
+  .pass-toggle.active-pp{border-color:#00A896;background:#E0FAF8;color:#00A896;}
+  .pass-toggle.active-dpa{border-color:#B88800;background:#FFF3CC;color:#B88800;}
+  .pass-toggle input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--teal);}
   .tag-closed{background:#FFE0E8;color:#FF4F7B;}
 
   /* ===== RECOMMEND ===== */
@@ -731,6 +735,17 @@ window.FIREBASE_CONFIG = {
             <div id="ride-prev-rows" style="display:flex;flex-direction:column;gap:4px;"></div>
           </div>
         </div>
+        <div id="ride-pass-row" style="display:none;margin-bottom:10px;">
+          <label class="form-label">🎟️ ใช้ Pass ไหม?</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <label class="pass-toggle" id="pp-toggle" onclick="togglePass('pp')">
+              <input type="checkbox" id="pp-checkbox" onclick="event.stopPropagation()"> 🎟️ Priority Pass
+            </label>
+            <label class="pass-toggle" id="dpa-toggle" onclick="togglePass('dpa')">
+              <input type="checkbox" id="dpa-checkbox" onclick="event.stopPropagation()"> 💳 DPA
+            </label>
+          </div>
+        </div>
         <div style="position:relative;z-index:10;padding-top:8px;">
           <button class="btn btn-primary" style="position:relative;z-index:10;" onclick="saveRide()">💾 บันทึกเครื่องเล่น</button>
         </div>
@@ -973,6 +988,11 @@ window.FIREBASE_CONFIG = {
     <div id="top-rides"><div class="empty-state" style="padding:14px 0"><p style="font-size:13px">ยังไม่มีข้อมูล</p></div></div>
   </div>
 
+  <div class="section-card" id="pass-summary-card" style="display:none;">
+    <div class="section-title"><span>🎟️</span>สรุปการใช้ Pass</div>
+    <div id="pass-summary-content"></div>
+  </div>
+
   <div class="section-card">
     <div class="section-title"><span>👨‍👩‍👧</span>คะแนนครอบครัว</div>
     <div id="family-leaderboard"><p style="font-size:13px;color:var(--gray);text-align:center;padding:14px 0">ยังไม่มีข้อมูล — ให้ทุกคน rate หลังเล่นแต่ละอย่าง</p></div>
@@ -1130,6 +1150,20 @@ const RIDES_DATA = [
   {name:"Monsters, Inc. Ride & Go Seek!", zone:"Tomorrowland", wait:"40-60", note:"🎟️ Priority Pass"},
   {name:"Space Mountain", zone:"Tomorrowland", wait:"-", note:"⚠️ ปิดปรับปรุง เปิดใหม่ 2027"},
 ];
+
+// PP/DPA availability lookup: 'pp' | 'dpa' | 'both'
+const PASS_MAP = {
+  "Big Thunder Mountain": "pp",
+  "Splash Mountain": "dpa",
+  "Enchanted Tale of Beauty and the Beast": "dpa",
+  "Pooh's Hunny Hunt": "pp",
+  "Haunted Mansion": "pp",
+  "The Happy Ride with Baymax": "dpa",
+  "Monsters, Inc. Ride & Go Seek!": "pp",
+  "Disney Harmony in Color (Daytime Parade)": "dpa",
+  "Electrical Parade Dreamlights (Night Parade)": "dpa",
+  "Reach for the Stars (Castle Projection)": "dpa",
+};
 
 const SHOWS_DATA = [
   {name:"Disney Harmony in Color (Daytime Parade)", zone:"Parade", note:"💳 DPA / พาเหรดสีสันสดใส"},
@@ -2468,6 +2502,10 @@ function saveRide(){
   const round=prevCount+1;
   const myState=familyStarState.ride||{};
   const groupId=Date.now(); // shared groupId for same-time logs
+  // Read pass used
+  const ppUsed=document.getElementById('pp-checkbox')?.checked||false;
+  const dpaUsed=document.getElementById('dpa-checkbox')?.checked||false;
+  const passUsed=ppUsed?'pp':dpaUsed?'dpa':null;
   // Create one log per member who participated (has stars or is currentMember)
   const allParticipants=[...new Set([currentMember,...allMembers])].filter(Boolean);
   const logsToSave=[];
@@ -2478,49 +2516,25 @@ function saveRide(){
     if(m!==currentMember&&mStars===0)return;
     const mPrevCount=tripLogs().filter(l=>l.type==='ride'&&l.name===name&&l.member===m).length;
     const mRound=mPrevCount+1;
-    const log={id:groupId+i,type:'ride',name,zone:selectedRideZone,order,wait,time,stars:mStars,feeling:'',note:mNote,round:mRound,timestamp:groupId,member:m,groupId,tripId:currentTripId};
+    const log={id:groupId+i,type:'ride',name,zone:selectedRideZone,order,wait,time,stars:mStars,feeling:'',note:mNote,round:mRound,timestamp:groupId,member:m,groupId,passUsed,tripId:currentTripId};
     logsToSave.push(log);
   });
   if(editingLogId){
     // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId (only if defined); fall back to nearby timestamp
-    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
-    // Track which members already have a log
-    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
-    // Update existing logs
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const fss=familyStarState.ride||{};
-      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
-      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
-      const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
+      const mStars=(familyStarState.ride||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.ride||{})[gl.member+'_note']??gl.note??'';
+      const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote,passUsed};
       logs[gi]=updated;
       dbSet(tripPath('logs/'+gl.id),updated);
-    });
-    // Create new logs for members who got rated but had no log yet
-    const fss=familyStarState.ride||{};
-    const sharedGroupId=refLog.groupId||refLog.id;
-    Object.keys(fss).forEach(key=>{
-      if(key.endsWith('_note'))return;
-      const member=key;
-      const mStars=fss[member]||0;
-      if(!mStars)return; // skip unrated
-      if(existingMembers.has(member))return; // already updated above
-      const mNote=fss[member+'_note']||'';
-      const newId=Date.now()+Math.random();
-      const newLog={id:newId,type:'ride',name,zone:refLog.zone||selectedRideZone,order:refLog.order,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,feeling:'',note:mNote,round:1,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,tripId:currentTripId};
-      // Also assign groupId back to refLog if it didn't have one
-      if(!refLog.groupId){
-        const ri=logs.findIndex(l=>l.id===refLog.id);
-        if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
-      }
-      logs.push(newLog);
-      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -2560,39 +2574,18 @@ function saveShow(){
   });
   if(editingLogId){
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId (only if defined); fall back to nearby timestamp
-    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
-    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const fss=familyStarState.show||{};
-      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
-      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
+      const mStars=(familyStarState.show||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
-    });
-    // Create new logs for members who got rated but had no log yet
-    const fss=familyStarState.show||{};
-    const sharedGroupId=refLog.groupId||refLog.id;
-    Object.keys(fss).forEach(key=>{
-      if(key.endsWith('_note'))return;
-      const member=key;
-      const mStars=fss[member]||0;
-      if(!mStars)return;
-      if(existingMembers.has(member))return;
-      const mNote=fss[member+'_note']||'';
-      const newId=Date.now()+Math.random();
-      const newLog={id:newId,type:'show',name,time:logsToSave[0].time,duration:'',wait:logsToSave[0].wait,stars:mStars,feeling:'',note:mNote,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,tripId:currentTripId};
-      if(!refLog.groupId){
-        const ri=logs.findIndex(l=>l.id===refLog.id);
-        if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
-      }
-      logs.push(newLog);
-      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -2669,7 +2662,21 @@ function resetRideForm(){
   const slider=document.getElementById('ride-wait-slider');if(slider)slider.value=0;
   updateWait(0);
   const ps=document.getElementById('ride-prev-summary');if(ps)ps.style.display='none';
+  // Reset pass checkboxes
+  const ppCb=document.getElementById('pp-checkbox');if(ppCb)ppCb.checked=false;
+  const dpaCb=document.getElementById('dpa-checkbox');if(dpaCb)dpaCb.checked=false;
+  const ppT=document.getElementById('pp-toggle');if(ppT)ppT.classList.remove('active-pp');
+  const dpaT=document.getElementById('dpa-toggle');if(dpaT)dpaT.classList.remove('active-dpa');
+  const pr=document.getElementById('ride-pass-row');if(pr)pr.style.display='none';
   familyStarState.ride={};editingLogId=null;editingLogMember=null;renderFamilyStars('ride');
+}
+
+function togglePass(type){
+  const cb=document.getElementById(type+'-checkbox');
+  const toggle=document.getElementById(type+'-toggle');
+  if(!cb||!toggle)return;
+  cb.checked=!cb.checked;
+  toggle.classList.toggle('active-'+type, cb.checked);
 }
 function resetShowForm(){
   document.getElementById('show-name-custom').value='';
@@ -2988,6 +2995,8 @@ function timelineCardInner(item, inGroup, orderNum){
     
     if(item.wait>0)badges+=`<span class="badge badge-pink" style="font-size:10px;">⏳${item.wait}น.</span>`;
     if(item.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${item.zone}</span>`;
+    if(item.passUsed==='pp')badges+=`<span class="badge tag-pp" style="font-size:10px;">🎟️ PP</span>`;
+    if(item.passUsed==='dpa')badges+=`<span class="badge tag-dpa" style="font-size:10px;">💳 DPA</span>`;
     if(item.member&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>${item.stars?` <span style="font-size:12px;font-weight:900;color:${TIER_COLOR[item.stars]}">${TIER_LABEL[item.stars]}</span>${item.note&&item.note!=='เคยเล่น'?` <span style="font-size:11px;color:#888;">"${item.note}"</span>`:''}`:''}`;
   }
   if(item.type==='show'){
@@ -3025,6 +3034,8 @@ function timelineGroupInner(lead,members,orderNum){
     
     if(lead.wait>0)badges+=`<span class="badge badge-pink" style="font-size:10px;">⏳${lead.wait}น.</span>`;
     if(lead.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${lead.zone}</span>`;
+    if(lead.passUsed==='pp')badges+=`<span class="badge tag-pp" style="font-size:10px;">🎟️ PP</span>`;
+    if(lead.passUsed==='dpa')badges+=`<span class="badge tag-dpa" style="font-size:10px;">💳 DPA</span>`;
   }
   if(lead.type==='show'&&lead.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${lead.duration}น.</span>`;
   const memberRows=members.map(m=>{
@@ -3160,6 +3171,25 @@ function openEditLog(id){
       // Pre-fill time
       const timeEl=document.getElementById(type==='ride'?'ride-time':'show-time');
       if(timeEl) timeEl.value=log.time||'';
+      // Restore PP/DPA pass for ride
+      if(type==='ride'){
+        const passType=PASS_MAP[log.name];
+        const passRow=document.getElementById('ride-pass-row');
+        const ppToggle=document.getElementById('pp-toggle');
+        const dpaToggle=document.getElementById('dpa-toggle');
+        const ppCb=document.getElementById('pp-checkbox');
+        const dpaCb=document.getElementById('dpa-checkbox');
+        if(passRow&&passType){
+          passRow.style.display='';
+          if(ppToggle)ppToggle.style.display=(passType==='pp'||passType==='both')?'flex':'none';
+          if(dpaToggle)dpaToggle.style.display=(passType==='dpa'||passType==='both')?'flex':'none';
+          if(ppCb){ppCb.checked=log.passUsed==='pp';if(ppToggle)ppToggle.classList.toggle('active-pp',ppCb.checked);}
+          if(dpaCb){dpaCb.checked=log.passUsed==='dpa';if(dpaToggle)dpaToggle.classList.toggle('active-dpa',dpaCb.checked);}
+        } else if(passRow){
+          passRow.style.display='none';
+          if(ppCb)ppCb.checked=false; if(dpaCb)dpaCb.checked=false;
+        }
+      }
       // Pre-select stars for the log's member
       const starBtns=document.querySelectorAll(`[data-member="${log.member}"] .star-btn`);
       if(starBtns.length&&log.stars){
@@ -3253,7 +3283,55 @@ function renderSummary(){
     return '<div class="expense-row" onclick="openAttractionDetail(\''+safeName+'\')" style="cursor:pointer;border-radius:10px;transition:background 0.15s;" onmouseover="this.style.background=\'#f8f0ff\'" onmouseout="this.style.background=\'\'">'+'<div class="expense-cat">'+['🥇','🥈','🥉','4️⃣','5️⃣'][i]+' '+typeIcon+' '+r.name+'</div>'+'<div style="display:flex;align-items:center;gap:4px;">'+tierBadge(stars,13,true)+'</span>'+(r.count>1?'<span style="font-size:10px;color:#aaa;">('+r.count+'คน avg '+r.avg.toFixed(1)+')</span>':'')+'<span style="font-size:11px;color:#ccc;margin-left:4px;">›</span></div></div>';
   }).join('');}
   renderFamilyLeaderboard(tl);
+  renderPassSummary(tl);
   const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display=isAdminMode?'':'none';
+}
+
+function renderPassSummary(tl){
+  const card=document.getElementById('pass-summary-card');
+  const content=document.getElementById('pass-summary-content');
+  if(!card||!content)return;
+  const passLogs=tl.filter(l=>l.type==='ride'&&l.passUsed);
+  if(!passLogs.length){card.style.display='none';return;}
+  card.style.display='';
+  // Group by ride name + passUsed
+  const ppLogs=passLogs.filter(l=>l.passUsed==='pp');
+  const dpaLogs=passLogs.filter(l=>l.passUsed==='dpa');
+  const ppRides=[...new Set(ppLogs.map(l=>l.name))];
+  const dpaRides=[...new Set(dpaLogs.map(l=>l.name))];
+  // Count unique sessions (by groupId)
+  const countSessions=(logs)=>new Set(logs.map(l=>l.groupId||l.id)).size;
+  let html='';
+  // Stats row
+  html+=`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">`;
+  if(ppLogs.length)html+=`<div style="flex:1;min-width:120px;background:#E0FAF8;border-radius:12px;padding:10px 14px;border:1px solid #7EEEE7;">
+    <div style="font-size:11px;font-weight:700;color:#007A6E;margin-bottom:2px;">🎟️ Priority Pass</div>
+    <div style="font-size:22px;font-weight:900;color:#00A896;">${countSessions(ppLogs)}</div>
+    <div style="font-size:10px;color:#00A896;">ครั้ง / ${ppRides.length} เครื่องเล่น</div>
+  </div>`;
+  if(dpaLogs.length)html+=`<div style="flex:1;min-width:120px;background:#FFF3CC;border-radius:12px;padding:10px 14px;border:1px solid #FFD966;">
+    <div style="font-size:11px;font-weight:700;color:#B88800;margin-bottom:2px;">💳 DPA</div>
+    <div style="font-size:22px;font-weight:900;color:#B88800;">${countSessions(dpaLogs)}</div>
+    <div style="font-size:10px;color:#B88800;">ครั้ง / ${dpaRides.length} เครื่องเล่น</div>
+  </div>`;
+  html+='</div>';
+  // Ride list
+  const allPassRides=[...new Set(passLogs.map(l=>l.name))];
+  allPassRides.forEach(rideName=>{
+    const rLogs=passLogs.filter(l=>l.name===rideName);
+    const passType=rLogs[0].passUsed;
+    const badgeClass=passType==='pp'?'tag-pp':'tag-dpa';
+    const badgeLabel=passType==='pp'?'🎟️ PP':'💳 DPA';
+    const sessions=countSessions(rLogs);
+    const memberList=[...new Set(rLogs.map(l=>l.member).filter(Boolean))];
+    html+=`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0f0;">
+      <span class="badge ${badgeClass}" style="font-size:10px;flex-shrink:0;">${badgeLabel}</span>
+      <span style="font-weight:700;font-size:13px;flex:1;">${rideName}</span>
+      <span style="font-size:11px;color:#aaa;">${sessions}ครั้ง</span>
+    </div>
+    <div style="font-size:11px;color:#888;padding:3px 0 6px 8px;">${memberList.join(' · ')}</div>`;
+  });
+  content.innerHTML=html;
 }
 
 function renderFamilyLeaderboard(tl){
@@ -3404,7 +3482,7 @@ function generateExport(){
   const trip=trips.find(t=>t.id===currentTripId);const now=new Date();
   let text='🏰 บันทึกการเที่ยว Tokyo Disneyland\n📅 '+(trip?trip.name:now.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}))+'\n'+'='.repeat(40)+'\n\n🎢 เครื่องเล่น ('+rideSessions.length+' รายการ)\n'+'─'.repeat(30)+'\n';
   rideSessions.forEach(({lead,members},i)=>{
-    text+=(i+1)+'. '+lead.name+' ['+(lead.time||'--:--')+']'+(lead.zone?' ('+lead.zone+')':'')+'\n';
+    text+=(i+1)+'. '+lead.name+' ['+(lead.time||'--:--')+']'+(lead.zone?' ('+lead.zone+')':'')+(lead.passUsed==='pp'?' [PP]':lead.passUsed==='dpa'?' [DPA]':'')+'\n';
     if(lead.wait>0)text+='   ⏳ รอ: '+lead.wait+'น.\n';
     const rated=members.filter(m=>m.stars>0);
     if(rated.length)text+='   '+rated.map(m=>m.member+' ['+TIER_LABEL[m.stars]+']'+(m.note&&m.note!=='เคยเล่น'?' "'+m.note+'"':'')).join(' | ')+'\n';
@@ -3835,6 +3913,25 @@ function selectRide(name,zone){
   setTimeout(()=>{const el=document.getElementById('ride-details');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},80);
   // Always reset ratings fresh for new round
   familyStarState.ride={};
+  // Show/hide PP/DPA pass row based on PASS_MAP
+  const passType=PASS_MAP[name];
+  const passRow=document.getElementById('ride-pass-row');
+  const ppToggle=document.getElementById('pp-toggle');
+  const dpaToggle=document.getElementById('dpa-toggle');
+  const ppCb=document.getElementById('pp-checkbox');
+  const dpaCb=document.getElementById('dpa-checkbox');
+  if(passRow&&ppToggle&&dpaToggle){
+    if(passType){
+      passRow.style.display='';
+      ppToggle.style.display=(passType==='pp'||passType==='both')?'flex':'none';
+      dpaToggle.style.display=(passType==='dpa'||passType==='both')?'flex':'none';
+      if(ppCb)ppCb.checked=false; ppToggle.classList.remove('active-pp');
+      if(dpaCb)dpaCb.checked=false; dpaToggle.classList.remove('active-dpa');
+    } else {
+      passRow.style.display='none';
+      if(ppCb)ppCb.checked=false; if(dpaCb)dpaCb.checked=false;
+    }
+  }
   // Check previous plays this trip
   const tl=tripLogs();
   const prevLogs=tl.filter(l=>l.type==='ride'&&l.name===name);
