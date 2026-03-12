@@ -2484,21 +2484,43 @@ function saveRide(){
   if(editingLogId){
     // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId (only if groupId is defined); fall back to nearby timestamp
+    // Group by shared groupId (only if defined); fall back to nearby timestamp
     const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    // Track which members already have a log
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
+    // Update existing logs
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
       const fss=familyStarState.ride||{};
-      // Only update stars/note if user explicitly set them (key exists in familyStarState)
       const mStars=gl.member in fss?fss[gl.member]:gl.stars;
       const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;
       dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who got rated but had no log yet
+    const fss=familyStarState.ride||{};
+    const sharedGroupId=refLog.groupId||refLog.id;
+    Object.keys(fss).forEach(key=>{
+      if(key.endsWith('_note'))return;
+      const member=key;
+      const mStars=fss[member]||0;
+      if(!mStars)return; // skip unrated
+      if(existingMembers.has(member))return; // already updated above
+      const mNote=fss[member+'_note']||'';
+      const newId=Date.now()+Math.random();
+      const newLog={id:newId,type:'ride',name,zone:refLog.zone||selectedRideZone,order:refLog.order,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,feeling:'',note:mNote,round:1,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,tripId:currentTripId};
+      // Also assign groupId back to refLog if it didn't have one
+      if(!refLog.groupId){
+        const ri=logs.findIndex(l=>l.id===refLog.id);
+        if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+      }
+      logs.push(newLog);
+      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -2543,6 +2565,7 @@ function saveShow(){
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
@@ -2551,6 +2574,25 @@ function saveShow(){
       const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who got rated but had no log yet
+    const fss=familyStarState.show||{};
+    const sharedGroupId=refLog.groupId||refLog.id;
+    Object.keys(fss).forEach(key=>{
+      if(key.endsWith('_note'))return;
+      const member=key;
+      const mStars=fss[member]||0;
+      if(!mStars)return;
+      if(existingMembers.has(member))return;
+      const mNote=fss[member+'_note']||'';
+      const newId=Date.now()+Math.random();
+      const newLog={id:newId,type:'show',name,time:logsToSave[0].time,duration:'',wait:logsToSave[0].wait,stars:mStars,feeling:'',note:mNote,timestamp:refLog.timestamp||refLog.id,member,groupId:sharedGroupId,tripId:currentTripId};
+      if(!refLog.groupId){
+        const ri=logs.findIndex(l=>l.id===refLog.id);
+        if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+      }
+      logs.push(newLog);
+      dbPush(tripPath('logs'),newLog);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -3125,13 +3167,11 @@ function openEditLog(id){
       }
       // Restore ALL members' stars+notes from the same group session
       if(!familyStarState[type])familyStarState[type]={};
-      // Group by shared groupId (only if defined); fall back to nearby timestamp
-      const sameGroup=log.groupId!=null?logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId===log.groupId):[];
+      // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+      const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
       // Fallback: same name+trip, but limit to logs within 2 hours of the edited log
       const nearbyFallback=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&Math.abs((l.timestamp||l.id)-(log.timestamp||log.id))<7200000);
       const groupLogs=sameGroup.length>1?sameGroup:(nearbyFallback.length>0?nearbyFallback:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name));
-      // Clear old familyStarState for this type so stale data doesn't carry over
-      familyStarState[type]={};
       groupLogs.forEach(gl=>{
         familyStarState[type][gl.member]=gl.stars||0;
         familyStarState[type][gl.member+'_note']=gl.note||'';
