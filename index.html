@@ -2599,7 +2599,7 @@ function saveExpense(){
   const cat=document.getElementById('exp-cat').value;const time=document.getElementById('exp-time').value;const note=document.getElementById('exp-note').value.trim();
   let priceYen,priceThb;
   if(expCurrency==='yen'){priceYen=priceRaw;priceThb=priceRaw*exchangeRate;}else{priceThb=priceRaw;priceYen=priceRaw/exchangeRate;}
-  const exp={id:Date.now(),name,cat,time,note,priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),tripId:currentTripId};
+  const _expNow=Date.now();const exp={id:_expNow,name,cat,time,note,priceYen:Math.round(priceYen),priceThb:Math.round(priceThb),tripId:currentTripId,timestamp:_expNow};
   expenses.push(exp);saveExpenses();dbPush(tripPath('expenses'),exp);
   document.getElementById('exp-name').value='';document.getElementById('exp-price').value='';document.getElementById('exp-note').value='';document.getElementById('exp-converted').textContent='';
   showToast('💴 บันทึกค่าใช้จ่ายสำเร็จ!');
@@ -2773,7 +2773,7 @@ function renderTimeline(){
     } else statsEl.style.display='none';
   }
 
-  const allItems=[...logItems,...expItems].sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const allItems=[...logItems,...expItems].sort((a,b)=>(a.timestamp||a.id||0)-(b.timestamp||b.id||0));
   if(!allItems.length){container.innerHTML='<div class="empty-state"><div class="empty-icon">🏰</div><p>ยังไม่มีรายการ</p></div>';return;}
 
   // Group logs: 1) by groupId (same session) 2) auto-merge: same name + time within 30min + different member
@@ -3293,12 +3293,12 @@ function generateShareImage(){
   const totalWait=[...new Set(repRides.map(l=>l.groupId||l.id))].reduce((s,gid)=>{const rep=repRides.find(r=>(r.groupId||r.id)===gid);return s+(rep?.wait||0);},0);
   // Build session lists for rendering
   const seen=new Set();const rideSessions=[];
-  allRideLogs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
+  allRideLogs.sort((a,b)=>(a.timestamp||a.id||0)-(b.timestamp||b.id||0)).forEach(l=>{
     const key=l.groupId||l.id;
     if(!seen.has(key)){seen.add(key);rideSessions.push({lead:l,members:allRideLogs.filter(x=>(x.groupId||x.id)===key)});}
   });
   const seen2=new Set();const showSessions=[];
-  allShowLogs.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(l=>{
+  allShowLogs.sort((a,b)=>(a.timestamp||a.id||0)-(b.timestamp||b.id||0)).forEach(l=>{
     const key=l.groupId||l.id;
     if(!seen2.has(key)){seen2.add(key);showSessions.push({lead:l,members:allShowLogs.filter(x=>(x.groupId||x.id)===key)});}
   });
