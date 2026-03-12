@@ -2484,16 +2484,18 @@ function saveRide(){
   if(editingLogId){
     // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId (only if groupId is defined); fall back to nearby timestamp
+    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const mStars=(familyStarState.ride||{})[gl.member]??gl.stars;
-      const mNote=(familyStarState.ride||{})[gl.member+'_note']??gl.note??'';
+      const fss=familyStarState.ride||{};
+      // Only update stars/note if user explicitly set them (key exists in familyStarState)
+      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
+      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;
       dbSet(tripPath('logs/'+gl.id),updated);
@@ -2536,16 +2538,17 @@ function saveShow(){
   });
   if(editingLogId){
     const refLog=logs.find(l=>l.id===editingLogId);
-    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId (only if defined); fall back to nearby timestamp
+    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
-      const mStars=(familyStarState.show||{})[gl.member]??gl.stars;
-      const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
+      const fss=familyStarState.show||{};
+      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
+      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
     });
@@ -3122,11 +3125,13 @@ function openEditLog(id){
       }
       // Restore ALL members' stars+notes from the same group session
       if(!familyStarState[type])familyStarState[type]={};
-      // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
-      const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
+      // Group by shared groupId (only if defined); fall back to nearby timestamp
+      const sameGroup=log.groupId!=null?logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId===log.groupId):[];
       // Fallback: same name+trip, but limit to logs within 2 hours of the edited log
       const nearbyFallback=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&Math.abs((l.timestamp||l.id)-(log.timestamp||log.id))<7200000);
       const groupLogs=sameGroup.length>1?sameGroup:(nearbyFallback.length>0?nearbyFallback:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name));
+      // Clear old familyStarState for this type so stale data doesn't carry over
+      familyStarState[type]={};
       groupLogs.forEach(gl=>{
         familyStarState[type][gl.member]=gl.stars||0;
         familyStarState[type][gl.member+'_note']=gl.note||'';
