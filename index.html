@@ -3088,14 +3088,28 @@ function timelineCardInner(item, inGroup, orderNum){
     if(item.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${item.zone}</span>`;
     if(item.passUsed==='pp')badges+=`<span class="badge tag-pp" style="font-size:10px;">🎟️ PP</span>`;
     if(item.passUsed==='dpa')badges+=`<span class="badge tag-dpa" style="font-size:10px;">💳 DPA</span>`;
-    if(item.member&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>${item.stars?` <span style="font-size:12px;font-weight:900;color:${TIER_COLOR[item.stars]}">${TIER_LABEL[item.stars]}</span>${item.note&&item.note!=='เคยเล่น'?` <span style="font-size:11px;color:#888;">"${item.note}"</span>`:''}`:''}`;
+    if(item.member&&!inGroup){
+      let _mb='<span style="font-size:10px;font-weight:700;background:'+memberCol+'18;color:'+memberCol+';padding:1px 7px;border-radius:8px;border:1px solid '+memberCol+'30;">'+item.member+'</span>';
+      if(item.stars){
+        _mb+=' <span style="font-size:12px;font-weight:900;color:'+TIER_COLOR[item.stars]+'">'+TIER_LABEL[item.stars]+'</span>';
+        if(item.note&&item.note!=='เคยเล่น') _mb+=' <span style="font-size:11px;color:#888;">"'+item.note+'"</span>';
+      }
+      badges+=_mb;
+    }
   }
   if(item.type==='show'){
     if(item.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${item.duration}น.</span>`;
     if(item.wait>0)badges+=`<span class="badge badge-teal" style="font-size:10px;">⏳${item.wait}น.</span>`;
-    if(item.member&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>${item.stars?` <span style="font-size:12px;font-weight:900;color:${TIER_COLOR[item.stars]}">${TIER_LABEL[item.stars]}</span>${item.note&&item.note!=='เคยเล่น'?` <span style="font-size:11px;color:#888;">"${item.note}"</span>`:''}`:''}`;
+    if(item.member&&!inGroup){
+      let _mb='<span style="font-size:10px;font-weight:700;background:'+memberCol+'18;color:'+memberCol+';padding:1px 7px;border-radius:8px;border:1px solid '+memberCol+'30;">'+item.member+'</span>';
+      if(item.stars){
+        _mb+=' <span style="font-size:12px;font-weight:900;color:'+TIER_COLOR[item.stars]+'">'+TIER_LABEL[item.stars]+'</span>';
+        if(item.note&&item.note!=='เคยเล่น') _mb+=' <span style="font-size:11px;color:#888;">"'+item.note+'"</span>';
+      }
+      badges+=_mb;
+    }
   }
-  if(item.type==='food'){if(item.menu)badges+=`<span class="badge badge-gold" style="font-size:10px;">${item.menu}</span>`;if(item.priceYen>0)badges+=`<span class="badge badge-gold" style="font-size:10px;">¥${item.priceYen.toLocaleString()}</span>`;}
+  if(item.type==='food'){if(item.menu)badges+='<span class="badge badge-gold" style="font-size:10px;">'+item.menu+'</span>';if(item.priceYen>0)badges+='<span class="badge badge-gold" style="font-size:10px;">¥'+item.priceYen.toLocaleString()+'</span>';}
   if(item.type==='expense')badges+=`<span class="badge badge-purple" style="font-size:10px;">${item.cat}</span><span class="badge badge-purple" style="font-size:10px;">¥${(item.priceYen||0).toLocaleString()}</span>`;
   const mergeBtn=(item.type==='ride'||item.type==='show')&&isLog
     ?`<button class="tl-delete-btn" onclick="openMergeModal(${item.id})" title="รวมกับกลุ่มอื่น" style="color:#bbb;font-size:13px;margin-right:2px;">🔗</button>`:'';
@@ -3472,7 +3486,7 @@ function renderFamilyLeaderboard(tl){
     const avgR=Math.round(avgNum);
     const col=TIER_COLOR[avgR]||'var(--gold)';
     const medals=['🥇','🥈','🥉'];
-    const rank=i<3?`<span style="font-size:20px;">${medals[i]}</span>`:`<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">${i+1}</span>`;
+    const rank=i<3?'<span style="font-size:20px;">'+medals[i]+'</span>':'<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">'+(i+1)+'</span>';
     const fam=memberFamilies[m]?`<span style="font-size:10px;background:#f0f4ff;color:var(--navy);padding:1px 7px;border-radius:8px;margin-left:5px;font-weight:600;">${memberFamilies[m]}</span>`:'';
     const bar=Math.round(avgNum/5*100);
     const safeM=m.replace(/'/g,"\'");
