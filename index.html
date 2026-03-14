@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.0.0</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.1.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.0.0 NEW FEATURES ===== */
+  /* ===== v2.1.0 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -481,6 +481,7 @@ window.FIREBASE_CONFIG = {
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
       <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);">สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม</p>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.0</div>
     </div>
 
     <!-- Step 1: Trip list -->
@@ -644,7 +645,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.0.0</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.0</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -3259,6 +3260,8 @@ function openEditLog(id){
           familyStarState[type][m+'_note']='';
         }
       });
+      // Re-render family stars now that all members are injected into state
+      renderFamilyStars(type);
       // Also update tier button visual state for all members
       document.querySelectorAll('.family-star[data-type="'+type+'"]').forEach(btn=>{
         const bm=btn.dataset.member,bn=parseInt(btn.dataset.n);
@@ -3555,7 +3558,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.0.0';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.0';
   document.getElementById('export-text').textContent=text;
 }
 
