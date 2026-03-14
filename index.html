@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.2.0</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.0.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.2.0 NEW FEATURES ===== */
+  /* ===== v2.0.0 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -446,16 +446,15 @@ window.FIREBASE_CONFIG = {
 
 
 
-  /* Admin mode floating badge */
+  /* Admin mode indicator badge */
   #admin-mode-badge{
     position:fixed;top:10px;right:10px;z-index:9999;
-    display:none;align-items:center;gap:6px;
     background:linear-gradient(135deg,#27ae60,#1e8449);
     color:#fff;font-size:11px;font-weight:700;
-    padding:5px 12px 5px 10px;border-radius:20px;
-    box-shadow:0 2px 10px rgba(39,174,96,0.45);
+    padding:4px 10px;border-radius:20px;
+    box-shadow:0 2px 8px rgba(39,174,96,0.5);
+    display:none;pointer-events:none;
     font-family:'Sarabun',sans-serif;letter-spacing:0.3px;
-    cursor:pointer;user-select:none;
   }
 </style>
 
@@ -482,7 +481,6 @@ window.FIREBASE_CONFIG = {
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
       <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);">สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม</p>
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.2.0</div>
     </div>
 
     <!-- Step 1: Trip list -->
@@ -646,7 +644,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.2.0</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.0.0</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -661,7 +659,7 @@ window.FIREBASE_CONFIG = {
   </div>
   <div id="sync-status" class="sync-badge sync-local" style="margin-top:6px;">⚫ Local Mode</div>
 </div>
-<div id="admin-mode-badge" onclick="exitAdminModeBadge()">🛡️ Admin <span style="font-size:10px;opacity:0.85;">แตะเพื่อปิด ✕</span></div>
+<div id="admin-mode-badge">🛡️ Admin Mode</div>
 
 <div class="nav-tabs">
   <button class="tab-btn active" onclick="showTab('info')" id="tab-info"><span class="tab-icon">🎡</span>ข้อมูล</button>
@@ -1987,16 +1985,12 @@ function backToTrips(){
 // ===== ADMIN FUNCTIONS =====
 const ADMIN_CODE='134140';
 let isAdminMode=localStorage.getItem('tdl_admin_mode')==='1';
-window.addEventListener('DOMContentLoaded',()=>{
-  const _abi=document.getElementById('admin-mode-badge');
-  if(_abi)_abi.style.display=isAdminMode?'flex':'none';
-});
+window.addEventListener('DOMContentLoaded',()=>{const ab=document.getElementById('admin-mode-badge');if(ab)ab.style.display=isAdminMode?'block':'none';});
 
 function goToLanding(){
   currentMember='';currentTripId='';
-  isAdminMode=false;
+  isAdminMode=false;const ab=document.getElementById('admin-mode-badge');if(ab)ab.style.display='none';
   localStorage.removeItem('tdl_admin_mode');
-  const _abl=document.getElementById('admin-mode-badge');if(_abl)_abl.style.display='none';
   localStorage.removeItem('tdl_member');
   localStorage.removeItem('tdl_current_trip');
   landingSelectedTripId=null;
@@ -2033,25 +2027,14 @@ function pinPress(v){
 function adminLogin(){_pinVal='';const disp=document.getElementById('admin-pin-display');if(disp)disp.textContent='';
   const code=document.getElementById('admin-code-input').value.trim();
   if(code!==ADMIN_CODE){showToast('❌ รหัสไม่ถูกต้อง');return;}
-  isAdminMode=true;
+  isAdminMode=true;const ab=document.getElementById('admin-mode-badge');if(ab)ab.style.display='block';
   localStorage.setItem('tdl_admin_mode','1');
   closeAdminModal();
   openAdminCreateModal();
   // Show manage section immediately if on summary tab
   const ms=document.getElementById('admin-manage-section');
   if(ms)ms.style.display='';
-  showToast('🔑 Admin Mode เปิดแล้ว');const _ab=document.getElementById('admin-mode-badge');if(_ab)_ab.style.display='flex';
-}
-
-function exitAdminModeBadge(){
-  isAdminMode=false;
-  localStorage.removeItem('tdl_admin_mode');
-  const ab=document.getElementById('admin-mode-badge');
-  if(ab)ab.style.display='none';
-  renderFamilyStars('ride');renderFamilyStars('show');renderFamilyStars('food');
-  renderTimeline();
-  const ms=document.getElementById('admin-manage-section');if(ms)ms.style.display='none';
-  showToast('🔒 ปิด Admin Mode แล้ว');
+  showToast('🔑 Admin Mode เปิดแล้ว');
 }
 
 function openAdminCreateModal(){
@@ -2222,34 +2205,22 @@ function renderAdminTripList(){
   el.innerHTML=trips.map(t=>{
     const d=t.date?new Date(t.date).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):'';
     const locked=t.locked||false;
-    const logLocked=t.logLocked||false;
-    const rateLocked=t.rateLocked||false;
-    return `<div style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:#f8f9ff;border-radius:12px;border:1.5px solid ${locked?'#ffd6d6':'#e8eaf0'};">
+    return `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#f8f9ff;border-radius:12px;border:1.5px solid ${locked?'#ffd6d6':'#e8eaf0'};">
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:700;color:var(--navy);">${t.name}</div>
         ${d?`<div style="font-size:11px;color:var(--gray);">📅 ${d}</div>`:''}
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">
-          ${locked?'<span style="font-size:10px;background:#ffe0e0;color:#e74c3c;padding:1px 7px;border-radius:6px;font-weight:700;">🔒 ล็อกทั้งหมด</span>':''}
-          ${logLocked&&!locked?'<span style="font-size:10px;background:#fff3e0;color:#e65100;padding:1px 7px;border-radius:6px;font-weight:700;">📝 ล็อกบันทึก</span>':''}
-          ${rateLocked&&!locked?'<span style="font-size:10px;background:#e8eaf6;color:#3949ab;padding:1px 7px;border-radius:6px;font-weight:700;">⭐ ล็อก Rate</span>':''}
-          ${!locked&&!logLocked&&!rateLocked?'<span style="font-size:10px;background:#e8f8f0;color:#27ae60;padding:1px 7px;border-radius:6px;font-weight:700;">🔓 เปิดแก้ไข</span>':''}
-        </div>
+        <div style="font-size:11px;margin-top:3px;">${locked?'<span style="color:#e74c3c;font-weight:700;">🔒 ล็อกแล้ว</span>':'<span style="color:#27ae60;font-weight:700;">🔓 เปิดแก้ไข</span>'}</div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:4px;align-items:stretch;">
-        <button data-action="lock" data-id="${t.id}" style="border:none;border-radius:7px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:${locked?'#e8f8f0;color:#27ae60':'#fff0f0;color:#e74c3c'};">${locked?'🔓 Unlock All':'🔒 Lock All'}</button>
-        <button data-action="loglock" data-id="${t.id}" style="border:none;border-radius:7px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:${logLocked?'#fff3e0;color:#e65100':'#f5f5f5;color:#666'};">${logLocked?'📝 Unlock บันทึก':'📝 Lock บันทึก'}</button>
-        <button data-action="ratelock" data-id="${t.id}" style="border:none;border-radius:7px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;background:${rateLocked?'#e8eaf6;color:#3949ab':'#f5f5f5;color:#666'};">${rateLocked?'⭐ Unlock Rate':'⭐ Lock Rate'}</button>
-        <button data-action="delete" data-id="${t.id}" style="border:none;background:#ffe0e8;color:#e74c3c;border-radius:7px;padding:4px 8px;font-size:11px;cursor:pointer;">🗑️ ลบ</button>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <button data-action="lock" data-id="${t.id}" style="border:none;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;background:${locked?'#e8f8f0;color:#27ae60':'#fff0f0;color:#e74c3c'};">${locked?'🔓 Unlock':'🔒 Lock'}</button>
+        <button data-action="delete" data-id="${t.id}" style="border:none;background:#ffe0e8;color:#e74c3c;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;">🗑️ ลบ</button>
       </div>
     </div>`;
   }).join('');
   el.querySelectorAll('button[data-action]').forEach(btn=>{
     btn.addEventListener('click',()=>{
       const id=btn.getAttribute('data-id');
-      const act=btn.getAttribute('data-action');
-      if(act==='lock') adminToggleLock(id);
-      else if(act==='loglock') adminToggleLogLock(id);
-      else if(act==='ratelock') adminToggleRateLock(id);
+      if(btn.getAttribute('data-action')==='lock') adminToggleLock(id);
       else adminDeleteTrip(id);
     });
   });
@@ -2274,39 +2245,14 @@ function adminToggleLock(id){
   trip.locked=!trip.locked;
   localStorage.setItem('tdl_trips',JSON.stringify(trips));
   if(firebaseReady&&db)dbWrite('trips',trips);
-  renderAdminTripList();renderLandingTrips();
+  renderAdminTripList();
+  renderLandingTrips();
   showToast(trip.locked?'🔒 ล็อกทริปแล้ว':'🔓 Unlock แล้ว');
-}
-function adminToggleLogLock(id){
-  const trip=trips.find(t=>t.id===id);if(!trip)return;
-  trip.logLocked=!trip.logLocked;
-  localStorage.setItem('tdl_trips',JSON.stringify(trips));
-  if(firebaseReady&&db)dbWrite('trips',trips);
-  renderAdminTripList();
-  showToast(trip.logLocked?'📝 ล็อกการบันทึกแล้ว (rate ยังได้)':'📝 เปิดการบันทึกแล้ว');
-}
-function adminToggleRateLock(id){
-  const trip=trips.find(t=>t.id===id);if(!trip)return;
-  trip.rateLocked=!trip.rateLocked;
-  localStorage.setItem('tdl_trips',JSON.stringify(trips));
-  if(firebaseReady&&db)dbWrite('trips',trips);
-  renderAdminTripList();
-  showToast(trip.rateLocked?'⭐ ล็อกการ Rate แล้ว':'⭐ เปิดการ Rate แล้ว');
 }
 
 function isTripLocked(){
   const trip=trips.find(t=>t.id===currentTripId);
   return trip&&trip.locked;
-}
-function isTripLogLocked(){
-  // locked = cannot add/edit/delete any log entries or change time
-  const trip=trips.find(t=>t.id===currentTripId);
-  return trip&&(trip.locked||trip.logLocked);
-}
-function isTripRateLocked(){
-  // rateLocked = cannot change star ratings
-  const trip=trips.find(t=>t.id===currentTripId);
-  return trip&&(trip.locked||trip.rateLocked);
 }
 
 function adminDeleteTrip(id){
@@ -2430,20 +2376,14 @@ function renderFamilyStars(type){
   const container=document.getElementById('family-stars-'+type);if(!container)return;
   const memberFamilies=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
   const myFamily=memberFamilies[currentMember]||'';
-  // Edit mode: show own family members only (admin sees all)
-  // Normal add mode: same — self + own family + no-family
-  const members=editingLogId
-    ? (isAdminMode
-        ? [currentMember,...allMembers.filter(m=>m!==currentMember)]
-        : [currentMember,...allMembers.filter(m=>m!==currentMember&&(
-            !memberFamilies[m]||!myFamily||memberFamilies[m]===myFamily
-          ))])
-    : [currentMember,...allMembers.filter(m=>m!==currentMember&&(
-        isAdminMode ||
-        !memberFamilies[m] ||
-        !myFamily ||
-        memberFamilies[m]===myFamily
-      ))];
+  // Show: self + same family only (hide other families)
+  // Admin sees all. If I have no family assigned, show everyone without a family.
+  const members=[currentMember,...allMembers.filter(m=>{
+    if(m===currentMember) return false;
+    if(isAdminMode) return true;
+    if(!myFamily) return !memberFamilies[m]; // I have no family → show others without family
+    return memberFamilies[m]===myFamily;      // same family only
+  })];
   if(!members.length||!currentMember){
     container.innerHTML='<p style="font-size:12px;color:var(--gray);">ยังไม่มีสมาชิก</p>';return;
   }
@@ -2490,7 +2430,6 @@ function renderFamilyStars(type){
   // Stars — only attach to editable members
   container.querySelectorAll('.family-star').forEach(el=>{
     el.addEventListener('click',()=>{
-      if(isTripRateLocked()){showToast('⭐ การ Rate ถูกล็อก');return;}
       const t=el.dataset.type,m=el.dataset.member,n=parseInt(el.dataset.n);
       if(!familyStarState[t])familyStarState[t]={};
       familyStarState[t][m]=familyStarState[t][m]===n?0:n;
@@ -2563,7 +2502,7 @@ function updateShowWait(val){
 
 // ========== SAVE FUNCTIONS ==========
 function saveRide(){
-  if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก ไม่สามารถเพิ่ม/แก้ไขได้');return;}
+  if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}
   const customName=document.getElementById('ride-name-custom').value.trim();
   const name=customName||selectedRideName;
   if(!name){showToast('⚠️ กรุณาเลือกหรือพิมพ์ชื่อเครื่องเล่น');return;}
@@ -2595,31 +2534,24 @@ function saveRide(){
     logsToSave.push(log);
   });
   if(editingLogId){
+    // Edit mode: update ALL logs in the same group session
     const refLog=logs.find(l=>l.id===editingLogId);
-    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
-    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
-      const gi=logs.findIndex(l=>l.id===gl.id);if(gi===-1)return;
-      const fss=familyStarState.ride||{};
-      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
-      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
+      const gi=logs.findIndex(l=>l.id===gl.id);
+      if(gi===-1)return;
+      const mStars=(familyStarState.ride||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.ride||{})[gl.member+'_note']??gl.note??'';
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote,passUsed};
-      logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
+      logs[gi]=updated;
+      dbSet(tripPath('logs/'+gl.id),updated);
     });
-    const sharedGid=refLog.groupId||refLog.id;
-    if(!refLog.groupId){const ri=logs.findIndex(l=>l.id===refLog.id);if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGid};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}}
-    const fssR=familyStarState.ride||{};
-    Object.keys(fssR).forEach(key=>{
-      if(key.endsWith('_note'))return;
-      const mStars=fssR[key]||0;if(!mStars||existingMembers.has(key))return;
-      const newId=Date.now()+Math.floor(Math.random()*9999);
-      const nl={id:newId,type:'ride',name,zone:refLog.zone||selectedRideZone,order:refLog.order,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,feeling:'',note:fssR[key+'_note']||'',round:1,timestamp:refLog.timestamp||refLog.id,member:key,groupId:sharedGid,passUsed,tripId:currentTripId};
-      logs.push(nl);dbPush(tripPath('logs'),nl);
-    });
-    const savedEditId=editingLogId;editingLogId=null;editingLogMember=null;
+    const savedEditId=editingLogId;
+    editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'ride');
     resetRideForm();renderTimeline();renderSummary();renderAttractions();
     showToast('✏️ แก้ไขสำเร็จ — '+name+'!');
@@ -2635,7 +2567,7 @@ function saveRide(){
 }
 
 function saveShow(){
-  if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก ไม่สามารถเพิ่ม/แก้ไขได้');return;}
+  if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}
   const name=document.getElementById('show-name-custom').value.trim();
   if(!name){showToast('⚠️ กรุณาเลือกหรือพิมพ์ชื่อโชว์');return;}
   const time=document.getElementById('show-time').value;
@@ -2656,30 +2588,21 @@ function saveShow(){
   });
   if(editingLogId){
     const refLog=logs.find(l=>l.id===editingLogId);
-    const sameGrp=refLog&&refLog.groupId!=null?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
+    // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+    const sameGrp=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.groupId===refLog.groupId&&l.type===refLog.type&&l.name===refLog.name):[];
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
-    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
-      const gi=logs.findIndex(l=>l.id===gl.id);if(gi===-1)return;
-      const fss=familyStarState.show||{};
-      const mStars=gl.member in fss?fss[gl.member]:gl.stars;
-      const mNote=(gl.member+'_note') in fss?fss[gl.member+'_note']:(gl.note??'');
+      const gi=logs.findIndex(l=>l.id===gl.id);
+      if(gi===-1)return;
+      const mStars=(familyStarState.show||{})[gl.member]??gl.stars;
+      const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
     });
-    const sharedGid=refLog.groupId||refLog.id;
-    if(!refLog.groupId){const ri=logs.findIndex(l=>l.id===refLog.id);if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGid};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}}
-    const fssS=familyStarState.show||{};
-    Object.keys(fssS).forEach(key=>{
-      if(key.endsWith('_note'))return;
-      const mStars=fssS[key]||0;if(!mStars||existingMembers.has(key))return;
-      const newId=Date.now()+Math.floor(Math.random()*9999);
-      const nl={id:newId,type:'show',name,time:logsToSave[0].time,duration:'',wait:logsToSave[0].wait,stars:mStars,feeling:'',note:fssS[key+'_note']||'',timestamp:refLog.timestamp||refLog.id,member:key,groupId:sharedGid,tripId:currentTripId};
-      logs.push(nl);dbPush(tripPath('logs'),nl);
-    });
-    const savedEditId=editingLogId;editingLogId=null;editingLogMember=null;
+    const savedEditId=editingLogId;
+    editingLogId=null;editingLogMember=null;
     saveLogs();saveFamilyRatings(name,'show');
     resetShowForm();renderTimeline();renderSummary();showToast('✏️ แก้ไขสำเร็จ — '+name+'!');
     showTab('timeline');setTimeout(()=>scrollToLog(savedEditId),300);
@@ -2693,7 +2616,7 @@ function saveShow(){
 }
 
 function saveFood(){
-  if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก ไม่สามารถเพิ่ม/แก้ไขได้');return;}
+  if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}
   const customMenu=document.getElementById('food-menu-custom').value.trim();
   const menu=customMenu||selectedFoodMenu;
   if(!selectedFoodRestaurant){showToast('⚠️ กรุณาเลือกร้านอาหาร');return;}
@@ -2728,7 +2651,7 @@ function saveFood(){
 }
 
 function saveExpense(){
-  if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก ไม่สามารถเพิ่ม/แก้ไขได้');return;}
+  if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}
   const name=document.getElementById('exp-name').value.trim();const priceRaw=parseFloat(document.getElementById('exp-price').value)||0;
   if(!name||priceRaw<=0){showToast('⚠️ กรุณาใส่รายการและราคา');return;}
   const cat=document.getElementById('exp-cat').value;const time=document.getElementById('exp-time').value;const note=document.getElementById('exp-note').value.trim();
@@ -3088,47 +3011,33 @@ function timelineCardInner(item, inGroup, orderNum){
     if(item.zone)badges+=`<span class="badge badge-navy" style="font-size:10px;">${item.zone}</span>`;
     if(item.passUsed==='pp')badges+=`<span class="badge tag-pp" style="font-size:10px;">🎟️ PP</span>`;
     if(item.passUsed==='dpa')badges+=`<span class="badge tag-dpa" style="font-size:10px;">💳 DPA</span>`;
-    if(item.member&&!inGroup){
-      let _mb='<span style="font-size:10px;font-weight:700;background:'+memberCol+'18;color:'+memberCol+';padding:1px 7px;border-radius:8px;border:1px solid '+memberCol+'30;">'+item.member+'</span>';
-      if(item.stars){
-        _mb+=' <span style="font-size:12px;font-weight:900;color:'+TIER_COLOR[item.stars]+'">'+TIER_LABEL[item.stars]+'</span>';
-        if(item.note&&item.note!=='เคยเล่น') _mb+=' <span style="font-size:11px;color:#888;">"'+item.note+'"</span>';
-      }
-      badges+=_mb;
-    }
+    if(item.member&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>${item.stars?` <span style="font-size:12px;font-weight:900;color:${TIER_COLOR[item.stars]}">${TIER_LABEL[item.stars]}</span>${item.note&&item.note!=='เคยเล่น'?` <span style="font-size:11px;color:#888;">"${item.note}"</span>`:''}`:''}`;
   }
   if(item.type==='show'){
     if(item.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${item.duration}น.</span>`;
     if(item.wait>0)badges+=`<span class="badge badge-teal" style="font-size:10px;">⏳${item.wait}น.</span>`;
-    if(item.member&&!inGroup){
-      let _mb='<span style="font-size:10px;font-weight:700;background:'+memberCol+'18;color:'+memberCol+';padding:1px 7px;border-radius:8px;border:1px solid '+memberCol+'30;">'+item.member+'</span>';
-      if(item.stars){
-        _mb+=' <span style="font-size:12px;font-weight:900;color:'+TIER_COLOR[item.stars]+'">'+TIER_LABEL[item.stars]+'</span>';
-        if(item.note&&item.note!=='เคยเล่น') _mb+=' <span style="font-size:11px;color:#888;">"'+item.note+'"</span>';
-      }
-      badges+=_mb;
-    }
+    if(item.member&&!inGroup)badges+=`<span style="font-size:10px;font-weight:700;background:${memberCol}18;color:${memberCol};padding:1px 7px;border-radius:8px;border:1px solid ${memberCol}30;">${item.member}</span>${item.stars?` <span style="font-size:12px;font-weight:900;color:${TIER_COLOR[item.stars]}">${TIER_LABEL[item.stars]}</span>${item.note&&item.note!=='เคยเล่น'?` <span style="font-size:11px;color:#888;">"${item.note}"</span>`:''}`:''}`;
   }
-  if(item.type==='food'){if(item.menu)badges+='<span class="badge badge-gold" style="font-size:10px;">'+item.menu+'</span>';if(item.priceYen>0)badges+='<span class="badge badge-gold" style="font-size:10px;">¥'+item.priceYen.toLocaleString()+'</span>';}
+  if(item.type==='food'){if(item.menu)badges+=`<span class="badge badge-gold" style="font-size:10px;">${item.menu}</span>`;if(item.priceYen>0)badges+=`<span class="badge badge-gold" style="font-size:10px;">¥${item.priceYen.toLocaleString()}</span>`;}
   if(item.type==='expense')badges+=`<span class="badge badge-purple" style="font-size:10px;">${item.cat}</span><span class="badge badge-purple" style="font-size:10px;">¥${(item.priceYen||0).toLocaleString()}</span>`;
   const mergeBtn=(item.type==='ride'||item.type==='show')&&isLog
     ?`<button class="tl-delete-btn" onclick="openMergeModal(${item.id})" title="รวมกับกลุ่มอื่น" style="color:#bbb;font-size:13px;margin-right:2px;">🔗</button>`:'';
-  const _mfca=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const _myFca=_mfca[currentMember]||null;
-  const _logFca=item.member?_mfca[item.member]||null:null;
-  const canAct=isAdminMode||(item.member===currentMember)||(_myFca&&_myFca===_logFca);
+  // canAct: admin always; others only for own/family logs
+  const _mf7=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const _myFam7=_mf7[currentMember]||null;
+  const _logFam7=item.member?_mf7[item.member]||null:null;
+  const canAct=isAdminMode||(item.member===currentMember)||(_myFam7&&_myFam7===_logFam7);
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
     <div class="tl-card-header">
       <div class="tl-card-title">${TYPE_LABEL[item.type]||''} ${item.name}</div>
       <div class="tl-card-time">${orderNum?'#'+orderNum:''}</div>
       ${mergeBtn}
-      ${isLog&&canAct&&item.type!=='expense'?'<button onclick="openEditLog('+item.id+')" style="font-size:11px;padding:3px 9px;border:1px solid #e0e0e0;border-radius:8px;background:#f7f7f7;color:#666;cursor:pointer;margin-right:2px;">✏️</button>':''}
-      ${canAct?'<button class="tl-delete-btn" data-del-id="'+item.id+'" data-del-type="'+(isLog?(item.type==='expense'?'expense':'log'):'expense')+'">✕</button>':''}
+      ${isLog&&canAct&&item.type!=='expense'?`<button data-edit-id="${item.id}" style="border:none;background:#f0f4ff;color:var(--navy);border-radius:8px;padding:3px 9px;font-size:13px;font-weight:700;cursor:pointer;margin-right:2px;">✏️</button>`:''}
+      ${canAct?`<button class="tl-delete-btn" data-del-id="${item.id}" data-del-type="${isLog?(item.type==='expense'?'expense':'log'):'expense'}">✕</button>`:''}
     </div>
     ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
     
-    ${item.note&&item.note!=='เคยเล่น'&&item.type==='food'?`<div class="log-item-note" style="margin:0 12px 8px;">"${item.note}"</div>`:''}
-    ``;
+    ${item.note&&item.note!=='เคยเล่น'&&item.type==='food'?`<div class="log-item-note" style="margin:0 12px 8px;">"${item.note}"</div>`:''}`;
 
 
 
@@ -3147,33 +3056,30 @@ function timelineGroupInner(lead,members,orderNum){
     if(lead.passUsed==='dpa')badges+=`<span class="badge tag-dpa" style="font-size:10px;">💳 DPA</span>`;
   }
   if(lead.type==='show'&&lead.duration)badges+=`<span class="badge badge-teal" style="font-size:10px;">${lead.duration}น.</span>`;
-  const _mfrMap=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const _myFrFam=_mfrMap[currentMember]||null;
+  // Find which log to edit: prefer currentMember, fallback to same family, then admin gets first
+  const _mfgr=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+  const _myFgr=_mfgr[currentMember]||null;
+  const _canActGrp=isAdminMode||members.some(m=>m.member===currentMember||(_myFgr&&_mfgr[m.member]===_myFgr));
+  const _myLogInGrp=members.find(m=>m.member===currentMember)
+    ||members.find(m=>_myFgr&&_mfgr[m.member]===_myFgr)
+    ||(isAdminMode?members[0]:null);
   const memberRows=members.map(m=>{
     const col=getMemberColor(m.member);
     const starsStr=m.stars?tierBadge(m.stars,13,true):'<span style="font-size:10px;color:#bbb;">—</span>';
-    const noteHtml=m.note&&m.note!=='เคยเล่น'?'<span style="font-size:11px;color:#888;font-weight:400;margin-left:2px;">"'+m.note+'"</span>':'';
-    const _mFam=_mfrMap[m.member]||null;
-    const _okDel=isAdminMode||(m.member===currentMember)||(_myFrFam&&_myFrFam===_mFam);
-    const delBtn=_okDel?'<button class="tl-delete-btn" data-del-id="'+m.id+'" data-del-type="log" style="margin-left:auto;">✕</button>':'';
-    return '<div class="tl-member-row">'
-      +'<span class="tl-member-name" style="color:'+col+';">'+m.member+' '+starsStr+noteHtml+'</span>'
-      +delBtn
-      +'</div>';
+    const noteStr=m.note&&m.note!=='เคยเล่น'?`<span style="font-size:11px;color:#888;font-weight:400;margin-left:2px;">"${m.note}"</span>`:'';
+    const _mFg=_mfgr[m.member]||null;
+    const _canDel=isAdminMode||(m.member===currentMember)||(_myFgr&&_myFgr===_mFg);
+    const delBtn=_canDel?`<button class="tl-delete-btn" data-del-id="${m.id}" data-del-type="log" style="margin-left:auto;">✕</button>`:'';
+    return `<div class="tl-member-row">
+      <span class="tl-member-name" style="color:${col};">${m.member} ${starsStr}${noteStr}</span>
+      ${delBtn}
+    </div>`;
   }).join('');
-  // Permission for the current user on this group card
-  const _mfg2=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-  const _myFg2=_mfg2[currentMember]||null;
-  // Can act if admin, or any member in the group shares family with currentMember
-  const _canActGrp=isAdminMode||members.some(m=>m.member===currentMember||(m.member&&_myFg2&&_mfg2[m.member]===_myFg2));
-  // Find the log belonging to currentMember in the group (for edit button)
-  const _myLog=members.find(m=>m.member===currentMember)||members.find(m=>_myFg2&&_mfg2[m.member]===_myFg2)||(isAdminMode?members[0]:null);
-  const _editBtnGrp=_canActGrp&&_myLog?'<button onclick="openEditLog('+_myLog.id+')" style="font-size:11px;padding:3px 9px;border:1px solid #e0e0e0;border-radius:8px;background:#f7f7f7;color:#666;cursor:pointer;margin-left:4px;">✏️</button>':'';
   return `<div class="tl-card-strip" style="background:${stripColor};"></div>
     <div class="tl-card-header">
       <div class="tl-card-title">${TYPE_LABEL[lead.type]||''} ${lead.name}</div>
       <div class="tl-card-time">${orderNum?'#'+orderNum:''}</div>
-      ${_editBtnGrp}
+      ${_canActGrp&&_myLogInGrp?`<button data-edit-id="${_myLogInGrp.id}" style="border:none;background:#f0f4ff;color:var(--navy);border-radius:8px;padding:3px 9px;font-size:13px;font-weight:700;cursor:pointer;margin-right:2px;">✏️</button>`:''}
     </div>
     ${badges?`<div class="tl-card-badges">${badges}</div>`:''}
     ${(()=>{const rated=members.filter(m=>m.stars>0);if(!rated.length)return '';const avg=rated.reduce((s,m)=>s+m.stars,0)/rated.length;const avgR=Math.round(avg);return `<div style="padding:2px 12px 6px;font-size:11px;color:#aaa;">avg <span style="font-weight:900;font-size:13px;color:${TIER_COLOR[avgR]};">${TIER_LABEL[avgR]}</span> <span style="color:${TIER_COLOR[avgR]};font-weight:600;">${RATING_LABELS[avgR]}</span></div>`;})()}
@@ -3251,15 +3157,15 @@ function doMerge(srcId,targetId){
 function openEditLog(id){
   const log=logs.find(l=>l.id===id);
   if(!log)return;
+  // Permission check: admin can edit all; others can only edit own family
   if(!isAdminMode){
-    const _mfx=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-    const _myF=_mfx[currentMember]||null;
-    const _logF=_mfx[log.member]||null;
-    if(log.member!==currentMember&&!(_myF&&_myF===_logF)){
-      showToast('🔒 แก้ไขได้เฉพาะรายการของตัวเองหรือครอบครัว');return;
-    }
+    const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+    const myFamily=mf[currentMember]||null;
+    const logFamily=mf[log.member]||null;
+    const isMine=log.member===currentMember;
+    const isSameFamily=myFamily&&myFamily===logFamily;
+    if(!isMine&&!isSameFamily){showToast('🔒 แก้ไขได้เฉพาะรายการของตัวเองหรือครอบครัว');return;}
   }
-  // All edits allowed
   editingLogId=id;
   editingLogMember=log.member; // track whose log we're editing
   const type=log.type;
@@ -3327,9 +3233,11 @@ function openEditLog(id){
       if(starBtns.length&&log.stars){
         starBtns.forEach((b,i)=>{b.classList.toggle('active',i<log.stars);});
       }
-      // Restore ALL members' stars+notes — clear first to avoid stale data
-      familyStarState[type]={};
-      const sameGroup=log.groupId!=null?logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId===log.groupId):[];
+      // Restore ALL members' stars+notes from the same group session
+      familyStarState[type]={}; // clear first so stale members from prior edit don't linger
+      // Group by shared groupId; fall back to same name+type+trip (for separately-saved logs)
+      const sameGroup=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&l.groupId!=null&&l.groupId===log.groupId);
+      // Fallback: same name+trip, but limit to logs within 2 hours of the edited log
       const nearbyFallback=logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name&&Math.abs((l.timestamp||l.id)-(log.timestamp||log.id))<7200000);
       const groupLogs=sameGroup.length>1?sameGroup:(nearbyFallback.length>0?nearbyFallback:logs.filter(l=>l.tripId===log.tripId&&l.type===type&&l.name===log.name));
       groupLogs.forEach(gl=>{
@@ -3361,18 +3269,18 @@ function openEditLog(id){
 let editingLogId=null,editingLogMember=null;
 
 function deleteLog(id){
-  if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก ไม่สามารถลบได้');return;}
+  if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถลบได้');return;}
   const log=logs.find(l=>l.id===id);
   if(!log)return;
+  // Permission check
   if(!isAdminMode){
-    const _mfd=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
-    const _myFd=_mfd[currentMember]||null;
-    const _logFd=_mfd[log.member]||null;
-    if(log.member!==currentMember&&!(_myFd&&_myFd===_logFd)){
-      showToast('🔒 ลบได้เฉพาะรายการของตัวเองหรือครอบครัว');return;
-    }
+    const mf=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+    const myFamily=mf[currentMember]||null;
+    const logFamily=mf[log.member]||null;
+    const isMine=log.member===currentMember;
+    const isSameFamily=myFamily&&myFamily===logFamily;
+    if(!isMine&&!isSameFamily){showToast('🔒 ลบได้เฉพาะรายการของตัวเองหรือครอบครัว');return;}
   }
-  // All deletes allowed
   if(!confirm('ลบรายการ "'+log.name+'" ของ '+log.member+' ?')){return;}
   logs=logs.filter(l=>l.id!==id);saveLogs();renderTimeline();renderSummary();renderAttractions();showToast('🗑️ ลบรายการแล้ว');
 }
@@ -3486,7 +3394,7 @@ function renderFamilyLeaderboard(tl){
     const avgR=Math.round(avgNum);
     const col=TIER_COLOR[avgR]||'var(--gold)';
     const medals=['🥇','🥈','🥉'];
-    const rank=i<3?'<span style="font-size:20px;">'+medals[i]+'</span>':'<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">'+(i+1)+'</span>';
+    const rank=i<3?`<span style="font-size:20px;">${medals[i]}</span>`:`<span style="font-size:13px;font-weight:700;color:#aaa;min-width:24px;text-align:center;">${i+1}</span>`;
     const fam=memberFamilies[m]?`<span style="font-size:10px;background:#f0f4ff;color:var(--navy);padding:1px 7px;border-radius:8px;margin-left:5px;font-weight:600;">${memberFamilies[m]}</span>`:'';
     const bar=Math.round(avgNum/5*100);
     const safeM=m.replace(/'/g,"\'");
@@ -3634,7 +3542,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.2.0';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.0.0';
   document.getElementById('export-text').textContent=text;
 }
 
@@ -4437,7 +4345,7 @@ function openAttractionDetail(name){
   modal.classList.add('open');
   document.body.style.overflow='hidden';
 }
-function quickLogFromModal(name,zone){if(isTripLogLocked()){showToast('📝 การบันทึกถูกล็อก');return;}rideOrderCount++;const now=new Date();const time=now.toTimeString().slice(0,5);const log={id:Date.now(),type:'ride',name,zone,order:rideOrderCount,wait:0,time,stars:0,feeling:'',note:'(quick log)',timestamp:Date.now(),member:currentMember,tripId:currentTripId};logs.push(log);saveLogs();dbPush(tripPath('logs'),log);renderTimeline();renderSummary();renderAttractions();showToast('⚡ บันทึก '+name+' แล้ว!');}
+function quickLogFromModal(name,zone){if(isTripLocked()){showToast('🔒 ทริปนี้ถูกล็อก ไม่สามารถบันทึกได้');return;}rideOrderCount++;const now=new Date();const time=now.toTimeString().slice(0,5);const log={id:Date.now(),type:'ride',name,zone,order:rideOrderCount,wait:0,time,stars:0,feeling:'',note:'(quick log)',timestamp:Date.now(),member:currentMember,tripId:currentTripId};logs.push(log);saveLogs();dbPush(tripPath('logs'),log);renderTimeline();renderSummary();renderAttractions();showToast('⚡ บันทึก '+name+' แล้ว!');}
 function closeModal(){document.getElementById('detail-modal').classList.remove('open');document.body.style.overflow='';}
 function closeModalIfOutside(e){if(e.target===document.getElementById('detail-modal'))closeModal();}
 
