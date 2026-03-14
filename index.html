@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.1.7</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.1.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -12,13 +12,13 @@
 // 2. สร้าง project → Add app → Web → Copy firebaseConfig มาแทนด้านล่าง
 // 3. ใน Realtime Database → Rules → ตั้ง ".read":true, ".write":true (สำหรับใช้งานภายในครอบครัว)
 window.FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDkFGEpMW3wgrx-Q86x9BKXJyjJh-7-ZNw",
+  authDomain: "disney-2d1eb.firebaseapp.com",
+  databaseURL: "https://disney-2d1eb-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "disney-2d1eb",
+  storageBucket: "disney-2d1eb.firebasestorage.app",
+  messagingSenderId: "927617434806",
+  appId: "1:927617434806:web:7de1059386b5ef1cacd217"
 };
 </script>
 <script type="module">
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.1.7 NEW FEATURES ===== */
+  /* ===== v2.1.8 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -481,7 +481,7 @@ window.FIREBASE_CONFIG = {
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
       <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);">สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม</p>
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.7</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.8</div>
     </div>
 
     <!-- Step 1: Trip list -->
@@ -645,7 +645,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.7</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.8</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -3646,7 +3646,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.7';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.8';
   document.getElementById('export-text').textContent=text;
 }
 
