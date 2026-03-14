@@ -3246,6 +3246,19 @@ function openEditLog(id){
         // Update note input if visible
         document.querySelectorAll(`.family-note-input[data-member="${gl.member}"]`).forEach(ni=>{ni.value=gl.note||'';});
       });
+      // Ensure ALL family members appear in familyStarState (even those with no prior log)
+      // so renderFamilyStars shows them with val=0 and an empty note input
+      const _mfEdit=JSON.parse(localStorage.getItem('tdl_member_families')||'{}');
+      const _myFamEdit=_mfEdit[currentMember]||null;
+      allMembers.forEach(m=>{
+        if(m===currentMember) return; // already handled
+        const _mFam=_mfEdit[m]||null;
+        const sameFamily=_myFamEdit&&_myFamEdit===_mFam;
+        if(sameFamily&&!(m in familyStarState[type])){
+          familyStarState[type][m]=0; // no prior rating — show empty card
+          familyStarState[type][m+'_note']='';
+        }
+      });
       // Also update tier button visual state for all members
       document.querySelectorAll('.family-star[data-type="'+type+'"]').forEach(btn=>{
         const bm=btn.dataset.member,bn=parseInt(btn.dataset.n);
