@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.1.4</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.1.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.1.4 NEW FEATURES ===== */
+  /* ===== v2.1.5 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -481,7 +481,7 @@ window.FIREBASE_CONFIG = {
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
       <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);">สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม</p>
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.4</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.5</div>
     </div>
 
     <!-- Step 1: Trip list -->
@@ -645,7 +645,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.4</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.5</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -2546,6 +2546,7 @@ function saveRide(){
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
@@ -2554,6 +2555,26 @@ function saveRide(){
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote,passUsed};
       logs[gi]=updated;
       dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who rated now but had no prior log
+    const sharedGroupId=refLog.groupId||refLog.id;
+    if(!refLog.groupId){
+      const ri=logs.findIndex(l=>l.id===refLog.id);
+      if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+    }
+    const fssR=familyStarState.ride||{};
+    Object.keys(fssR).forEach(key=>{
+      if(key.endsWith('_note')) return;
+      const mStars=fssR[key]||0;
+      if(!mStars||existingMembers.has(key)) return; // skip if no rating or already has log
+      const newId=Date.now()+Math.floor(Math.random()*9999);
+      const nl={id:newId,type:'ride',name,zone:refLog.zone||selectedRideZone,
+        wait:logsToSave[0].wait,time:logsToSave[0].time,
+        stars:mStars,note:fssR[key+'_note']||'',
+        member:key,tripId:refLog.tripId,groupId:sharedGroupId,
+        round:refLog.round||1,passUsed,timestamp:refLog.timestamp||Date.now()};
+      logs.push(nl);
+      dbPush(tripPath('logs'),nl);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -2598,6 +2619,7 @@ function saveShow(){
     const nearbyFbk=refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name&&Math.abs((l.timestamp||l.id)-(refLog.timestamp||refLog.id))<7200000):[];
     const groupLogs=sameGrp.length>1?sameGrp:(nearbyFbk.length>0?nearbyFbk:(refLog?logs.filter(l=>l.tripId===refLog.tripId&&l.type===refLog.type&&l.name===refLog.name):[]));
     const logsToUpdate=groupLogs.length>0?groupLogs:[refLog].filter(Boolean);
+    const existingMembers=new Set(logsToUpdate.map(gl=>gl.member));
     logsToUpdate.forEach(gl=>{
       const gi=logs.findIndex(l=>l.id===gl.id);
       if(gi===-1)return;
@@ -2605,6 +2627,26 @@ function saveShow(){
       const mNote=(familyStarState.show||{})[gl.member+'_note']??gl.note??'';
       const updated={...gl,wait:logsToSave[0].wait,time:logsToSave[0].time,stars:mStars,note:mNote};
       logs[gi]=updated;dbSet(tripPath('logs/'+gl.id),updated);
+    });
+    // Create new logs for members who rated now but had no prior log
+    const sharedGroupId=refLog.groupId||refLog.id;
+    if(!refLog.groupId){
+      const ri=logs.findIndex(l=>l.id===refLog.id);
+      if(ri!==-1){logs[ri]={...logs[ri],groupId:sharedGroupId};dbSet(tripPath('logs/'+refLog.id),logs[ri]);}
+    }
+    const fssS=familyStarState.show||{};
+    Object.keys(fssS).forEach(key=>{
+      if(key.endsWith('_note')) return;
+      const mStars=fssS[key]||0;
+      if(!mStars||existingMembers.has(key)) return;
+      const newId=Date.now()+Math.floor(Math.random()*9999);
+      const nl={id:newId,type:'show',name,time:logsToSave[0].time,
+        wait:logsToSave[0].wait,duration:'',
+        stars:mStars,note:fssS[key+'_note']||'',
+        member:key,tripId:refLog.tripId,groupId:sharedGroupId,
+        round:refLog.round||1,timestamp:refLog.timestamp||Date.now()};
+      logs.push(nl);
+      dbPush(tripPath('logs'),nl);
     });
     const savedEditId=editingLogId;
     editingLogId=null;editingLogMember=null;
@@ -3568,7 +3610,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.4';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.5';
   document.getElementById('export-text').textContent=text;
 }
 
