@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 TDL บันทึกการเดินทาง v2.1.5</title>
+<title>🏰 TDL บันทึกการเดินทาง v2.1.7</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 // ========== FIREBASE CONFIG ==========
@@ -399,7 +399,7 @@ window.FIREBASE_CONFIG = {
   .rate-inline-hint{font-size:11px;color:var(--gray);white-space:nowrap;}
 
 
-  /* ===== v2.1.5 NEW FEATURES ===== */
+  /* ===== v2.1.7 NEW FEATURES ===== */
   .wait-preset-btn{padding:9px 14px;border-radius:12px;border:2px solid var(--light-gray);background:var(--white);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--gray);cursor:pointer;transition:all 0.15s;white-space:nowrap;}
   .wait-preset-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
   .wait-preset-btn:hover:not(.active){border-color:var(--navy);}
@@ -481,7 +481,7 @@ window.FIREBASE_CONFIG = {
       <div style="font-size:52px;margin-bottom:8px;animation:float 3s ease-in-out infinite;">🏰</div>
       <h2 style="font-family:'Prompt',sans-serif;font-size:22px;color:#fff;margin-bottom:4px;">Tokyo Disneyland Logger</h2>
       <p style="font-size:12px;color:rgba(255,255,255,0.65);">สนุกแค่ไหน บันทึกไว้ ไม่ให้ลืม</p>
-      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.5</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:6px;font-family:monospace;letter-spacing:1.5px;">v2.1.7</div>
     </div>
 
     <!-- Step 1: Trip list -->
@@ -645,7 +645,7 @@ window.FIREBASE_CONFIG = {
   <span class="castle-icon">🏰</span>
   <h1>Tokyo Disneyland</h1>
   <div class="subtitle">บันทึกความทรงจำ</div>
-  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.5</div>
+  <div style="font-size:10px;color:var(--gold-light);opacity:0.65;margin-top:3px;letter-spacing:1.5px;font-family:monospace;">v2.1.7</div>
   <div class="date-display" id="currentDate">กำลังโหลด...</div>
   <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
     <div class="member-pill">
@@ -683,6 +683,7 @@ window.FIREBASE_CONFIG = {
   <div id="form-ride">
     <div class="section-card">
       <div class="section-title"><span>🎢</span>บันทึกเครื่องเล่น</div>
+      <div id="ride-edit-banner" style="display:none;margin:0 0 10px;padding:9px 14px;background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;font-size:13px;font-weight:700;color:#b8860b;">✏️ กำลังแก้ไข: <span id="ride-edit-name" style="color:var(--navy);"></span></div>
 
       <!-- Ride search (cross-zone) -->
       <div class="form-row" id="ride-search-box" style="margin-bottom:8px;">
@@ -723,7 +724,7 @@ window.FIREBASE_CONFIG = {
           <input type="number" class="form-input" id="ride-order" placeholder="อัตโนมัติ" min="1"/>
         </div>
 
-        <div class="form-row">
+        <div class="form-row" id="ride-wait-section">
           <label class="form-label">⏳ เวลารอ: <span id="wait-val">0</span> นาที &nbsp;<span class="wait-display" id="wait-show" style="font-size:12px;font-weight:600;">ไม่รอเลย 🎉</span></label>
           <input type="hidden" id="ride-wait" value="0"/>
           <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
@@ -770,14 +771,15 @@ window.FIREBASE_CONFIG = {
   <div id="form-show" style="display:none">
     <div class="section-card">
       <div class="section-title"><span>🎭</span>บันทึกโชว์ / Parade</div>
+      <div id="show-edit-banner" style="display:none;margin:0 0 10px;padding:9px 14px;background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;font-size:13px;font-weight:700;color:#b8860b;">✏️ กำลังแก้ไข: <span id="show-edit-name" style="color:var(--navy);"></span></div>
 
-      <div class="form-row">
+      <div class="form-row" id="show-search-box">
         <div style="position:relative;margin-bottom:8px;">
           <input id="show-global-search" class="form-input" placeholder="🔍 ค้นหาโชว์ / พาเหรด..." oninput="filterShowGlobal(this.value)" style="padding-right:32px;"/>
           <button onclick="clearShowSearch()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;font-size:14px;cursor:pointer;display:none;" id="show-search-clear">✕</button>
         </div>
         <div id="show-global-results" style="display:none;margin-bottom:8px;background:#fff;border:1px solid #e0e0e0;border-radius:12px;max-height:200px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,0.08);"></div>
-        <label class="form-label">เลือกหรือพิมพ์ชื่อโชว์</label>
+        <label class="form-label" id="show-select-section">เลือกหรือพิมพ์ชื่อโชว์</label>
         <div class="ride-list" id="show-option-list" style="max-height:220px;">
         </div>
         <input class="form-input" id="show-name-custom" placeholder="หรือพิมพ์ชื่อเอง..." style="margin-top:8px"/>
@@ -786,7 +788,7 @@ window.FIREBASE_CONFIG = {
       <div id="show-details" style="display:none;">
         <div class="divider"></div>
         <div style="display:none;"><input type="time" class="form-input" id="show-time"/></div>
-        <div class="form-row">
+        <div class="form-row" id="show-wait-section">
           <label class="form-label">⏳ เวลารอ: <span id="show-wait-val">0</span> นาที &nbsp;<span style="font-size:12px;font-weight:600;color:var(--teal);" id="show-wait-show">ไม่รอเลย 🎉</span></label>
           <input type="hidden" id="show-wait" value="0"/>
           <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
@@ -1106,10 +1108,10 @@ window.FIREBASE_CONFIG = {
 <div id="merge-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:7000;align-items:flex-end;justify-content:center;" onclick="closeMergeModal()">
   <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:20px 18px 40px;max-height:80vh;overflow-y:auto;animation:slideUp 0.3s ease;" onclick="event.stopPropagation()">
     <div style="width:36px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px;"></div>
-    <h3 style="font-family:'Prompt',sans-serif;font-size:16px;color:var(--navy);margin-bottom:4px;">🔗 รวมกับกลุ่มอื่น</h3>
+    <h3 style="font-family:'Prompt',sans-serif;font-size:16px;color:var(--navy);margin-bottom:12px;">🔗 รวมกับกลุ่มอื่น</h3>
     <p style="font-size:12px;color:var(--gray);margin-bottom:16px;" id="merge-source-label"></p>
-    <div id="merge-candidates" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
-    <button onclick="closeMergeModal()" style="width:100%;padding:13px;border:none;background:var(--light-gray);border-radius:14px;font-family:'Sarabun',sans-serif;font-weight:700;color:var(--gray);cursor:pointer;">ยกเลิก</button>
+    <div id="merge-candidates" style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;"></div>
+    <button class="btn" style="margin-top:16px;width:100%;" onclick="closeMergeModal()">ยกเลิก</button>
   </div>
 </div>
 
@@ -2712,6 +2714,10 @@ function saveExpense(){
 
 // ========== RESET FORMS ==========
 function resetRideForm(){
+  const _rb=document.getElementById('ride-edit-banner');if(_rb)_rb.style.display='none';
+  const _rsb=document.getElementById('ride-search-box');if(_rsb)_rsb.style.display='';
+  const _rs1=document.getElementById('ride-step1');if(_rs1)_rs1.style.display='';
+  const _rws=document.getElementById('ride-wait-section');if(_rws)_rws.style.display='';
   selectedRideZone='';selectedRideName='';
   document.getElementById('ride-step1').style.display='';
   document.getElementById('ride-step2').style.display='none';
@@ -2740,6 +2746,11 @@ function togglePass(type){
   toggle.classList.toggle('active-'+type, cb.checked);
 }
 function resetShowForm(){
+  const _sb=document.getElementById('show-edit-banner');if(_sb)_sb.style.display='none';
+  const _ssb=document.getElementById('show-search-box');if(_ssb)_ssb.style.display='';
+  const _ssl=document.getElementById('show-select-section');if(_ssl)_ssl.style.display='';
+  const _sol=document.getElementById('show-option-list');if(_sol)_sol.style.display='';
+  const _sws=document.getElementById('show-wait-section');if(_sws)_sws.style.display='';
   document.getElementById('show-name-custom').value='';
   const showTime=document.getElementById('show-time');if(showTime)showTime.value='';
   updateShowWait(0);
@@ -3330,6 +3341,31 @@ function openEditLog(id){
       // Scroll to form
       const det=document.getElementById(type==='ride'?'ride-details':'show-details');
       if(det) det.scrollIntoView({behavior:'smooth',block:'start'});
+      // Show edit banner + hide/show sections based on mode
+      if(type==='ride'){
+        const _rb=document.getElementById('ride-edit-banner');
+        const _rn=document.getElementById('ride-edit-name');
+        if(_rb&&_rn){_rn.textContent=log.name;_rb.style.display='';}
+        // Hide search + zone (not needed during edit)
+        const _rsb=document.getElementById('ride-search-box');if(_rsb)_rsb.style.display='none';
+        const _rs1=document.getElementById('ride-step1');if(_rs1)_rs1.style.display='none';
+        // Wait slider: admin sees + prefilled, others hidden
+        const _rws=document.getElementById('ride-wait-section');
+        if(_rws) _rws.style.display=isAdminMode?'':'none';
+        if(isAdminMode) updateWait(log.wait||0);
+      } else if(type==='show'){
+        const _sb=document.getElementById('show-edit-banner');
+        const _sn=document.getElementById('show-edit-name');
+        if(_sb&&_sn){_sn.textContent=log.name;_sb.style.display='';}
+        // Hide search + select list
+        const _ssb=document.getElementById('show-search-box');if(_ssb)_ssb.style.display='none';
+        const _ssl=document.getElementById('show-select-section');if(_ssl)_ssl.style.display='none';
+        const _sol=document.getElementById('show-option-list');if(_sol)_sol.style.display='none';
+        // Wait slider: admin sees + prefilled, others hidden
+        const _sws=document.getElementById('show-wait-section');
+        if(_sws) _sws.style.display=isAdminMode?'':'none';
+        if(isAdminMode) updateShowWait(log.wait||0);
+      }
       showToast('✏️ แก้ไข: '+log.name);
     },150);
   },100);
@@ -3610,7 +3646,7 @@ function generateExport(){
     text+='\n';
   });
   text+='\n🍜 ร้านอาหาร ('+food.length+' มื้อ)\n'+'─'.repeat(30)+'\n';food.forEach((f,i)=>{text+=(i+1)+'. '+f.name+(f.menu?' - '+f.menu:'')+' ['+(f.time||'--:--')+']\n'+(f.priceYen>0?'   💴 ¥'+f.priceYen.toLocaleString()+'\n':'')+(f.stars>0?'   ['+TIER_LABEL[f.stars]+']\n':'')+(f.note?'   📝 "'+f.note+'"\n':'')+'\n';});
-  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.5';
+  text+='\n'+'='.repeat(40)+'\n📊 สรุป\n🎢 '+rideSessions.length+' | 🎭 '+showSessions.length+' | 🍜 '+food.length+'\n⏳ '+totalWait+'น. | 💴 ¥'+totalYen.toLocaleString()+' (฿'+Math.round(totalThb).toLocaleString()+')\n\n✨ TDL Trip Logger v2.1.7';
   document.getElementById('export-text').textContent=text;
 }
 
